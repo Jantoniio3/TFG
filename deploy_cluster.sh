@@ -11,7 +11,15 @@ else
     echo "⚠️ Ya existe un archivo .env. Asegúrate de modificarlo con las variables de .env.cluster!"
 fi
 
-# 2. Instalar el entorno (Asumiendo que has creado un conda o venv nuevo en el linux)
+# 2. Creación y activación de entorno virtual (aislado del sistema operativo)
+if [ ! -d ".venv_cluster" ]; then
+    echo "🐍 Inicializando entorno virtual aislado (.venv_cluster)..."
+    python3 -m venv .venv_cluster
+fi
+
+echo "🔄 Activando el entorno virtual..."
+source .venv_cluster/bin/activate
+
 echo "📦 Instalando dependencias del proyecto..."
 pip install -r requirements.txt
 
@@ -20,6 +28,7 @@ echo "🦙 Asegurando que llama3.1 de 70B parámetros esté descargado..."
 ollama pull llama3.1:70b
 
 echo ""
-echo "✅ DEPLOYMENT PREPARADO. Todo listo para iniciar."
-echo "Si es tu primer inicio, no olvides ejecutar: python src/scripts/init_ontology.py"
-echo "Para arrancar la interfaz completa: python main.py"
+echo "✅ DEPLOYMENT PREPARADO. Todo listo."
+echo "Para arrancar el proyecto en el futuro, RECUERDA ACTIVAR TU ENTORNO SIEMPRE ejecutando:"
+echo "source .venv_cluster/bin/activate"
+echo "Y luego ya lanzas: python main.py"
