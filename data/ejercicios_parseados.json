@@ -1,0 +1,112 @@
+[
+  {
+    "id": "resuelto_1",
+    "estado": "Resuelto",
+    "enunciado": "Programa  una  función  que,  recibiendo  los  3  coeficientes  a,  b  y  c  de  una  ecuación  de\nsegundo grado, calcule el valor del discriminante (valor del radicando) de la misma según\nla fórmula:\n\n𝑥 =\n\n−𝑏 ± √𝑏2 − 4𝑎𝑐\n2𝑎\n\nDonde:\n\n        𝑑𝑖𝑠𝑐𝑟𝑖𝑚𝑖𝑛𝑎𝑛𝑡𝑒 = 𝑏2 − 4𝑎𝑐\n\nPrueba la función con un programa que la invoque con 3 valores para sus coeficientes.\n\nSOLUCION PROPUESTA:\n\ndef discriminante(a, b, c):\n\"\"\" float,float,float --> float\n    OBJ: calcula el discriminante de la ecuación de segundo grado \"\"\"\n    return b**2-4*a*c\n\n#Probador 4,5,1\nprint(discriminante(4,5,1))"
+  },
+  {
+    "id": "resuelto_2",
+    "estado": "Resuelto",
+    "enunciado": "Programa una función que determine si un número entero es impar y pruébala.\n\nSOLUCION PROPUESTA:\n\ndef es_impar(n):\n   \"\"\" int --> bool\n       OBJ: Determina si un entero es impar o no\n   \"\"\"\n   return (n % 2 != 0)     # alternativa n % 2 == 1\n\n#Probador\nprint(es_impar(25), 'si ')   # Observa que necesitaremos 2 probadores\nprint(es_impar(24), 'no ')\n\n\n1\n\n\f3.  Escribe y prueba una función que calcule el impuesto que debe pagar un contribuyente a\npartir de sus ingresos anuales y el número de hijos. El impuesto a pagar es un tercio del\ningreso imponible, siendo este último igual a los ingresos totales menos una deducción\npersonal de 600€, a lo que se ha de añadir otra deducción de 60€ por hijo.\n\nSOLUCION PROPUESTA:\n\ndef impuesto (ingresos, num_hijos):\n    \"\"\" float, int --> float\n       OBJ: impuesto que debe pagar un contribuyente a\n       partir de sus ingresos anuales y el número de hijos. Existe una\n       deducción personal de 600 euros y una por hijo de 60eur/hijo\n       PRE: num_hijos >= 0                          \"\"\"\n    DEDUCCION_PERSONAL = 600\n    DEDUCCION_POR_HIJO = 60\n    ingreso_imponible = ingresos - DEDUCCION_PERSONAL\n    return (ingreso_imponible - DEDUCCION_POR_HIJO * num_hijos)/3\n\n#Probador\nprint(impuesto(25000,2))"
+  },
+  {
+    "id": "resuelto_4",
+    "estado": "Resuelto",
+    "enunciado": "Escribe un programa modularizado que, utilizando funciones, calcule el perímetro y el área\n\nde un círculo. Construye los respectivos probadores.\n\nSOLUCION PROPUESTA:\n\ndef area_circulo(radio):\n    \"\"\" float --> float\n        OBJ: Calcula el area de un circulo\n        PRE: radio >= 0 \"\"\"\n    import math\n    return math.pi * radio**2\n\n# Programa probador\nradio=3.0\nprint ('área = ',area_circulo(radio), 'debe dar 28.274.. ')\n\ndef perimetro_circunferencia(radio):\n    \"\"\" float --> float\n        OBJ: Calcula el perímetro de una circunferencia\n        PRE: radio >= 0 \"\"\"\n    import math\n    return math.pi * radio * 2.0\n\n#Programa probador\nradio=3.0\nprint ('perímetro = ', perimetro_circunferencia(radio), 'dará 18.84... ')"
+  },
+  {
+    "id": "propuesto_1",
+    "estado": "Propuesto",
+    "enunciado": "Implementa  una  función  \"fuerza\"  que  retorne  el  valor  de  la  magnitud\nfísica  fuerza  a  partir  de  dos  valores  recibidos  como  parámetros:  masa  y\naceleración. Construye después un programa que permita probar tu función,\nmostrando  por  pantalla  el  valor  de  la  fuerza  a  partir  de  una  masa  y\naceleración dadas."
+  },
+  {
+    "id": "propuesto_2",
+    "estado": "Propuesto",
+    "enunciado": "El Barn es una unidad de superficie muy utilizada en la física de partículas,\nque equivale a 10-28 m². Para ilustrar su tamaño, ten en cuenta que un Barn\nes,  aproximadamente,  el  área  de  la  sección  transversal  del  núcleo  de  un\n\n\n2\n\n\fátomo  de  uranio.  Programa  dos  funciones,  una  que  permita  convertir\nunidades en m² a Barns, y su inversa."
+  },
+  {
+    "id": "propuesto_3",
+    "estado": "Propuesto",
+    "enunciado": "En  el  mundo  financiero,  existe  para  ciertos  productos  de  inversión  un\nconcepto  denominado  Tasa  de  Interés  Efectivo  Anual  (TIEA).  Esta  tasa  es\nfunción de la tasa nominal anual (TNA) y del número (entero) de períodos de\ncapitalización  (del  número  de  veces  en  el  año  que  los  intereses  pasan  a\nformar parte del capital) según la expresión: TIEA=(1 + TNA/m)m-1, siendo\nm el número de periodos total de un año (es decir, 12 si hablamos de períodos\nmensuales,  4  si  es trimestral,  2 si  es  semestral,  etc.). Escribe  una  función\nque calcule el TIEA a partir del TNA y el número de períodos."
+  },
+  {
+    "id": "propuesto_4",
+    "estado": "Propuesto",
+    "enunciado": "Escribe un programa modularizado que, a partir de una hora (3 datos enteros\nuno para la hora, otro para los minutos y otro para los segundos y, utilizando\nuna función que calcule el número total de segundos transcurridos desde la\núltima medianoche, muestre dicho total posteriormente por pantalla."
+  },
+  {
+    "id": "propuesto_5",
+    "estado": "Propuesto",
+    "enunciado": "Escribe  una  función  que  determine  si  un  punto  de  coordenadas  en  2D\nestá  o  no  sobre  la  circunferencia  x2+y2=1000.  Error  frecuente:  considerar\nque necesitas una instrucción if. No es necesario utilizar if y te pedimos de\nhecho que no lo utilices."
+  },
+  {
+    "id": "propuesto_6",
+    "estado": "Propuesto",
+    "enunciado": "El  antiguo  sistema  anglosajón  de  unidades  sigue  en  vigor  en  muchos\nlugares y su uso es frecuente en algunos contextos. Programa una función\nque  determine  el  número  de  pintas  que  contiene  una  cierta  cantidad  de\nlíquido expresada en mililitros, sabiendo que 1 pinta (pt) = 568,261ml."
+  },
+  {
+    "id": "propuesto_7",
+    "estado": "Propuesto",
+    "enunciado": "La temperatura expresada en grados centígrados TC, se puede convertir\na grados Fahrenheit (TF) mediante la siguiente fórmula: TF = 9*TC/5 + 32.\nIgualmente, es sabido que −273,15 °C corresponden con el 0 Kelvin. Escribe\nuna función devuelva la temperatura en grados Farenheit y otra en Kelvin a\npartir  de  la  temperatura  en  grados  centígrados.  Escribe  un  programa  para\nprobar  ambas  funciones  que,  a  partir  de  una  temperatura  en  centígrados\ncalcule e imprima por pantalla la temperatura en Kelvin y Farenheit."
+  },
+  {
+    "id": "propuesto_8",
+    "estado": "Propuesto",
+    "enunciado": "Escribe una función que a partir de las coordenadas 3D de dos puntos en\nel  espacio  en  formato  (x,  y,  z)  calcule  la  distancia  que  hay  entre  dichos\npuntos. Prueba tu función."
+  },
+  {
+    "id": "propuesto_9",
+    "estado": "Propuesto",
+    "enunciado": "Un  número  complejo  es  un  número  de  la  forma  a+bi,  donde  a  y  b  son\nnúmeros  reales  y el  valor  de  i es  √−1  .  Las cuatro operaciones  aritméticas\nbásicas sobre números complejos se definen como:\n•  Suma: (a+bi)+(c+di)=(a+c)+(b+d)i\n•  Resta: (a+bi)-(c+di)=(a-c)+(b-d)i\n•  Producto: (a+bi)*(c+di)=(ac-bd)+(ad+bc)i\n•  División: (a+bi)/(c+di) = ((ac+bd)/(c2+d2)) + ((bc-ad)/(c2+d2))i,\n\nsuponiendo c2+d2<>0\n\nPrograma  funciones  para  cada  una  de  las  operaciones  descritas  con  sus\nrespectivos. Construye los probadores que muestren por pantalla el resultado\nde  las  operaciones  reseñadas.  No  utilices  datos  de  tipo  complex  de  Python:\ndeberás  simularlos  programando  los  complejos  utilizando  como  coeficientes\n(a,b,c y d) cuyos valores son de tipo real."
+  },
+  {
+    "id": "propuesto_10",
+    "estado": "Propuesto",
+    "enunciado": "Una  aplicación  leerá  de  teclado  los  valores  necesarios  para  mostrar  en\npantalla  el  área  de  un  círculo,  un  cuadrado  y  un  triángulo.  No  queremos\nimplementar la aplicación completa aún, sólo preparar los subprogramas de\nque  necesitaremos  disponer  para  en  un  futuro  construir  la  aplicación\n(funciones  que  leen  de  teclado  números  y  los  validan,  por  una  parte,  y\nfunciones que hacen los cálculos de las distintas áreas, por otra). Nota: si lo\nnecesitas, utiliza como aproximación de П (pi) el valor de que proporciona la\nbiblioteca “math” de Python.\n\n\n3\n\n\f11. (*) El calendario gregoriano estableció (en 1582) que un año es bisiesto si es\ndivisible entre 4, a menos que sea divisible entre 100. Sin embargo, si un año\nes  divisible  entre  100  y  además  es  divisible  entre  400,  también  resulta\nbisiesto. Implementa una función que determine si un año es bisiesto o no y\nescribe un probador para todos los posibles casos. Este probador debe mostrar\nen pantalla, por ejemplo, si has puesto una variable anno= 2015, una salida\ncomo la siguiente: \"el año 2015 ¿es bisiesto?: False\".\n\nResuelve  los  problemas  poco  a  poco,  prueba  primero  si  es  divisible  por  4.\nCuando lo tengas, ve añadiendo el resto de las condiciones.\n\nError frecuente: considerar que necesitas una instrucción  if. Los booleanos\nse pueden operar como el resto de los tipos."
+  },
+  {
+    "id": "propuesto_12",
+    "estado": "Propuesto",
+    "enunciado": "Elabora un subprograma que resuelva una ecuación de primer grado (𝑎·𝑥  +\n𝑏 = 0). Lo más importante es determinar claramente qué tipo de subprograma\nes (función/procedimiento), cuáles son sus entradas, cuáles son sus salidas y\ncómo  no,  ponerle  un  nombre  significativo.  Para  todo  lo  anterior,  lo  más\nsencillo  es  comenzar  por  escribir  su  documentación  (docstring).  Una  vez  lo\ntengas terminado, para probarlo, crea un programa que solicite los valores de\nlos parámetros 𝑎 y 𝑏 el cual debe mostrar el valor resultante de la variable 𝑥."
+  },
+  {
+    "id": "propuesto_13",
+    "estado": "Propuesto",
+    "enunciado": "Haz un subprograma que determine los días, horas, minutos y segundos que\nhay  en  una  cantidad  de segundos  introducida  por el usuario  (desprecia  las\nfracciones de segundo). Escribe un probador para el mismo."
+  },
+  {
+    "id": "propuesto_14",
+    "estado": "Propuesto",
+    "enunciado": "La ley de los gases ideales indica que el volumen V (en litros) ocupado por n\nmoles  de  un  gas  a  presión  P  (en  atmósferas)  y  temperatura  T  (en  grados\nKelvin), responde a la siguiente fórmula:\n\n𝑉 = nRT/P\n\nsiendo R la constante universal de los gases cuyo valor es 0,082 atmósferas\nlitro/Kmol.  Hagamos  un  subprograma  que  calcule  el  volumen  de  un  gas  a\npartir de su presión y temperatura y probémoslo."
+  },
+  {
+    "id": "propuesto_15",
+    "estado": "Propuesto",
+    "enunciado": "Se dice que un gas está en condiciones ideales cuando está a 1 atmósfera de\npresión y 0°C, es decir, 273.15ºK. Escribe una función que determine si un\ncierto gas se encuentra en condiciones ideales."
+  },
+  {
+    "id": "propuesto_16",
+    "estado": "Propuesto",
+    "enunciado": "Siguiendo con lo anterior, implementa ahora un subprograma que calcule el\nvolumen de un gas en condiciones ideales. ¡No olvides reutilizar tu esfuerzo\nno  reescribiendo  código  que  ya  tienes  de  ejercicios  anteriores,  sino\ninvocándolo! Por cierto, que tu nuevo subprograma debería tener tan solo una\nlínea de código, tenlo en cuenta. Y no olvides probarlo."
+  },
+  {
+    "id": "propuesto_17",
+    "estado": "Propuesto",
+    "enunciado": "Cuando  construyamos  programas  para  su  comercialización  mimaremos  el\naspecto  de  la  entrada  y  la  salida  (lo  que  en  conjunto  se  llama  interfaz  de\nusuario). Posiblemente pondremos al principio un rótulo, indicando al usuario\nqué aplicación está usando, rótulo que irá centrado en la pantalla y subrayado,\ndejando una línea en blanco por encima y otra por debajo. Así:\n\nAplicación de combinatoria\n=================\n\nEscribe el siguiente subprograma:\n\n\n4\n\n\fdef centrarRotulo (rotulo):\n    \"\"\"string--> None\n       OBJ: centra rótulo, subrayado con signos =, +línea encima y debajo\n    \"\"\"\n    tam=len(rotulo)\n    lado=((72-tam)//2)-1  # 72 columnas suele ser ancho de la pantalla\n    print()\n    print(' '*lado,rotulo)\n    print(' '*lado , '='*tam , end='\\n')\n\n#Probador\nfrase = 'Don Quijote de la Mancha'\ncentrarRotulo(frase)                           # distinto nombre\ncentrarRotulo('Cervantes')                     # constante\nrotulo = 'El famoso hidalgo don Quijote de la Mancha' # mismo nombre\ncentrarRotulo(rotulo)\n\nEjecútalo en Pythontutor (http://www.pythontutor.com/visualize.html)\n\nNota: Este ejercicio pretende que visualices:\n\n▪  Que la declaración de un subprograma no es ejecutable\n▪  Que los argumentos reales no tienen por qué llamarse igual, ni diferente\n\nque los argumentos formales.\n\n▪  De hecho, los argumentos reales de entrada pueden ser una constante\n▪  Aprecia que cada pieza de código tiene su propia tabla de símbolos (frames\nen Python tutor). En un momento de la ejecución hay dos variables con el\nmismo nombre y distinto contenido."
+  },
+  {
+    "id": "propuesto_18",
+    "estado": "Propuesto",
+    "enunciado": "Flexibiliza el subprograma centrarRotulo de modo que el signo con el que\nse  subraye  y  el  tamaño  de  la  ventana  puedan  ser  distintos  en  diferentes\nejecuciones.  Nota:  Este  ejercicio  pretende  enseñarte  que  la  forma  de\nflexibilizar un subprograma es pasarle parámetros."
+  },
+  {
+    "id": "propuesto_19",
+    "estado": "Propuesto",
+    "enunciado": "Python permite dar valores por defecto en la definición de un subprograma.\nDocuméntate  y  estudia  cómo  se  hace  esto.  Para  ello,  ten  en  cuenta  que  la\npresión  es  mucho  más  estable  que  la  temperatura.  Nota:  Este  ejercicio\npretende mostrarte que con la implementación de valores por defecto ya no\nte harían falta los dos ejercicios anteriores."
+  },
+  {
+    "id": "propuesto_20",
+    "estado": "Propuesto",
+    "enunciado": "Una  biblioteca  es  un  archivo  que  agrupa  funciones  y  otros  elementos  de\ncódigo  con  una  lógica  o  temática  común.  Así,  existen  bibliotecas  gráficas,\nmatemáticas,  etc.  Son  importantes  pues,  al  agrupar  los  subprogramas  en\nbibliotecas,  se  facilita  y  fomenta  su  reutilización.  Algunas  vienen  con  una\ndistribución  del  lenguaje  puesto  que  son  de  uso  común  para  muchas\naplicaciones  (piensa  en  la  biblioteca  math  que  ya  habrás  seguramente\nutilizado) pero también es posible construirnos nuestras propias bibliotecas.\nEn este ejercicio queremos mostrar lo sencillo que resulta reutilizar código,\ncreando las siguientes bibliotecas para tu uso personal:\n\na.  Una  biblioteca  bib_interfaz  de  funciones  de  interfaz  con  la  función\ncentrarRotulo  del ejercicio 17, así como los subprogramas que leen\ndatos numéricos de teclado y que permiten construir aplicaciones como\n\n\n5\n\n\fla del ejercicio 10. Organiza todo de modo que resulte fácil reutilizarlo\nen el futuro, pues esta biblioteca la iremos ampliando en adelante.\nb.  Otra  biblioteca  bib_conversiones  con  funciones  de  conversión  de\nunidades  que  contenga  todas  las  funciones  implementadas  en  los\nejercicios 2, 6 y 7.\n\nc.  Una tercera  bib_geometria  que  agrupe funciones  relacionadas con la\ngeometría, por ejemplo, las de los ejercicios 5, 8 y 10 (al menos).\nd.  Finalmente,  una  bib_complejos  con  las  operaciones  con  números\n\ncomplejos del ejercicio 9.\n\n\n6"
+  }
+]
