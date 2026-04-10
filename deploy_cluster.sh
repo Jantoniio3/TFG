@@ -9,8 +9,6 @@ if [ -f .env ]; then
 fi
 echo "📋 Copiando configuración del cluster (.env.cluster) -> .env..."
 cp -f .env.cluster .env
-fi
-
 # 2. Creación y activación de entorno virtual (aislado del sistema operativo)
 if [ ! -d ".venv_cluster" ]; then
     echo "🐍 Inicializando entorno virtual aislado (.venv_cluster)..."
