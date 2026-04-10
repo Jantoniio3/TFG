@@ -1,68 +1,66 @@
-import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from src.database.neo4j_client import Neo4jClient
+import json
+import random
 
 class GraphRAG:
     def __init__(self):
-        self.client = Neo4jClient()
-        
+        # Load labelled exercises from JSON
+        json_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'ejercicios_etiquetados.json')
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as f:
+                self.ejercicios = json.load(f)
+        else:
+            self.ejercicios = []
+            print(f"[!] No se encontró '{json_path}'. El RAG está vacío.")
+            
     def retrieve_valid_exercises(self, conceptos_buscados, conceptos_vistos, dificultad_deseada=None):
         """
         Recupera ejercicios que evalúan EXACTAMENTE los conceptos buscados (o un subconjunto)
-        y NINGÚN concepto que no esté en la lista de conceptos_vistos.
+        y NINGÚN concepto que no esté en la lista de conceptos_vistos. Operando In-Memory.
         """
-        
-        # Consulta avanzada Cypher:
-        # 1. Obtenemos ejercicios que evalúan AL MENOS UNO de los conceptos_buscados
-        # 2. MATCH adicional para recolectar TODOS los conceptos de ese ejercicio
-        # 3. Y filtramos: TODOS los conceptos evaluados deben estar dentro de la lista de conceptos_vistos.
-        
-        query = """
-        MATCH (e:Ejercicio)-[:EVALUA]->(cb:Concepto)
-        WHERE cb.nombre IN $buscados
-        
-        // Recogemos todos los conceptos de este ejercicio
-        MATCH (e)-[:EVALUA]->(ctodos:Concepto)
-        WITH e, collect(ctodos.nombre) as conceptos_del_ejercicio
-        
-        // El paso clave pedagógico: all(x IN collection WHERE condition)
-        WHERE all(x IN conceptos_del_ejercicio WHERE x IN $vistos)
-        """
-        
-        if dificultad_deseada:
-            query += "\nAND e.dificultad = $dificultad"
+        valid_exercises = []
+        set_buscados = set(conceptos_buscados)
+        set_vistos = set(conceptos_vistos)
+
+        for ej in self.ejercicios:
+            evaluados = set(ej.get("conceptos_evaluados", []))
             
-        query += "\nRETURN e.id as id, e.enunciado as enunciado, e.dificultad as dificultad, conceptos_del_ejercicio LIMIT 5"
-        
-        params = {
-            "buscados": conceptos_buscados,
-            "vistos": conceptos_vistos
-        }
-        if dificultad_deseada:
-            params["dificultad"] = dificultad_deseada
-            
-        try:
-            resultados = self.client.execute_query(query, params)
-            # Transformamos los Record de Neo4j en diccionarios
-            return [{"id": r["id"], "enunciado": r["enunciado"], "dificultad": r["dificultad"], "conceptos": r["conceptos_del_ejercicio"]} for r in resultados]
-        except Exception as e:
-            print(f"Error consultando el grafo: {e}")
-            return []
+            # 1. El ejercicio debe cubrir al menos uno de los conceptos buscados
+            if set_buscados and not (evaluados & set_buscados):
+                continue
+                
+            # 2. TODOS los conceptos que evalúa el ejercicio deben haber sido ya vistos por el alumno
+            if not evaluados.issubset(set_vistos):
+                continue
+                
+            # 3. Filtrado por dificultad
+            if dificultad_deseada and ej.get("dificultad") != dificultad_deseada:
+                continue
+                
+            valid_exercises.append({
+                "id": ej.get("id"),
+                "enunciado": ej.get("enunciado"),
+                "solucion": ej.get("solucion", ""),
+                "dificultad": ej.get("dificultad"),
+                "conceptos": list(evaluados)
+            })
+
+        # Rotar aleatoriamente y devolver top 5
+        random.shuffle(valid_exercises)
+        return valid_exercises[:5]
 
     def close(self):
-        self.client.close()
+        # Dummy method for compatibility with graph.py / state.py if they try to close
+        pass
 
 if __name__ == "__main__":
     rag = GraphRAG()
-    # Simulación de un alumno con conocimientos basales
-    vistos = ["Algoritmo", "Programa", "Variable", "Función", "Argumento", "Operador"]
-    buscados = ["Variable", "Función"]
+    vistos = ["Algoritmo", "Programa", "Variable", "Función", "Argumento", "Operador", "Parámetro"]
+    buscados = ["Función", "Variable"]
     
     print(f"Buscando ejercicios sobre {buscados} con conocimientos limitados a {vistos}...")
-    res = rag.retrieve_valid_exercises(buscados, vistos)
+    res = rag.retrieve_valid_exercises(buscados, vistos, "Fácil")
     if not res:
-        print("Graph RAG no devolvió resultados (es lo esperado si los ejercicios evaluaban conceptos como 'Diccionario' o 'Recursividad' que el alumno no conoce).")
+        print("Graph RAG no devolvió resultados.")
     for r in res:
         print(f"Encontrado: {r['id']} - (Conceptos: {r['conceptos']})")
-    rag.close()

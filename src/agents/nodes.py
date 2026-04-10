@@ -21,9 +21,16 @@ def get_llm():
     return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.7)
 
 def get_llm_deterministic():
-    model_name = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
-    num_ctx = int(os.getenv("NUM_CTX", "16384"))
+    env = os.getenv("ENVIRONMENT", "local")
+    if env == "cluster":
+        print("[⚡ CLUSTER MODE] Usando GPU A40 / Llama-3.1 70B determinista para mayor exactitud.")
     return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.0)
+
+def get_cluster_prompt_suffix():
+    env = os.getenv("ENVIRONMENT", "local")
+    if env == "cluster":
+        return "\n\n[INSTRUCCIÓN AVANZADA CLÚSTER A40]: Dado que cuentas con alta capacidad computacional y de contexto, por favor utiliza 'Chain of Thought' (piensa paso a paso). Argumenta exhaustivamente tus decisiones, provee consideraciones pedagógicas o de rendimiento sumamente profundas, y genera respuestas del más alto nivel técnico y descriptivo disponible."
+    return ""
 
 def router_node(state):
     return state
@@ -41,7 +48,7 @@ def generate_exercise(state):
     contexto = "\n".join([f"Id: {e['id']} - Dificultad: {e['dificultad']}\nEnunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
     lenguaje = state.get("lenguaje", "Python")
     
-    system_prompt = f"Eres un profesor experto de programación. Tu objetivo es generar un ejercicio de código en {lenguaje}."
+    system_prompt = f"Eres un profesor experto de programación. Tu objetivo es generar un ejercicio de código en {lenguaje}." + get_cluster_prompt_suffix()
     user_prompt = f"""Restricciones Críticas:
 1. El alumno solo conoce estos conceptos: {vistos}. NO incluyas ni uses conceptos que no estén en esta lista.
 2. El ejercicio debe enfocarse en poner en práctica principalmente estos conceptos: {buscados}.
@@ -66,7 +73,7 @@ def generate_solution_node(state):
     system_prompt = f"""Eres el profesor que ha escrito este ejercicio. Por favor, resuelve el ejercicio aportando:
 1. El código en {lenguaje} correcto.
 2. Una explicación pedagógica de cómo funciona el código y por qué se resuelve así.
-Devuelve el resultado en Markdown, de forma clara y unificada."""
+Devuelve el resultado en Markdown, de forma clara y unificada.""" + get_cluster_prompt_suffix()
     
     response = llm.invoke([
         SystemMessage(content=system_prompt),
@@ -80,7 +87,7 @@ def solve_node(state):
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")
     
-    system_prompt = f"Eres un tutor experto. Tu objetivo es explicar qué hace este código en {lenguaje} proporcionado de forma pedagógica, o explicar su lógica general, y proponer un código mejorado si ves áreas de mejora. Devuelve la respuesta en Markdown."
+    system_prompt = f"Eres un tutor experto. Tu objetivo es explicar qué hace este código en {lenguaje} proporcionado de forma pedagógica, o explicar su lógica general, y proponer un código mejorado si ves áreas de mejora. Devuelve la respuesta en Markdown." + get_cluster_prompt_suffix()
     
     response = llm.invoke([
         SystemMessage(content=system_prompt),
@@ -94,7 +101,7 @@ def find_bugs_node(state):
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")
     
-    system_prompt = f"Eres un debugger experto en {lenguaje}. Tu objetivo es encontrar fallos lógicos o sintácticos en el código proporcionado. Explica dónde están los errores, por qué ocurren y proporciona la versión corregida. Sé muy metódico. Devuelve el resultado en Markdown."
+    system_prompt = f"Eres un debugger experto en {lenguaje}. Tu objetivo es encontrar fallos lógicos o sintácticos en el código proporcionado. Explica dónde están los errores, por qué ocurren y proporciona la versión corregida. Sé muy metódico. Devuelve el resultado en Markdown." + get_cluster_prompt_suffix()
     
     response = llm.invoke([
         SystemMessage(content=system_prompt),

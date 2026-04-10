@@ -4,11 +4,11 @@ echo "🚀 PREPARANDO CLÚSTER PARA EL TUTOR MULTI-AGENTE"
 echo "==============================================="
 
 # 1. Configurar el .env
-if [ ! -f .env ]; then
-    echo "📋 Copiando configuración del cluster (.env.cluster) -> .env..."
-    cp .env.cluster .env
-else
-    echo "⚠️ Ya existe un archivo .env. Asegúrate de modificarlo con las variables de .env.cluster!"
+if [ -f .env ]; then
+    echo "⚠️ Encontrado un .env antiguo, sobreescribiéndolo con la configuración del cluster..."
+fi
+echo "📋 Copiando configuración del cluster (.env.cluster) -> .env..."
+cp -f .env.cluster .env
 fi
 
 # 2. Creación y activación de entorno virtual (aislado del sistema operativo)

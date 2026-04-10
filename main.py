@@ -5,7 +5,8 @@ import sys
 sys.path.append(os.path.dirname(__file__))
 
 from src.agents.graph import build_graph
-from src.database.neo4j_client import Neo4jClient
+import networkx as nx
+from src.ontology.grafo import concepto_dominio, construir_grafo
 
 def get_multiline_input(prompt):
     print(prompt)
@@ -24,13 +25,8 @@ def main():
     print("-" * 50)
     
     app = build_graph()
-    db = Neo4jClient()
     
-    conceptos_db = []
-    try:
-        conceptos_db = db.get_all_concepts()
-    except Exception as e:
-        print(f"[!] Error inicial conectando a Neo4j: {e}")
+    conceptos_db = list(concepto_dominio().keys())
         
     historial_alumno = []
     lenguaje_sesion = "Python"
@@ -67,9 +63,22 @@ def main():
             vistos_input = input("Conceptos vistos [Dejar en blanco para usar perfil DEMO]: ")
             if vistos_input.strip():
                 conceptos_base = [c.strip() for c in vistos_input.split(",") if c.strip()]
-                print("🧠 Infiriendo dependencias previas desde el Grafo de Conocimiento...")
-                prerequisitos = db.get_prerequisites(conceptos_base)
-                historial_alumno = list(set(conceptos_base + prerequisitos))
+                print("🧠 Infiriendo dependencias previas desde el Grafo de Conocimiento In-Memory...")
+                G_req = construir_grafo(["REQUIERE_PREVIO"])
+                prerequisitos = set()
+                for c in conceptos_base:
+                    if c in G_req.nodes:
+                        # Ancestors are nodes that have a path TO 'c' in the Directed Graph
+                        # Since REQUIERE_PREVIO means (A) -REQUIERE_PREVIO-> (B) -> (A depends on B)
+                        # Wait! In grafo.py:
+                        # SEMÁNTICA: ("Origen", "Destino", "REQUIERE_PREVIO")
+                        # "Para aprender 'origen' hay que dominar 'destino' antes."
+                        # Which means Origen -> Destino.
+                        # So Destino is the prerequisite!
+                        # We need nodes reachable FROM 'c' downstream (successors and descendants).
+                        prerequisitos.update(nx.descendants(G_req, c))
+                
+                historial_alumno = list(set(conceptos_base).union(prerequisitos))
                 if prerequisitos:
                     print(f"   (Se han inferido automáticamente {len(historial_alumno) - len(conceptos_base)} conceptos previos subyacentes)")
             else:
