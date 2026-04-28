@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Literal
+from typing import TypedDict, List, Literal, Optional
 
 class TutorState(TypedDict):
     tarea: Literal["generar", "resolver", "debug"]
@@ -13,3 +13,6 @@ class TutorState(TypedDict):
     enunciado_generado: str
     codigo_solucion: str
     explicacion: str
+    reintentos: int
+    ejercicio_generado: str
+    criticas_senado: str

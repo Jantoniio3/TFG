@@ -7,6 +7,13 @@ from src.retriever.graph_rag import GraphRAG
 from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 
+import asyncio
+from pydantic import BaseModel, Field
+
+class SenateVote(BaseModel):
+    aprueba: bool = Field(description="True si el ejercicio es adecuado, False si no cumple los requisitos.")
+    critica: str = Field(description="Breve razonamiento o crítica de tu voto.")
+
 load_dotenv()
 
 def get_llm():
@@ -48,6 +55,9 @@ def generate_exercise(state):
     contexto = "\n".join([f"Id: {e['id']} - Dificultad: {e['dificultad']}\nEnunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
     lenguaje = state.get("lenguaje", "Python")
     
+    reintentos = state.get("reintentos", 0)
+    criticas = state.get("criticas_senado", "")
+    
     system_prompt = f"Eres un profesor experto de programación. Tu objetivo es generar un ejercicio de código en {lenguaje}." + get_cluster_prompt_suffix()
     user_prompt = f"""Restricciones Críticas:
 1. El alumno solo conoce estos conceptos: {vistos}. NO incluyas ni uses conceptos que no estén en esta lista.
@@ -56,14 +66,78 @@ def generate_exercise(state):
 
 Contexto de ejercicios similares para inspiración:
 {contexto}
+"""
+    if reintentos > 0 and criticas:
+        user_prompt += f"\nATENCIÓN: Este es el intento número {reintentos + 1}. El Senado rechazó tu ejercicio anterior con las siguientes críticas:\n{criticas}\nPOR FAVOR, CORRIGE EL EJERCICIO TENIENDO EN CUENTA ESTE FEEDBACK.\n"
 
-Devuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio."""
+    user_prompt += "\nDevuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio."
 
     response = llm.invoke([
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_prompt)
     ])
-    return {"enunciado_generado": response.content}
+    return {"ejercicio_generado": response.content}
+
+def senate_evaluation_node(state):
+    print("\n⚖️ El Senado está debatiendo...")
+    llm = get_llm().with_structured_output(SenateVote)
+    
+    ejercicio = state.get("ejercicio_generado", "")
+    dificultad = state.get("dificultad", "Media")
+    contexto = "\n".join([f"Enunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
+    
+    system_prompt = f"""Eres un juez estricto en el Senado Académico.
+Debes evaluar el siguiente ejercicio generado por otro profesor.
+Criterios estrictos:
+1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno ({dificultad})?
+2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+
+Contexto de ejercicios base para guiar el estilo:
+{contexto}
+
+Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" + get_cluster_prompt_suffix()
+
+    user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
+
+    async def get_vote():
+        return await llm.ainvoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=user_prompt)
+        ])
+
+    async def run_senate():
+        return await asyncio.gather(get_vote(), get_vote(), get_vote())
+
+    try:
+        try:
+            loop = asyncio.get_running_loop()
+            # Si hay loop, creamos tarea para evitar RuntimeError
+            votes = asyncio.run_coroutine_threadsafe(run_senate(), loop).result()
+        except RuntimeError:
+            votes = asyncio.run(run_senate())
+    except Exception as e:
+        print(f"[!] Aviso: fallback a votación síncrona por error asíncrono ({e})")
+        votes = [llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]) for _ in range(3)]
+
+    votos_favor = sum(1 for v in votes if getattr(v, "aprueba", False))
+    votos_contra = 3 - votos_favor
+    
+    criticas_list = [f"Juez {i+1} ({'Aprueba' if getattr(v, 'aprueba', False) else 'Rechaza'}): {getattr(v, 'critica', '')}" for i, v in enumerate(votes)]
+    criticas_str = "\n".join(criticas_list)
+    
+    if votos_favor >= 2:
+        print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. ¡Ejercicio Aprobado!")
+        return {
+            "enunciado_generado": ejercicio,
+            "criticas_senado": "" 
+        }
+    else:
+        print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. Ejercicio Rechazado.")
+        reintentos_actuales = state.get("reintentos", 0)
+        return {
+            "reintentos": reintentos_actuales + 1,
+            "criticas_senado": criticas_str
+        }
 
 def generate_solution_node(state):
     llm = get_llm()
