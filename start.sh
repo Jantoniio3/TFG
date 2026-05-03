@@ -23,4 +23,6 @@ cp .env.cluster .env
 
 echo "💻 5. ¡Todo listo! Arrancando el programa principal..."
 echo "============================================="
+sleep 2
+clear
 python main.py
