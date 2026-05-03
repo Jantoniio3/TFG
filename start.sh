@@ -13,7 +13,8 @@ echo "🧠 2. Arrancando el motor de IA limpio en segundo plano..."
 ollama serve > ollama_logs.txt 2>&1 &
 # Damos 3 segundos para que Ollama se despierte completamente
 sleep 3 
-
+ollama rm qwen2.5:72b
+ollama pull qwen2.5-coder:72b
 echo "🐍 3. Activando la burbuja de Python..."
 # Activamos el entorno virtual. Si usas otro nombre distinto a .venv_cluster, cámbialo aquí
 source .venv_cluster/bin/activate
