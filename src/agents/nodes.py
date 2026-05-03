@@ -86,16 +86,16 @@ def senate_evaluation_node(state):
     dificultad = state.get("dificultad", "Media")
     contexto = "\n".join([f"Enunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
     
-    system_prompt = f"""Eres un juez estricto en el Senado Académico.
+    system_prompt = f"""Eres un juez evaluador en el Senado Académico.
 Debes evaluar el siguiente ejercicio generado por otro profesor.
-Criterios estrictos:
-1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno ({dificultad})?
-2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+Criterios de evaluación (sé tolerante y constructivo):
+1. ¿La dificultad del ejercicio es apropiada o cercana a la pedida por el alumno ({dificultad})?
+2. ¿El ejercicio tiene sentido didáctico basándote libremente en los ejercicios del contexto?
 
-Contexto de ejercicios base para guiar el estilo:
+Contexto de ejercicios base (solo como inspiración):
 {contexto}
 
-Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" + get_cluster_prompt_suffix()
+Aprueba el ejercicio SIEMPRE, a menos que tenga errores gravísimos o la dificultad sea radicalmente opuesta a lo pedido. Da una breve justificación.""" + get_cluster_prompt_suffix()
 
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
