@@ -1,0 +1,82 @@
+Modelo,Caso_Test,Dificultad,Latencia_Segundos,Intentos_Senado,Status,Ejercicio
+llama3.1:8b,Bucle For Simple,Fácil,120.2,1,Aprobado,"**Ejercicio 1: Cuentas a la inversa**
+
+Tenemos un número entero **x** y queremos mostrar sus cuentas de forma invertida. Por ejemplo, si **x = 123**, debería mostrarse como **321**.
+
+**Tu tarea:** Haz que el programa imprima las cuentas de **x** en orden inverso utilizando solo bucles `for`.
+
+**Requisitos:**
+
+1. El alumno debe utilizar únicamente la sintaxis conocida (variables, print y enteros).
+2. Debe implementar una forma de leer el número entero **x**.
+3. Utilizará un bucle `for` para recorrer las cuentas del número entero en orden inverso.
+
+**Pista:** Puedes utilizar la función `len()` para obtener la longitud del número entero y luego iterar desde la última cuenta hasta la primera."
+llama3.1:8b,Función Recursiva,Media,165.48,1,Aprobado,"**Ejercicio: ""Cuentas Atrasadas""**
+=====================================
+
+**Descripción:** Un banco quiere automatizar la gestión de cuentas atrasadas en sus sucursales. Cada cuenta tiene un monto adeudado y una cantidad de días que lleva sin pagar. El sistema debe calcular el interés sobre el monto adeudado según la cantidad de días que lleva sin pagar.
+
+**Requisitos:**
+
+* Crear una función `calcula_interes` que reciba como parámetros el monto adeudado, la cantidad de días y un tipo de cuenta (pago fijo o pago variable).
+* La función debe calcular el interés según las siguientes reglas:
+	+ Si es pago fijo, el interés es del 5% anual.
+	+ Si es pago variable, el interés es del 3% anual más un 0.5% por cada día que lleva sin pagar.
+* La función debe devolver el monto total a pagar (monto adeudado + interés).
+* El programa debe solicitar al usuario la cantidad de cuentas atrasadas y luego solicitar para cada cuenta:
+	+ Monto adeudado
+	+ Cantidad de días que lleva sin pagar
+	+ Tipo de cuenta (pago fijo o pago variable)
+* El programa debe mostrar el monto total a pagar por cada cuenta y calcular la cantidad total de dinero que el banco necesita devolver.
+
+**Consideraciones:**
+
+* No se pueden utilizar variables fuera del alcance de la función `calcula_interes`.
+* La función `calcula_interes` debe utilizar recursividad para calcular el interés.
+* El programa debe utilizar un bucle `For` para solicitar la información de cada cuenta.
+
+**Nota:** Puede asumir que el usuario ingresa los valores correctos."
+llama3.1:8b,Estructuras Avanzadas,Difícil,185.17,1,Aprobado,"**Ejercicio: ""Cafetería""**
+
+### Descripción:
+
+Una cafetería tiene varias bebidas disponibles, cada una con un nombre y un precio. Se requiere que se cree un sistema para gestionar las ventas de estas bebidas.
+
+### Requisitos:
+
+* Crear un diccionario `bebidas` donde cada llave sea el nombre de la bebida y el valor sea su precio.
+* Utilizar list comprehension para crear una lista con el nombre de cada bebida que tiene un precio mayor a 3 dólares.
+* Crear una función `vender_bebida()` que reciba como parámetro el nombre de la bebida y devuelva el cambio después de vender una unidad de esa bebida. Si no existe la bebida en el diccionario, devuelve un mensaje de error.
+* Modificar la función para que también calcule y devuelva la cantidad total de dinero recaudado hasta ese momento.
+
+### Restricciones:
+
+* Solo se pueden utilizar los conceptos mencionados al comienzo: Variables, Bucle For, Listas, Funciones. No se pueden usar estructuras de control como If-Else o Switch.
+* Utilizar list comprehension para resolver el segundo requisito.
+* La función `vender_bebida()` debe devolver un mensaje de error si no existe la bebida en el diccionario.
+
+### Pistas:
+
+* Recuerda que puedes utilizar variables para almacenar y manipular datos.
+* Un bucle For puede ser útil para iterar sobre las llaves del diccionario `bebidas`.
+* La función `vender_bebida()` debe tener acceso a la variable global `bebidas` o recibirla como parámetro.
+
+### Notas:
+
+* No te preocupes por la complejidad de los algoritmos, enfócate en aplicar las técnicas solicitadas.
+* Si necesitas crear una función para calcular el cambio, hazlo. Pero asegúrate de no sobrepasar el límite de conceptos permitidos.
+
+### ¡Buena suerte!"
+qwen2.5-coder:7b,Bucle For Simple,Fácil,0.45,0,Error,Excepción durante el grafo: model 'qwen2.5-coder:7b' not found (status code: 404)
+qwen2.5-coder:7b,Función Recursiva,Media,0.41,0,Error,Excepción durante el grafo: model 'qwen2.5-coder:7b' not found (status code: 404)
+qwen2.5-coder:7b,Estructuras Avanzadas,Difícil,0.4,0,Error,Excepción durante el grafo: model 'qwen2.5-coder:7b' not found (status code: 404)
+gemma2:9b,Bucle For Simple,Fácil,0.39,0,Error,Excepción durante el grafo: model 'gemma2:9b' not found (status code: 404)
+gemma2:9b,Función Recursiva,Media,0.41,0,Error,Excepción durante el grafo: model 'gemma2:9b' not found (status code: 404)
+gemma2:9b,Estructuras Avanzadas,Difícil,0.4,0,Error,Excepción durante el grafo: model 'gemma2:9b' not found (status code: 404)
+mistral:7b,Bucle For Simple,Fácil,0.4,0,Error,Excepción durante el grafo: model 'mistral:7b' not found (status code: 404)
+mistral:7b,Función Recursiva,Media,0.39,0,Error,Excepción durante el grafo: model 'mistral:7b' not found (status code: 404)
+mistral:7b,Estructuras Avanzadas,Difícil,0.39,0,Error,Excepción durante el grafo: model 'mistral:7b' not found (status code: 404)
+phi3.5,Bucle For Simple,Fácil,0.4,0,Error,Excepción durante el grafo: model 'phi3.5' not found (status code: 404)
+phi3.5,Función Recursiva,Media,0.39,0,Error,Excepción durante el grafo: model 'phi3.5' not found (status code: 404)
+phi3.5,Estructuras Avanzadas,Difícil,0.4,0,Error,Excepción durante el grafo: model 'phi3.5' not found (status code: 404)

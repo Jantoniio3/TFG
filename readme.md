@@ -1,31 +1,24 @@
-# 🔄 PIVOTE ARQUITECTÓNICO CRÍTICO: DE NEO4J A NETWORKX (IN-MEMORY GRAPH RAG)
+# 🧪 PROMPT DE IMPLEMENTACIÓN: SCRIPT DE EVALUACIÓN MASIVA (BENCHMARKING)
 
-Hemos decidido pivotar nuestra arquitectura de base de datos. Para maximizar la portabilidad del TFG y eliminar la dependencia de contenedores externos, **vamos a abandonar Neo4j por completo y migrar a un motor de grafos 100% en memoria usando `networkx`**. 
+Vamos a crear un entorno de laboratorio aislado para evaluar científicamente todos los modelos open-source disponibles usando nuestro motor RAG In-Memory. Esta métrica es vital para la memoria del TFG.
 
-He proporcionado un nuevo archivo llamado `grafo.py` que contiene la ontología completa, las relaciones estructuradas y los métodos de navegación del grafo.
+Por favor, crea un nuevo archivo en `src/evaluation/benchmark.py` respetando el principio de "Separation of Concerns" (no modifiques `main.py` ni el flujo del Tutor).
 
-Por favor, refactoriza el proyecto aplicando los siguientes cambios estrictos:
+## 1. ESTRUCTURA DEL LABORATORIO
+- **Lista de Modelos:** Define un array en Python con los modelos a evaluar: `MODELOS_A_TESTEAR = ["llama3.1:8b", "qwen2.5-coder:7b", "gemma2:9b", "mistral:7b", "phi3.5"]`.
+- **Casos de Prueba:** Crea un mock de `Golden Dataset` en memoria (una lista de diccionarios) con 3 casos de prueba base (ej. Petición de un ejercicio de Bucles, Petición de un ejercicio de Recursividad).
 
-## 1. LIMPIEZA DE DEPENDENCIAS (DROP NEO4J)
-- **Eliminar:** Borra el archivo `src/database/neo4j_client.py` (o equivalente).
-- **Entorno:** Elimina todas las variables relacionadas con Neo4j (`NEO4J_URI`, etc.) del archivo `.env` y de la configuración.
-- **Requirements:** Asegúrate de que `neo4j` ya no esté en `requirements.txt` y de que `networkx` sí esté.
+## 2. EL MOTOR DE BENCHMARK (`benchmark.py`)
+Implementa un script asíncrono que haga lo siguiente:
+1. Iterar sobre cada modelo de la lista `MODELOS_A_TESTEAR`.
+2. Por cada modelo, iterar sobre los casos del Golden Dataset.
+3. Instanciar dinámicamente tu `ChatOllama` inyectando el modelo correspondiente en ese momento.
+4. Ejecutar el flujo de generación del ejercicio (puedes instanciar una versión reducida de LangGraph o llamar directamente al generador y al Senado).
+5. Medir el **tiempo de ejecución** (latencia) de cada generación.
+6. Contar cuántos **intentos del Senado** hicieron falta para aprobarlo.
 
-## 2. INTEGRACIÓN DEL NUEVO MOTOR (grafo.py)
-- Mueve el archivo proporcionado `grafo.py` a la carpeta `src/graph/` (o `src/database/` si prefieres mantener esa nomenclatura).
-- Este archivo será a partir de ahora la **Única Fuente de Verdad (SSOT)** para la teoría y las validaciones de prerrequisitos.
+## 3. EXPORTACIÓN DE RESULTADOS
+- El script debe recolectar todos los datos (Modelo, Caso de Prueba, Tiempo de Respuesta, Intentos del Senado, Ejercicio Generado).
+- Al finalizar, debe exportar un archivo `resultados_benchmark.csv` usando la librería `csv` o `pandas`.
 
-## 3. REFACTORIZACIÓN DEL RETRIEVER (GRAPH RAG)
-El nodo `retriever_node` (y cualquier lógica de búsqueda) ya no ejecutará consultas Cypher. Ahora debe usar las funciones nativas de `grafo.py`:
-- **Filtro Anti-Frustración:** Cuando el alumno busque ejercicios de un concepto, debes verificar si ese concepto está desbloqueado usando la función `frente_aprendizaje(conceptos_vistos)`. Si el concepto pedido no está en el frente ni en los dominados, el sistema debe avisar de que faltan prerrequisitos.
-- **Enriquecimiento del Prompt:** Al recuperar el contexto para pasárselo al LLM (Generador), utiliza las funciones `casos_especiales(concepto)` y `combinaciones_naturales(concepto)`. Inyecta estas listas en el prompt del LLM para que las use como inspiración al redactar el enunciado del ejercicio.
-
-## 4. GESTIÓN DE LOS EJERCICIOS (JSON)
-Como ya no tenemos Neo4j para guardar los nodos de tipo `Ejercicio`, debes cargar el archivo `ejercicios_troceados.json` (o equivalente) directamente en memoria al iniciar la aplicación (ej. en un diccionario de Python o un DataFrame de Pandas ligero).
-- Para buscar un ejercicio candidato, filtra la lista de ejercicios en memoria buscando aquellos cuya lista de `conceptos_evaluados` sea un subconjunto de `conceptos_vistos + concepto_objetivo`.
-
-## 5. IMPACTO EN EL RESTO DEL FLUJO
-- El Enrutador (Router) y los nodos del LLM (`solve_node`, `find_bugs_node`) no cambian su lógica, pero los contextos de teoría que reciban ahora provendrán de llamadas a `grafo.py` en lugar de la base de datos externa.
-- Actualiza la interfaz interactiva (`main.py`) para que la lista de conceptos a elegir se cargue haciendo `from src.graph.grafo import DOMINIOS, CONCEPTOS`.
-
-**Procede paso a paso: primero limpia Neo4j, luego integra `grafo.py`, y finalmente refactoriza el Retriever para usar la lógica de NetworkX.**
+**No instales librerías de evaluación externas complejas todavía (como Ragas o DeepEval).** Por ahora, mediremos la Latencia y la Tasa de Rechazo del Senado como métricas principales de rendimiento. Escribe el código de `benchmark.py`.

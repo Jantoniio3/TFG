@@ -40,12 +40,46 @@ El clásico vector-RAG, propenso a inyectar contexto ruidoso mediante embeddings
 
 ---
 
-## 💻 3. Interfaz de Usuario y CLI (Command Line Interface)
+## 🔬 3. Anatomía del Sistema (Desglose Script por Script)
 
-El flujo del estudiante está capitaneado por `main.py`, que encapsula toda la complejidad computacional en un *pipeline* ordenado:
-1. **Recolección de Perfil con 1 Clic**: El usuario declara qué temática general desea repasar. El analizador topológico expande los ancestros y construye su zona de confort.
-2. **Internacionalización Modular**: El CLI pregunta el lenguaje de programación deseado en la sesión activa (Python, Java o C++) y adapta todos los agentes.
-3. **Loop Continuo**: El sistema corre ininterrumpidamente, permitiendo al usuario pegar sus propias tiras completas de código mal formado e ir depurándolas de la mano del tutor sin que la aplicación de consola termine.
+El funcionamiento del tutor se apoya en la coreografía exacta de módulos independientes y altamente especializados. A continuación se desglosa el cometido biológico de cada archivo:
+
+### ⚙️ `main.py` (El Orquestador y la Interfaz CLI)
+Actúa como panel de control principal.
+1. **Configuración del Perfil:** Al arrancar, solicita al alumno temas que domina (ej. "Bucle for") y pasa el texto a `grafo.py`.
+2. **Inferencia Automática:** Genera el grafo matemático para deducir todos los saberes previos implícitos y anota todo en la memoria base del alumno.
+3. **Loop Continuo:** Proporciona un menú infinito. Dependiendo de si se elige "Generar", "Resolver" o "Debuggear", rellena el diccionario de estado e invoca al grafo enrutador (`app.invoke(initial_state)`).
+4. **Impresión Elegante:** Imprime al estudiante de forma clara los resultados en formato Markdown en la consola interactiva.
+
+### 🗺️ `src/ontology/grafo.py` (La Ontología Pedagógica)
+Es la fuente de la verdad académica; no interactúa con LLMs, se encarga sólo de la semántica.
+- Alberga los diccionarios gigantes (`CONCEPTOS` y `RELACIONES`) que trazan las reglas estrictas de la programación.
+- Integra la función crucial `construir_grafo()`, ensamblando la malla en un `NetworkX DiGraph`. Su existencia permite que `main.py` lance `nx.descendants()` y consiga perfiles anti-frustración certeros en tiempo O(V+E).
+
+### 🧳 `src/agents/state.py` (El Sistema de Mensajería)
+El maletín de estado inmutable.
+- Define `TutorState`, un `TypedDict` que especifica datos exactos (`tarea`, `codigo_entrada`, `conceptos_buscados`).
+- Dictamina los canales de comunicación. Los agentes no se pasan variables normales; todo el Graph interactúa mediante mutaciones seguras dentro de este envoltorio.
+
+### 🚦 `src/agents/graph.py` (El Enrutador de LangGraph)
+Funge como policía de tráfico dirigiendo la ejecución.
+- Posee el **Enrutador Condicional** (`route_task`). 
+- Inspecciona el saco de estado que trajo `main.py` y genera el flujo: Si piden un "ejercicio", avisa a `GraphRAG` primero, viaja a `generate_exercise` para fabricarlo, y termina en `generate_solution_node` (si pidieron solución adjunta).
+
+### 🤖 `src/agents/nodes.py` (La Mente de la IA)
+Donde reside la lógica pesada del "profesor" Llama.
+- Ejecuta las directivas masivas de Ollama LLM (`ChatOllama`) inyectándolas con *System Prompts* hechos a medida.
+- Determina su contexto subyacente. Inyecta **Chain-of-Thought** si se acciona en Clúster para maximizar rigor analítico o responde de manera local rápida según las limitantes del `.env`.
+
+### 🛡️ `src/retriever/graph_rag.py` (RAG Estático Vectorless)
+El bibliotecario veloz y protector in-memory.
+- Al activarse por el LangGraph para crear simulacros, lee directamente `data/ejercicios_etiquetados.json`.
+- Aplica su método interseccional puro eliminando sistemáticamente todos y cada uno de los problemas que requieran conceptos ajenos a la lista inferida de progreso del estudiante.
+
+### 👷‍♂️ `deploy_cluster.sh` (Operario DevOps)
+Responsable del CI/CD de bajo nivel.
+- Ejecutado en servidores con restricciones, salta los problemas estructurales de Python Linux Global fabricando su `.venv_cluster`.
+- Fusiona automáticamente configuraciones `.env.cluster` para orquestar la tarjeta gráfica corporativa y hace `pip install` de los dependientes, aislando el trabajo computacional por completo.
 
 ---
 
@@ -54,8 +88,8 @@ El flujo del estudiante está capitaneado por `main.py`, que encapsula toda la c
 El salto a un entorno HPC (High Performance Computing) como el servidor universitario está orquestado mediante prácticas CI/CD modernas.
 - Se implementó `deploy_cluster.sh`. Este script actúa como administrador de sistemas:
   - Hace "bypass" a las estrictas normativas protectoras de Linux (`PEP 668`) creando silos invisibles (`.venv_cluster`).
-  - Purga archivos muertos, auto-sobrescribe ficheros locales `.env` con las variables HPC `.env.cluster` y fuerza el pre-calentamiento del modelo Llama.
-- Permite arrancar y usar el tutor inteligente en equipos sin privilegios administrativos en menos de 5 Minutos.
+    - Purga archivos muertos, auto-sobrescribe ficheros locales `.env` con las variables HPC `.env.cluster` y fuerza el pre-calentamiento del modelo Llama.
+    - Permite arrancar y usar el tutor inteligente en equipos sin privilegios administrativos en menos de 5 Minutos.
 
-> [!TIP]
-> **Pasos Futuros (Mejora de Capa 1):** Con toda la orquestación distribuida e in-memory trabajando impecablemente, el esfuerzo que lo transformará en un producto 10/10 es recubrirlo con una UI web moderna usando **Streamlit**. Esto mantendrá toda la arquitectura del Backend que hemos fabricado intacta, pero convertirá a `main.py` de una terminal verde y negra en un software gráfico que el tribunal del TFG aplaudirá por sí solo y que los alumnos reales podrán disfrutar desde su navegador.
+    > [!TIP]
+    > **Pasos Futuros (Mejora de Capa 1):** Con toda la orquestación distribuida e in-memory trabajando impecablemente, el esfuerzo que lo transformará en un producto 10/10 es recubrirlo con una UI web moderna usando **Streamlit**. Esto mantendrá toda la arquitectura del Backend que hemos fabricado intacta, pero convertirá a `main.py` de una terminal verde y negra en un software gráfico que el tribunal del TFG aplaudirá por sí solo y que los alumnos reales podrán disfrutar desde su navegador.
