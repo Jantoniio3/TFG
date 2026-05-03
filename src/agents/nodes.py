@@ -106,7 +106,11 @@ Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" 
         ])
 
     async def run_senate():
-        return await asyncio.gather(get_vote(), get_vote(), get_vote())
+        # Ejecución SECUENCIAL para no saturar la GPU A40 (evita Thrashing)
+        v = []
+        for _ in range(3):
+            v.append(await get_vote())
+        return v
 
     try:
         try:
