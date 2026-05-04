@@ -1,3 +1,10 @@
+"""Punto de entrada principal del Tutor Inteligente Multi-Agente.
+
+Este script inicializa la Interfaz de Línea de Comandos (CLI),
+configura el estado inicial del estudiante leyendo la ontología de conceptos,
+y lanza la ejecución en modo streaming del DAG de LangGraph.
+"""
+
 import os
 import sys
 import unicodedata
@@ -9,10 +16,26 @@ from src.agents.graph import build_graph
 import networkx as nx
 from src.ontology.grafo import concepto_dominio, construir_grafo
 
-def normalize_text(text):
+def normalize_text(text: str) -> str:
+    """Normaliza un texto eliminando tildes, espacios extra y pasándolo a minúsculas.
+    
+    Args:
+        text (str): El texto introducido por el usuario.
+        
+    Returns:
+        str: El texto normalizado (ej. "Función  " -> "funcion").
+    """
     return unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8").lower().strip()
 
-def get_multiline_input(prompt):
+def get_multiline_input(prompt: str) -> str:
+    """Captura código multilínea desde la terminal hasta que el usuario escriba 'FIN'.
+    
+    Args:
+        prompt (str): El mensaje a mostrar antes de pedir la entrada.
+        
+    Returns:
+        str: El bloque de código completo como un único string.
+    """
     print(prompt)
     print("(Pega tu código. Escribe 'FIN' en una nueva línea y presiona Enter para finalizar)")
     lines = []
@@ -24,6 +47,12 @@ def get_multiline_input(prompt):
     return "\n".join(lines)
 
 def main():
+    """Ejecuta el bucle principal de la aplicación CLI.
+    
+    Inicializa el grafo, pide la configuración del perfil del alumno (solo la primera vez),
+    y orquesta las opciones de generar ejercicios, explicar código o buscar bugs,
+    invocando el modelo de LangGraph en modo stream para mostrar el progreso.
+    """
     print("-" * 50)
     print("🧠 TUTOR INTELIGENTE - MULTI-AGENTE (DEMO CONSOLA) 🧠")
     print("-" * 50)

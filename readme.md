@@ -1,24 +1,78 @@
-# 🧪 PROMPT DE IMPLEMENTACIÓN: SCRIPT DE EVALUACIÓN MASIVA (BENCHMARKING)
+# 🧠 Tutor Inteligente Multi-Agente (Graph RAG + LangGraph)
 
-Vamos a crear un entorno de laboratorio aislado para evaluar científicamente todos los modelos open-source disponibles usando nuestro motor RAG In-Memory. Esta métrica es vital para la memoria del TFG.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-orange)](https://python.langchain.com/docs/langgraph/)
+[![Ollama](https://img.shields.io/badge/LLM-Ollama-white.svg)](https://ollama.com/)
+[![NetworkX](https://img.shields.io/badge/Ontology-NetworkX-green.svg)](https://networkx.org/)
 
-Por favor, crea un nuevo archivo en `src/evaluation/benchmark.py` respetando el principio de "Separation of Concerns" (no modifiques `main.py` ni el flujo del Tutor).
+Este repositorio contiene el código fuente de un **Sistema de Aprendizaje Adaptativo**. Es una arquitectura de Inteligencia Artificial que actúa como tutor experto de programación en Python, utilizando grafos de conocimiento in-memory y orquestación multi-agente con tolerancia a fallos.
 
-## 1. ESTRUCTURA DEL LABORATORIO
-- **Lista de Modelos:** Define un array en Python con los modelos a evaluar: `MODELOS_A_TESTEAR = ["llama3.1:8b", "qwen2.5-coder:7b", "gemma2:9b", "mistral:7b", "phi3.5"]`.
-- **Casos de Prueba:** Crea un mock de `Golden Dataset` en memoria (una lista de diccionarios) con 3 casos de prueba base (ej. Petición de un ejercicio de Bucles, Petición de un ejercicio de Recursividad).
+---
 
-## 2. EL MOTOR DE BENCHMARK (`benchmark.py`)
-Implementa un script asíncrono que haga lo siguiente:
-1. Iterar sobre cada modelo de la lista `MODELOS_A_TESTEAR`.
-2. Por cada modelo, iterar sobre los casos del Golden Dataset.
-3. Instanciar dinámicamente tu `ChatOllama` inyectando el modelo correspondiente en ese momento.
-4. Ejecutar el flujo de generación del ejercicio (puedes instanciar una versión reducida de LangGraph o llamar directamente al generador y al Senado).
-5. Medir el **tiempo de ejecución** (latencia) de cada generación.
-6. Contar cuántos **intentos del Senado** hicieron falta para aprobarlo.
+## 🏛️ Arquitectura del Sistema
 
-## 3. EXPORTACIÓN DE RESULTADOS
-- El script debe recolectar todos los datos (Modelo, Caso de Prueba, Tiempo de Respuesta, Intentos del Senado, Ejercicio Generado).
-- Al finalizar, debe exportar un archivo `resultados_benchmark.csv` usando la librería `csv` o `pandas`.
+El sistema abandona el enfoque clásico de un "chatbot" tradicional para implementar un **Grafo Acíclico Dirigido (DAG)** mediante LangGraph. Esto permite delegar tareas específicas a distintos agentes especializados:
 
-**No instales librerías de evaluación externas complejas todavía (como Ragas o DeepEval).** Por ahora, mediremos la Latencia y la Tasa de Rechazo del Senado como métricas principales de rendimiento. Escribe el código de `benchmark.py`.
+1. **RAG Ontológico In-Memory (`NetworkX`)**: Modela el plan de estudios de programación como un grafo dirigido de prerrequisitos. Impide estrictamente que el LLM utilice o enseñe conceptos que superen el "frente de aprendizaje" actual del alumno.
+2. **Agente Generador (`qwen2.5-coder:32b`)**: Lee el contexto recuperado por el RAG y redacta un borrador pedagógico.
+3. **El Senado Académico (BFT)**: Implementa Tolerancia a Fallos Bizantinos (Byzantine Fault Tolerance). Tres agentes jueces evalúan simultáneamente el borrador mediante "Majority Voting" (voto por mayoría) asegurando que el ejercicio respeta la dificultad y el estilo exigido.
+4. **Debugger Determinista**: Un agente calibrado con `temperature=0.0` para buscar errores lógicos en el código del alumno con exactitud matemática.
+
+---
+
+## 🚀 Despliegue en Clúster (HPC / Servidores Universitarios)
+
+Este proyecto está diseñado para ser desplegado en entornos sin permisos de administrador (Rootless) como clústeres universitarios. 
+
+### 1. Requisitos Previos
+No es necesario tener Ollama instalado a nivel de sistema. El script de arranque lo instalará en el espacio de usuario local `~/.local`.
+
+### 2. Arranque Seguro (One-Click Deploy)
+Clona este repositorio en tu clúster y ejecuta el script de orquestación principal:
+```bash
+git clone https://github.com/tu-usuario/tu-repo.git
+cd tu-repo
+bash start.sh
+```
+
+**¿Qué hace `start.sh` de forma automática?**
+- Verifica e instala la infraestructura LLM (Ollama) si no existe.
+- Purga procesos zombie de GPU (evita colisión de puertos).
+- Sincroniza variables de entorno (`cp .env.cluster .env`).
+- Levanta el servidor LLM y descarga el modelo preconfigurado de 32 Billones de parámetros.
+- Arranca el CLI del Tutor Inteligente.
+
+---
+
+## 💻 Configuración Local (Windows / Mac)
+
+Si deseas correr el proyecto en tu máquina local para desarrollo:
+
+1. Instala dependencias:
+```powershell
+pip install -r requirements.txt
+```
+2. Asegúrate de tener Ollama levantado localmente en el puerto `11434`.
+3. Ejecuta el archivo principal:
+```powershell
+python main.py
+```
+
+---
+
+## 🧪 Laboratorio de Benchmarking
+
+El sistema incluye un evaluador dinámico para validar la capacidad matemática y de salida estructurada (JSON estricto) de los modelos descargados en el clúster, justificando así la elección tecnológica del Senado:
+
+```bash
+python src/evaluation/model_evaluator.py
+```
+
+---
+
+## 📌 Configuración de VRAM (A40 GPU)
+En el archivo `.env.cluster` se configura la gestión agresiva de VRAM:
+- **`OLLAMA_MODEL`**: `qwen2.5-coder:32b` (Modelo experto en código que pesa ~19GB).
+- **`NUM_CTX`**: `65536`. Dado que la A40 cuenta con 48GB, se amplía el contexto de ejecución a 64K tokens para permitir la votación asíncrona concurrente de 3 jueces en el Senado sin incurrir en VRAM Thrashing.
+
+> **Nota:** Todos los módulos internos aplican una "Regla Estricta de Confinamiento de Conocimiento" que prohíbe pedagógicamente sugerir bibliotecas (`math`, `collections`, etc.) a alumnos que no han alcanzado dicho nodo en el grafo.

@@ -1,3 +1,10 @@
+"""Laboratorio de Evaluación de Modelos (Benchmarking).
+
+Este módulo se encarga de auditar los modelos LLM descargados en la máquina,
+evaluando su capacidad matemática y su obediencia al formato JSON estructurado,
+ambas capacidades vitales para funcionar como Juez en el Senado de LangGraph.
+"""
+
 import os
 import sys
 from dotenv import load_dotenv
@@ -13,6 +20,12 @@ ollama_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 client = ollama.Client(host=ollama_url)
 
 def evaluar_modelos():
+    """Escanea la máquina en busca de modelos Ollama y ejecuta una prueba de aptitud.
+    
+    Se comunica con el servidor Ollama activo, recupera la lista de modelos instalados
+    y les envía un prompt trampa (temperature=0.0) exigiéndoles una salida forzada en JSON.
+    Genera un informe final por consola clasificando los modelos en APTOS, DUDOSOS o NO APTOS.
+    """
     print("=" * 60)
     print("🧪 EVALUADOR AUTOMÁTICO DE APTITUD DE MODELOS")
     print("=" * 60)

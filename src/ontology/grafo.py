@@ -1,6 +1,10 @@
-import networkx as nx
+"""Módulo de Ontología y Grafo de Conocimiento.
 
-# ── Dominios ─────────────────────────────────────────────────────────────────
+Este módulo define la base de conocimientos del sistema tutor (conceptos de programación en Python),
+y expone funciones para construir y analizar un grafo dirigido (NetworkX) de pre-requisitos.
+"""
+
+import networkx as nx# ── Dominios ─────────────────────────────────────────────────────────────────
 
 DOMINIOS: list[str] = [
     "Introducción",

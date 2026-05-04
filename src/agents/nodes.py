@@ -1,3 +1,9 @@
+"""Nodos del Grafo (Agentes Inteligentes).
+
+Este módulo contiene la lógica interna de cada nodo de LangGraph, incluyendo
+la comunicación con la API de Ollama, el manejo de prompts y la estructura de agentes.
+"""
+
 import sys
 import os
 from dotenv import load_dotenv
@@ -17,6 +23,14 @@ class SenateVote(BaseModel):
 load_dotenv()
 
 def get_llm():
+    """Instancia el modelo LLM con temperatura estándar para tareas creativas.
+    
+    Lee la configuración del entorno para determinar si está en el clúster
+    o en local, ajustando el modelo y la memoria contextual.
+    
+    Returns:
+        ChatOllama: Instancia del modelo LLM configurado (temperatura 0.7).
+    """
     model_name = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
     num_ctx = int(os.getenv("NUM_CTX", "16384"))
     env = os.getenv("ENVIRONMENT", "local")
@@ -28,6 +42,14 @@ def get_llm():
     return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.7)
 
 def get_llm_deterministic():
+    """Instancia el modelo LLM sin temperatura para tareas de precisión.
+    
+    Ideal para depuración de código (find_bugs_node) donde no se busca
+    creatividad sino exactitud lógica.
+    
+    Returns:
+        ChatOllama: Instancia del modelo LLM configurado (temperatura 0.0).
+    """
     model_name = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
     num_ctx = int(os.getenv("NUM_CTX", "16384"))
     env = os.getenv("ENVIRONMENT", "local")
@@ -42,15 +64,31 @@ def get_cluster_prompt_suffix():
     return ""
 
 def router_node(state):
+    """Nodo inicial passthrough que no altera el estado.
+    
+    Actúa como punto de entrada (Entry Point) del DAG antes de que 
+    el evaluador condicional (conditional_edge) decida la rama.
+    """
     return state
 
 def retrieve_exercises(state):
+    """Nodo RAG: Recupera los ejercicios relevantes al perfil del alumno.
+    
+    Se comunica con el GraphRAG in-memory para obtener los documentos
+    top-K que no superen el frente de aprendizaje del estudiante.
+    """
     rag = GraphRAG()
     ejercicios = rag.retrieve_valid_exercises(state.get("conceptos_buscados", []), state.get("alumno_historial", []))
     rag.close()
     return {"ejercicios_contexto": ejercicios}
 
 def generate_exercise(state):
+    """Nodo Generador: Redacta un nuevo ejercicio adaptado al alumno.
+    
+    Lee el contexto del RAG y el historial del alumno. Si viene rebotado 
+    del Senado, lee las críticas previas para inyectarlas en el prompt
+    y forzar la corrección del ejercicio en este nuevo intento.
+    """
     llm = get_llm()
     buscados = ', '.join(state.get('conceptos_buscados', []))
     vistos = ', '.join(state.get('alumno_historial', []))
@@ -81,6 +119,13 @@ Contexto de ejercicios similares para inspiración:
     return {"ejercicio_generado": response.content}
 
 def senate_evaluation_node(state):
+    """Nodo Senado: Implementa Byzantine Fault Tolerance mediante voto por mayoría.
+    
+    Instancia 3 llamadas asíncronas concurrentes (o secuenciales según fallback) al LLM.
+    Cada "Juez" evalúa la dificultad y pertinencia pedagógica del ejercicio.
+    Si 2 o más aprueban, el flujo avanza. Si no, devuelve el estado
+    al Generador con las críticas acumuladas para que se regenere.
+    """
     print("\n⚖️ El Senado está debatiendo...")
     llm = get_llm().with_structured_output(SenateVote)
     
@@ -143,6 +188,11 @@ Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" 
         }
 
 def generate_solution_node(state):
+    """Nodo Tutor (Solución): Explica y resuelve el ejercicio generado.
+    
+    Incluye la directriz estricta de confinamiento para no usar herramientas
+    que el alumno no haya aprendido todavía.
+    """
     llm = get_llm()
     enunciado = state.get("enunciado_generado", "")
     lenguaje = state.get("lenguaje", "Python")
@@ -166,6 +216,11 @@ Devuelve el resultado en Markdown, de forma clara y unificada.""" + get_cluster_
     return {"resultado_codigo": response.content}
 
 def solve_node(state):
+    """Nodo Tutor (Corrección): Analiza código aportado por el alumno.
+    
+    Explica de forma socrática el código y propone mejoras respetando
+    estrictamente el historial de aprendizaje del estudiante.
+    """
     llm = get_llm()
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")
@@ -187,6 +242,11 @@ Devuelve la respuesta en Markdown.""" + get_cluster_prompt_suffix()
     return {"resultado_codigo": response.content}
 
 def find_bugs_node(state):
+    """Nodo Debugger: Encuentra fallos en el código del alumno.
+    
+    Utiliza el modelo determinista (temperatura 0.0) para máxima
+    exactitud al cazar bugs lógicos y de sintaxis.
+    """
     llm = get_llm_deterministic()
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")

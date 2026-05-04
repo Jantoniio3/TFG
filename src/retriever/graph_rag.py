@@ -1,10 +1,22 @@
+"""Módulo de Recuperación Aumentada por Grafo (Graph RAG).
+
+Este módulo se encarga de recuperar los ejercicios del dataset JSON In-Memory,
+aplicando filtrados estrictos basados en el frente de aprendizaje del alumno.
+"""
+
 import os
 import json
 import random
 
 class GraphRAG:
+    """Clase para la recuperación y filtrado de ejercicios (RAG In-Memory).
+    
+    Carga la base de datos de ejercicios etiquetados y permite extraer 
+    únicamente aquellos que cumplen con las restricciones pedagógicas.
+    """
+
     def __init__(self):
-        # Load labelled exercises from JSON
+        """Inicializa el motor RAG cargando el dataset local JSON."""
         json_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'ejercicios_etiquetados.json')
         if os.path.exists(json_path):
             with open(json_path, 'r', encoding='utf-8') as f:
@@ -13,10 +25,16 @@ class GraphRAG:
             self.ejercicios = []
             print(f"[!] No se encontró '{json_path}'. El RAG está vacío.")
             
-    def retrieve_valid_exercises(self, conceptos_buscados, conceptos_vistos, dificultad_deseada=None):
-        """
-        Recupera ejercicios que evalúan EXACTAMENTE los conceptos buscados (o un subconjunto)
-        y NINGÚN concepto que no esté en la lista de conceptos_vistos. Operando In-Memory.
+    def retrieve_valid_exercises(self, conceptos_buscados: list[str], conceptos_vistos: list[str], dificultad_deseada: str = None) -> list[dict]:
+        """Recupera los ejercicios que encajan perfectamente con el perfil del alumno.
+        
+        Args:
+            conceptos_buscados: Lista de conceptos en los que se debe enfocar el ejercicio.
+            conceptos_vistos: Lista completa del historial de conceptos dominados por el alumno.
+            dificultad_deseada: Filtro opcional por nivel de dificultad ("Fácil", "Media", "Difícil").
+            
+        Returns:
+            list[dict]: Lista con los 5 mejores ejercicios que cumplen TODAS las restricciones.
         """
         valid_exercises = []
         set_buscados = set(conceptos_buscados)
@@ -50,7 +68,7 @@ class GraphRAG:
         return valid_exercises[:5]
 
     def close(self):
-        # Dummy method for compatibility with graph.py / state.py if they try to close
+        """Método de limpieza por compatibilidad (vacío al operar In-Memory)."""
         pass
 
 if __name__ == "__main__":

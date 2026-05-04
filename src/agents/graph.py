@@ -1,3 +1,9 @@
+"""Orquestador del flujo de agentes usando LangGraph.
+
+Este módulo define la topología del Grafo Acíclico Dirigido (DAG) que controla
+las interacciones entre el RAG, el LLM Generador, el Senado y el Debugger.
+"""
+
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -6,10 +12,30 @@ from langgraph.graph import StateGraph, END
 from src.agents.state import TutorState
 from src.agents.nodes import router_node, retrieve_exercises, generate_exercise, senate_evaluation_node, generate_solution_node, solve_node, find_bugs_node
 
-def route_task(state):
+def route_task(state: TutorState) -> str:
+    """Enruta el flujo inicial hacia la rama correspondiente según la tarea.
+    
+    Args:
+        state: El estado actual del tutor.
+        
+    Returns:
+        str: El nombre del siguiente nodo ("retriever", "solve_node", "find_bugs_node").
+    """
     return state.get("tarea", "generar")
 
-def route_senate(state):
+def route_senate(state: TutorState) -> str:
+    """Decide el siguiente paso tras la votación del Senado (Tolerancia a fallos).
+    
+    Si el Senado rechaza el ejercicio, enruta de vuelta al Generador para reintentar.
+    Si se supera el límite de reintentos (3), finaliza el grafo para evitar bucles infinitos.
+    Si el Senado lo aprueba, enruta a la solución o finaliza.
+    
+    Args:
+        state: El estado actual del tutor.
+        
+    Returns:
+        str: El siguiente nodo en el flujo ("generator", "generate_solution_node", "end").
+    """
     if state.get("criticas_senado"):
         if state.get("reintentos", 0) < 3:
             return "generator"
@@ -22,6 +48,11 @@ def route_senate(state):
         return "end"
 
 def build_graph():
+    """Construye y compila la máquina de estados (Grafo) de LangGraph.
+    
+    Returns:
+        CompiledStateGraph: El grafo compilado listo para ser invocado (.invoke() o .stream()).
+    """
     workflow = StateGraph(TutorState)
     
     # Agregar nodos

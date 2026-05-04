@@ -30,9 +30,17 @@ MODELO=$(grep OLLAMA_MODEL .env.cluster | cut -d '=' -f2)
 echo "📥 Verificando/Descargando el modelo $MODELO..."
 ollama pull $MODELO
 
-echo "🐍 3. Activando la burbuja de Python..."
-# Activamos el entorno virtual. Si usas otro nombre distinto a .venv_cluster, cámbialo aquí
-source .venv_cluster/bin/activate
+echo "🐍 3. Verificando entorno de Python..."
+if [ ! -d ".venv_cluster" ]; then
+    echo "⚠️ Entorno virtual no encontrado. Creándolo desde cero e instalando dependencias..."
+    python3 -m venv .venv_cluster
+    source .venv_cluster/bin/activate
+    pip install -r requirements.txt
+    echo "✅ Dependencias instaladas."
+else
+    # Si ya existe, simplemente lo activamos
+    source .venv_cluster/bin/activate
+fi
 
 echo "⚙️ 4. Sincronizando variables de entorno para el Clúster..."
 cp .env.cluster .env
