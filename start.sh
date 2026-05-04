@@ -4,6 +4,18 @@ echo "============================================="
 echo "🚀 INICIANDO ENTORNO TFG SEGURO"
 echo "============================================="
 
+echo "📦 0. Verificando instalación de Ollama..."
+if ! command -v ollama &> /dev/null; then
+    echo "⚠️ Ollama no detectado. Instalando automáticamente en tu espacio de usuario..."
+    mkdir -p $HOME/.local
+    curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst | zstd -d | tar -xf - -C $HOME/.local
+    export PATH=$HOME/.local/bin:$PATH
+    export LD_LIBRARY_PATH=$HOME/.local/lib/ollama:$LD_LIBRARY_PATH
+    echo "✅ Instalación completada."
+else
+    echo "✅ Ollama ya está instalado."
+fi
+
 echo "🧹 1. Buscando y eliminando servidores Ollama zombie..."
 pkill -u $USER -f "ollama serve"
 # Damos 1 segundo para asegurar que se libera el puerto
@@ -27,6 +39,6 @@ cp .env.cluster .env
 
 echo "💻 5. ¡Todo listo! Arrancando el programa principal..."
 echo "============================================="
-sleep 15
+sleep 5
 clear
 python main.py
