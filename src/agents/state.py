@@ -41,3 +41,4 @@ class TutorState(TypedDict):
     reintentos: int
     ejercicio_generado: str
     criticas_senado: str
+    votos_senado: str

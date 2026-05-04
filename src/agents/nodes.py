@@ -177,14 +177,16 @@ Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" 
         print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. ¡Ejercicio Aprobado!")
         return {
             "enunciado_generado": ejercicio,
-            "criticas_senado": "" 
+            "criticas_senado": "",
+            "votos_senado": f"{votos_favor} a favor, {votos_contra} en contra"
         }
     else:
         print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. Ejercicio Rechazado.")
         reintentos_actuales = state.get("reintentos", 0)
         return {
             "reintentos": reintentos_actuales + 1,
-            "criticas_senado": criticas_str
+            "criticas_senado": criticas_str,
+            "votos_senado": f"{votos_favor} a favor, {votos_contra} en contra"
         }
 
 def generate_solution_node(state):
