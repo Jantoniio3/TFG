@@ -1,5 +1,6 @@
 import os
 import sys
+import unicodedata
 
 # Agregar src a los paths por si se invoca desde la raíz
 sys.path.append(os.path.dirname(__file__))
@@ -7,6 +8,9 @@ sys.path.append(os.path.dirname(__file__))
 from src.agents.graph import build_graph
 import networkx as nx
 from src.ontology.grafo import concepto_dominio, construir_grafo
+
+def normalize_text(text):
+    return unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8").lower().strip()
 
 def get_multiline_input(prompt):
     print(prompt)
@@ -27,6 +31,7 @@ def main():
     app = build_graph()
     
     conceptos_db = list(concepto_dominio().keys())
+    conceptos_normalizados = {normalize_text(c): c for c in conceptos_db}
         
     historial_alumno = []
     lenguaje_sesion = "Python"
@@ -62,7 +67,15 @@ def main():
             print("\nIndica los conceptos que YA HAS ESTUDIADO (tu perfil). Separa por comas.")
             vistos_input = input("Conceptos vistos [Dejar en blanco para usar perfil DEMO]: ")
             if vistos_input.strip():
-                conceptos_base = [c.strip() for c in vistos_input.split(",") if c.strip()]
+                conceptos_base_raw = [c.strip() for c in vistos_input.split(",") if c.strip()]
+                conceptos_base = []
+                for c in conceptos_base_raw:
+                    norm_c = normalize_text(c)
+                    if norm_c in conceptos_normalizados:
+                        conceptos_base.append(conceptos_normalizados[norm_c])
+                    else:
+                        print(f"⚠️ El concepto '{c}' no existe en la ontología y será ignorado.")
+                        
                 print("🧠 Infiriendo dependencias previas desde el Grafo de Conocimiento In-Memory...")
                 G_req = construir_grafo(["REQUIERE_PREVIO"])
                 prerequisitos = set()
@@ -109,7 +122,14 @@ def main():
             # Dejamos la opción de presionar "Enter" si quieren repasar todo su conocimiento o usar por defecto
             entrada = input("¿Qué conceptos te gustaría practicar? (Ej: Variable) [Rellena u oprime Enter para aleatorio]: ")
             if entrada.strip():
-                buscados = [c.strip() for c in entrada.split(",") if c.strip()]
+                buscados_raw = [c.strip() for c in entrada.split(",") if c.strip()]
+                buscados = []
+                for c in buscados_raw:
+                    norm_c = normalize_text(c)
+                    if norm_c in conceptos_normalizados:
+                        buscados.append(conceptos_normalizados[norm_c])
+                    else:
+                        print(f"⚠️ El concepto '{c}' no existe en la ontología y será ignorado.")
             else:
                 # Si no pone nada, agarramos 1 o 2 conceptos de su historial
                 import random
