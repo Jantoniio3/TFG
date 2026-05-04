@@ -199,9 +199,9 @@ def main():
             # Usamos stream en vez de invoke para poder mostrar el progreso paso a paso
             for s in app.stream(initial_state, config={"recursion_limit": 20}):
                 for node_name, node_state in s.items():
-                    if node_name == "retrieve_exercises":
+                    if node_name == "retriever":
                         print("   [25%] 🔍 RAG: Evaluando tu nivel y recuperando temario...")
-                    elif node_name == "generate_exercise":
+                    elif node_name == "generator":
                         print("   [50%] ✍️ LLM: Redactando borrador base del ejercicio...")
                     elif node_name == "senate_evaluation_node":
                         pass # El senado ya imprime sus votaciones internamente en nodes.py
