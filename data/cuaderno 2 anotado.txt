@@ -1,0 +1,14 @@
+Ejercicio 1: 
+
+[Función] [Identificador] [Parámetro] [Documentación (docstring)] [Tipo de dato] 
+[Tipo de dato básico (float)] [Valor de retorno] [Expresión] [Operador] [Identificador]
+[Caso de prueba] [Entrada / Salida] [Llamada a función] [Programa]
+
+Ejercicio 2: 
+
+Algoritmo, Programa, Función, Parámetro, Argumento, Valor de retorno, Identificador, Tipo de dato, Tipo de dato básico (int, float, bool, str), Operador, Expresión, Expresión de comparacion, Expresion booleana, Entrada / Salida, Documentación (docstring), Caso de prueba, Comentario, Flujo de ejecución
+
+Ejercicio 3: 
+
+Algoritmo, Programa, Función, Parámetro, Argumento, Valor de retorno, Identificador, Tipo de dato
+Tipo de dato básico (int, float, bool, str), Operador, Expresión, Asignación, Entrada / Salida, Documentación (docstring), Prueba del software, Caso de prueba, Comentario, Flujo de ejecución

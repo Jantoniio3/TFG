@@ -1,0 +1,49 @@
+******* EJERCICIOS POR CONTENIDO **************
+
+Muy sencillo [Objetivo: un único cálculo, transformación o decisión simple. Ej. típico: funciones “puras” con 1 retorno, predicados, formateo elemental. Rango LoC: 1–5 Estructura típica: 1 función + 1 return / 1–2 expresiones.]
+
+Corto [Objetivo: combinar 2–3 pasos de cálculo o decisión, o manejar 1–2 constantes y una pequeña validación. Rango LoC: 6–12. Estructura típica: 1 función con 2–3 expresiones, 1 if opcional, constantes simbólicas.]
+
+Condicional-Iteracion simple [Objetivo: decisiones compuestas o un bucle lineal sobre una estructura. Rango LoC: 10–20. Estructura típica: 1–2 funciones; if/elif/else o 1 bucle (for/while) sobre [Lista]/[Cadena].]
+
+Colecciones y slicing [Objetivo: operar con estructuras de datos y selecciones parciales. Rango LoC: 15–30
+Estructura típica: 1–2 funciones que manipulan [Lista]/[Tupla]/[Cadena]/[Diccionario]; uso de [Indexación]/[Slicing].]
+
+Composición [Objetivo: integrar lectura, validaciones, cálculo y presentación; varios if/bucles. Rango LoC: 20–40. Estructura típica: 2–3 funciones pequeñas, separación claro de responsabilidades.]
+
+Algorítmico clásico [Objetivo: implementar y razonar sobre un algoritmo conocido con su complejidad. Rango LoC: 25–50. Estructura típica: 1–2 funciones (p. ej., búsqueda binaria, insertion sort), pruebas parametrizadas.]
+
+Recursivo [Objetivo: problemas que requieren caso base + caso recursivo y control de profundidad. Rango LoC: 20–50. Estructura típica: 1 función recursiva + función wrapper opcional para validar.]
+
+Mixto (colecciones + control + validación) [Objetivo: integrar colecciones, condicionales, bucles y validación robusta en una mini-tarea.]
+
+------ POR NIVELES DE DIFICULTAD -------------
+
+Nivel Fácil - Requiere 1–2 conceptos principales del grafo. No implica control de flujo complejo. No requiere estructuras de datos compuestas. 1 sola expresión o condición.
+
+Nivel Medio - Varias expresiones, validaciones o una estructura condicional. Requiere combinar 3–5 conceptos del grafo. Pequeñas decisiones y una mínima modularidad.
+
+Nivel Difícil - Requiere estructuras de control repetitivas o colecciones. Implica 5–8 conceptos del grafo.
+Requiere planificar el algoritmo antes de codificar. Puede tener múltiples rutas de ejecución.
+
+Nivel Muy Difícil - Requiere integración de muchos conceptos (8+). Puede requerir recursividad, algoritmos clásicos o múltiples colecciones. Alta carga cognitiva: planificación previa indispensable. Suele exigir pruebas estructuradas.
+
+------ TIPOS DE EJERCICIOS --------------------
+
+Rellenar huecos - Ejercicios donde se presenta código incompleto y el alumno debe completar partes faltantes.
+
+Completar código - El código está parcialmente escrito, pero el alumno debe escribir porciones significativas (más que huecos aislados).
+
+Encontrar errores - Código con errores sintácticos, lógicos o de flujo. El alumno debe detectarlos (sin corregirlos necesariamente)
+
+Corregir errores - Similar al anterior, pero aquí el alumno sí debe reparar el código.
+
+Predecir la salida - Ejercicio clásico: se da un fragmento y se pregunta qué imprime o devuelve.
+
+Determinar si el código se ejecuta correctamente - Preguntas tipo “¿Este código funciona? ¿Por qué sí/no?”
+
+Reescribir código (Refactoring) - El alumno debe transformar una solución a otra forma equivalente (por ejemplo, while → for, o una función larga → varias).
+
+Diseñar un script / programa desde cero - Ejercicio “clásico” de implementación: simplemente dar un enunciado y pedir el código completo.
+
+Razonamiento sobre casos de prueba - Se dan entradas y se pide predecir salidas o identificar entradas problemáticas.

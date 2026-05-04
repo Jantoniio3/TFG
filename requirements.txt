@@ -1,0 +1,10 @@
+networkx
+langgraph
+langchain
+langchain-core
+langchain-community
+langchain-ollama
+markitdown
+ollama
+pydantic
+python-dotenv

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "CT2_Ej1",
+    "enunciado": "Escribe una función que devuelva el doble de un número entero recibido como argumento.",
+    "solucion": "def doble(n):\n    return n * 2",
+    "dificultad": "Fácil",
+    "conceptos_evaluados": ["Función", "Variable", "Parámetro"]
+  },
+  {
+    "id": "CT2_Ej2",
+    "enunciado": "Programa un script que evalúe si un número es par o impar y lo imprima en consola usando un if-else.",
+    "solucion": "n = 4\nif n % 2 == 0:\n    print('Par')\nelse:\n    print('Impar')",
+    "dificultad": "Fácil",
+    "conceptos_evaluados": ["Expresión", "Expresión de comparación", "Sentencia condicional", "Expresión booleana"]
+  },
+  {
+    "id": "CT2_Ej3",
+    "enunciado": "Crea una función que itere sobre una lista desordenada y use ordenación burbuja para ordenarla. Finalmente retorna la lista.",
+    "solucion": "def burbuja(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr",
+    "dificultad": "Difícil",
+    "conceptos_evaluados": ["Función", "Lista", "Bucle for", "Bucle anidado", "Ordenación burbuja"]
+  },
+  {
+    "id": "CT2_Ej4",
+    "enunciado": "Implementa una función recursiva que devuelva el n-ésimo número de Fibonacci.",
+    "solucion": "def fib(n):\n    if n <= 1:\n        return n\n    return fib(n-1) + fib(n-2)",
+    "dificultad": "Media",
+    "conceptos_evaluados": ["Función", "Recursividad", "Caso base", "Caso recursivo", "Pila de llamadas"]
+  }
+]

@@ -1,0 +1,9 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Enviroment configs (solo ignoramos el local, no el cluster base)
+.env
+walkthrough.md

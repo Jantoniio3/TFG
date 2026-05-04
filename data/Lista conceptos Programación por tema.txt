@@ -1,0 +1,268 @@
+Tema 1 — Introducción
+
+Programa
+Algoritmo
+Intérprete
+Compilador
+Script
+Variable
+Literal
+Tipo de dato 
+Tipo de dato básico (int, float, bool, str)
+Identificador
+Operador
+Expresión
+Asignación
+Entrada / Salida
+Error sintáctico
+Error lógico
+Comentario
+Prueba del software
+Caso de prueba
+Bug
+Excepción
+Depurar
+Flujo de ejecución
+Indentación
+
+--------------------------------------------------
+Tema 2 — Subprogramación
+
+Función
+Cabecera de función
+Cuerpo de función
+Llamada a función
+Parámetro
+Argumento
+Valor de retorno
+Ámbito
+Variable local
+Variable global
+Documentación (docstring)
+Importación de funciones
+Biblioteca
+
+--------------------------------------------------
+Tema 3 — Estructuras de control
+
+Sentencia condicional (if)
+Bucle for
+Bucle while
+break
+continue
+pass
+Iterable
+Iterador
+Bucle anidado
+Expresión de comparacion
+Expresion booleana
+
+--------------------------------------------------
+
+Tema 4 — Estructuras de datos
+
+Lista
+Tupla
+Cadena
+Conjunto
+Array
+Registro
+Diccionario
+Indexación
+Slicing
+Mutabilidad / inmutabilidad
+Iterabilidad
+Conversión de tipos (casting)
+Copia superficial
+Copia profunda 
+
+--------------------------------------------------
+
+Tema 5 — Recursividad y algoritmos
+
+Recursividad
+Caso base
+Caso recursivo
+Pila de llamadas
+Desbordamiento de recursión
+Complejidad algorítmica 
+Búsqueda lineal
+Búsqueda binaria
+Método de ordenación
+Ordenación burbuja
+Ordenación por inserción
+Ordenación por selección
+
+************************************************
+**        RELACIONES ENTRE CONCEPTOS          **
+************************************************
+
+[Algoritmo] @prerequisito_de [Programa], [Prueba del software], [Caso de prueba], [Error lógico]
+
+[Programa] @depende_de [Algoritmo]
+[Programa] @prerequisito_de [Intérprete], [Compilador], [Script], [Comentario], [Depurar], [Flujo de ejecución]
+
+[Intérprete] @depende_de [Programa]
+
+[Compilador] @depende_de [Programa]
+
+[Script] @depende_de [Programa]
+
+[Tipo de dato] @prerequisito_de [Tipo de dato básico (int, float, bool, str)], [Literal], [Variable], [Operador], [Expresión], [Entrada / Salida], [Caso de prueba]
+
+[Tipo de dato básico (int, float, bool, str)] @depende_de [Tipo de dato]
+[Tipo de dato básico (int, float, bool, str)] @prerequisito_de [Expresión], [Entrada / Salida], [Caso de prueba]
+
+[Identificador] @prerequisito_de [Variable]
+
+[Literal] @depende_de [Tipo de dato]
+[Literal] @prerequisito_de [Expresión]
+
+[Variable] @depende_de [Identificador], [Tipo de dato]
+[Variable] @prerequisito_de [Expresión], [Entrada / Salida]
+
+[Operador] @depende_de [Tipo de dato]
+[Operador] @prerequisito_de [Expresión]
+
+[Expresión] @depende_de [Variable], [Literal], [Operador]
+[Expresión] @prerequisito_de [Asignación], [Entrada / Salida], [Error lógico]
+
+[Asignación] @depende_de [Variable], [Expresión]
+[Asignación] @prerequisito_de [Flujo de ejecución]
+
+[Entrada / Salida] @depende_de [Expresión], [Tipo de dato básico (int, float, bool, str)]
+[Entrada / Salida] @prerequisito_de [Prueba del software], [Caso de prueba]
+
+[Comentario] @depende_de [Programa]
+
+[Error sintáctico] @depende_de [Indentación]
+[Error sintáctico] @prerequisito_de [Depurar]
+
+[Error lógico] @depende_de [Algoritmo], [Expresión]
+[Error lógico] @prerequisito_de [Bug]
+
+[Prueba del software] @depende_de [Algoritmo], [Entrada / Salida]
+[Prueba del software] @prerequisito_de [Caso de prueba]
+
+[Caso de prueba] @depende_de [Prueba del software], [Tipo de dato básico (int, float, bool, str)], [Entrada / Salida]
+
+[Bug] @depende_de [Error lógico]
+[Bug] @prerequisito_de [Depurar]
+
+[Excepción] @depende_de [Flujo de ejecución]
+[Excepción] @prerequisito_de [Depurar]
+
+[Depurar] @depende_de [Bug], [Error sintáctico], [Error lógico], [Flujo de ejecución]
+
+[Flujo de ejecución] @depende_de [Programa], [Asignación]
+[Flujo de ejecución] @prerequisito_de [Excepción]
+
+[Indentación] @prerequisito_de [Error sintáctico]
+
+Función] @prerequisito_de [Cabecera de función], [Cuerpo de función], [Llamada a función], [Valor de retorno], [Ámbito]
+
+[Cabecera de función] @depende_de [Función]
+
+[Cuerpo de función] @depende_de [Función]
+
+[Llamada a función] @depende_de [Función], [Parámetro], [Argumento]
+
+[Parámetro] @prerequisito_de [Llamada a función]
+
+[Argumento] @prerequisito_de [Llamada a función]
+
+[Valor de retorno] @depende_de [Función]
+
+[Ámbito] @depende_de [Función]
+[Ámbito] @prerequisito_de [Variable local], [Variable global]
+
+[Variable local] @depende_de [Ámbito]
+
+[Variable global] @depende_de [Ámbito]
+
+[Documentación (docstring)] @depende_de [Función]
+
+[Importación de funciones] @depende_de [Biblioteca]
+
+[Biblioteca] @prerequisito_de [Importación de funciones]
+
+[Sentencia condicional (if)] @depende_de [Expresión de comparacion], [Expresion booleana]
+
+[Bucle for] @depende_de [Iterable], [Iterador]
+[Bucle for] @prerequisito_de [Bucle anidado]
+
+[Bucle while] @depende_de [Expresion booleana]
+[Bucle while] @prerequisito_de [Bucle anidado]
+
+[break] @depende_de [Bucle for], [Bucle while]
+
+[continue] @depende_de [Bucle for], [Bucle while]
+
+[Iterable] @prerequisito_de [Bucle for], [Iterador]
+
+[Iterador] @depende_de [Iterable]
+[Iterador] @prerequisito_de [Bucle for]
+
+[Bucle anidado] @depende_de [Bucle for], [Bucle while]
+
+[Expresión de comparacion] @depende_de [Operador], [Expresión]
+[Expresión de comparacion] @prerequisito_de [Sentencia condicional (if)]
+
+[Expresion booleana] @depende_de [Expresión], [Operador]
+[Expresion booleana] @prerequisito_de [Sentencia condicional (if)], [Bucle while]
+
+[Lista] @depende_de [Mutabilidad / inmutabilidad], [Indexación], [Iterabilidad]
+
+[Tupla] @depende_de [Indexación], [Iterabilidad]
+
+[Cadena] @depende_de [Indexación], [Iterabilidad]
+
+[Conjunto] @depende_de [Iterabilidad]
+
+[Array] @depende_de [Indexación], [Mutabilidad / inmutabilidad]
+
+[Diccionario] @depende_de [Mutabilidad / inmutabilidad], [Iterabilidad]
+
+[Indexación] @prerequisito_de [Lista], [Tupla], [Cadena], [Array], [Slicing]
+
+[Slicing] @depende_de [Lista], [Tupla], [Cadena]
+
+[Mutabilidad / inmutabilidad] @prerequisito_de [Lista], [Array], [Diccionario], [Copia superficial]
+
+[Iterabilidad] @prerequisito_de [Lista], [Tupla], [Cadena], [Conjunto], [Diccionario]
+
+[Conversión de tipos (casting)] @depende_de [Tipo de dato], [Tipo de dato básico (int, float, bool, str)]
+
+[Copia superficial] @depende_de [Mutabilidad / inmutabilidad]
+[Copia superficial] @prerequisito_de [Copia profunda]
+
+[Copia profunda] @depende_de [Copia superficial]
+
+[Recursividad] @depende_de [Función], [Algoritmo]
+[Recursividad] @prerequisito_de [Caso recursivo], [Pila de llamadas]
+
+[Caso base] @depende_de [Recursividad]
+[Caso base] @prerequisito_de [Caso recursivo]
+
+[Caso recursivo] @depende_de [Recursividad], [Caso base]
+
+[Pila de llamadas] @depende_de [Recursividad]
+[Pila de llamadas] @prerequisito_de [Desbordamiento de recursión]
+
+[Desbordamiento de recursión] @depende_de [Pila de llamadas]
+
+[Complejidad algorítmica] @depende_de [Algoritmo]
+[Complejidad algorítmica] @prerequisito_de [Búsqueda lineal], [Búsqueda binaria], [Método de ordenación]
+
+[Búsqueda lineal] @depende_de [Algoritmo], [Complejidad algorítmica]
+
+[Búsqueda binaria] @depende_de [Algoritmo], [Complejidad algorítmica]
+
+[Método de ordenación] @depende_de [Algoritmo], [Complejidad algorítmica]
+[Método de ordenación] @prerequisito_de [Ordenación burbuja], [Ordenación por inserción], [Ordenación por selección]
+
+[Ordenación burbuja] @depende_de [Método de ordenación]
+
+[Ordenación por inserción] @depende_de [Método de ordenación]
+
+[Ordenación por selección] @depende_de [Método de ordenación]
