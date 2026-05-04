@@ -1,4 +1,4 @@
-# 🧠 Tutor Inteligente Multi-Agente (Graph RAG + LangGraph)
+# Tutor Inteligente Multi-Agente (Graph RAG + LangGraph)
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-orange)](https://python.langchain.com/docs/langgraph/)
@@ -9,7 +9,7 @@ Este repositorio contiene el código fuente de un **Sistema de Aprendizaje Adapt
 
 ---
 
-## 🏛️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 El sistema abandona el enfoque clásico de un "chatbot" tradicional para implementar un **Grafo Acíclico Dirigido (DAG)** mediante LangGraph. Esto permite delegar tareas específicas a distintos agentes especializados:
 
@@ -20,7 +20,7 @@ El sistema abandona el enfoque clásico de un "chatbot" tradicional para impleme
 
 ---
 
-## 🚀 Despliegue en Clúster (HPC / Servidores Universitarios)
+## Despliegue en Clúster (HPC / Servidores Universitarios)
 
 Este proyecto está diseñado para ser desplegado en entornos sin permisos de administrador (Rootless) como clústeres universitarios. 
 
@@ -30,8 +30,8 @@ No es necesario tener Ollama instalado a nivel de sistema. El script de arranque
 ### 2. Arranque Seguro (One-Click Deploy)
 Clona este repositorio en tu clúster y ejecuta el script de orquestación principal:
 ```bash
-git clone https://github.com/tu-usuario/tu-repo.git
-cd tu-repo
+git clone https://github.com/Jantoniio3/TFG
+cd TFG
 bash start.sh
 ```
 
@@ -44,7 +44,7 @@ bash start.sh
 
 ---
 
-## 💻 Configuración Local (Windows / Mac)
+## Configuración Local (Windows / Mac)
 
 Si deseas correr el proyecto en tu máquina local para desarrollo:
 
@@ -60,7 +60,7 @@ python main.py
 
 ---
 
-## 🧪 Laboratorio de Benchmarking
+## Laboratorio de Benchmarking
 
 El sistema incluye un evaluador dinámico para validar la capacidad matemática y de salida estructurada (JSON estricto) de los modelos descargados en el clúster, justificando así la elección tecnológica del Senado:
 
@@ -70,7 +70,7 @@ python src/evaluation/model_evaluator.py
 
 ---
 
-## 📌 Configuración de VRAM (A40 GPU)
+## Configuración de VRAM (A40 GPU)
 En el archivo `.env.cluster` se configura la gestión agresiva de VRAM:
 - **`OLLAMA_MODEL`**: `qwen2.5-coder:32b` (Modelo experto en código que pesa ~19GB).
 - **`NUM_CTX`**: `65536`. Dado que la A40 cuenta con 48GB, se amplía el contexto de ejecución a 64K tokens para permitir la votación asíncrona concurrente de 3 jueces en el Senado sin incurrir en VRAM Thrashing.
