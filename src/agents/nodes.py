@@ -28,9 +28,11 @@ def get_llm():
     return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.7)
 
 def get_llm_deterministic():
+    model_name = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
+    num_ctx = int(os.getenv("NUM_CTX", "16384"))
     env = os.getenv("ENVIRONMENT", "local")
     if env == "cluster":
-        print("[⚡ CLUSTER MODE] Usando GPU A40 / Llama-3.1 70B determinista para mayor exactitud.")
+        print(f"[⚡ CLUSTER MODE] Usando GPU A40 / {model_name} determinista para mayor exactitud.")
     return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.0)
 
 def get_cluster_prompt_suffix():
