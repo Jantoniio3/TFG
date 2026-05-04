@@ -30,8 +30,8 @@ No es necesario tener Ollama instalado a nivel de sistema. El script de arranque
 ### 2. Arranque Seguro (One-Click Deploy)
 Clona este repositorio en tu clúster y ejecuta el script de orquestación principal:
 ```bash
-git clone https://github.com/tu-usuario/tu-repo.git
-cd tu-repo
+git clone https://github.com/Jantoniio3/TFG
+cd TFG
 bash start.sh
 ```
 
