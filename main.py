@@ -167,7 +167,26 @@ def main():
             print("\n⚙️ Lanzando grafo: Buscando Bugs con LLM Determinista...")
             
         try:
-            final_state = app.invoke(initial_state)
+            # Usamos stream en vez de invoke para poder mostrar el progreso paso a paso
+            for s in app.stream(initial_state, config={"recursion_limit": 20}):
+                for node_name, node_state in s.items():
+                    if node_name == "retrieve_exercises":
+                        print("   [25%] 🔍 RAG: Evaluando tu nivel y recuperando temario...")
+                    elif node_name == "generate_exercise":
+                        print("   [50%] ✍️ LLM: Redactando borrador base del ejercicio...")
+                    elif node_name == "senate_evaluation_node":
+                        pass # El senado ya imprime sus votaciones internamente en nodes.py
+                    elif node_name == "generate_solution_node":
+                        print("   [90%] 💡 LLM: Generando la solución final explicada...")
+                    elif node_name == "solve_node":
+                        print("   [80%] 🧠 LLM: Analizando la lógica de tu código...")
+                    elif node_name == "find_bugs_node":
+                        print("   [80%] 🐛 Debugger: Ejecutando rastreo de código y vulnerabilidades...")
+                    
+                    # Guardamos el estado acumulativo
+                    initial_state.update(node_state)
+            
+            final_state = initial_state
             
             print("\n" + "*" * 50)
             print("🎯 RESULTADO 🎯")
