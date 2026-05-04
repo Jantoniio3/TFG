@@ -146,10 +146,16 @@ def generate_solution_node(state):
     llm = get_llm()
     enunciado = state.get("enunciado_generado", "")
     lenguaje = state.get("lenguaje", "Python")
+    vistos = ', '.join(state.get('alumno_historial', []))
     
     system_prompt = f"""Eres el profesor que ha escrito este ejercicio. Por favor, resuelve el ejercicio aportando:
 1. El código en {lenguaje} correcto.
 2. Una explicación pedagógica de cómo funciona el código y por qué se resuelve así.
+
+REGLA ESTRICTA DE CONFINAMIENTO DE CONOCIMIENTO:
+El alumno solo conoce estos conceptos: {vistos}.
+TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código que utilice conceptos, palabras clave, módulos o estructuras de datos ajenos a esa lista. Debes limitar tu solución estrictamente al arsenal de herramientas que el alumno ya domina.
+
 Devuelve el resultado en Markdown, de forma clara y unificada.""" + get_cluster_prompt_suffix()
     
     response = llm.invoke([
@@ -163,8 +169,15 @@ def solve_node(state):
     llm = get_llm()
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")
+    vistos = ', '.join(state.get('alumno_historial', []))
     
-    system_prompt = f"Eres un tutor experto. Tu objetivo es explicar qué hace este código en {lenguaje} proporcionado de forma pedagógica, o explicar su lógica general, y proponer un código mejorado si ves áreas de mejora. Devuelve la respuesta en Markdown." + get_cluster_prompt_suffix()
+    system_prompt = f"""Eres un tutor experto. Tu objetivo es explicar qué hace este código en {lenguaje} proporcionado de forma pedagógica, o explicar su lógica general, y proponer un código mejorado si ves áreas de mejora.
+
+REGLA ESTRICTA DE CONFINAMIENTO DE CONOCIMIENTO:
+El alumno solo conoce estos conceptos: {vistos}.
+TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código que utilice conceptos, palabras clave, módulos o estructuras de datos ajenos a esa lista (por ejemplo, prohibido sugerir importaciones si no conoce bibliotecas). Debes limitar tus correcciones y sugerencias estrictamente al arsenal de herramientas que el alumno ya domina.
+
+Devuelve la respuesta en Markdown.""" + get_cluster_prompt_suffix()
     
     response = llm.invoke([
         SystemMessage(content=system_prompt),
@@ -177,8 +190,15 @@ def find_bugs_node(state):
     llm = get_llm_deterministic()
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")
+    vistos = ', '.join(state.get('alumno_historial', []))
     
-    system_prompt = f"Eres un debugger experto en {lenguaje}. Tu objetivo es encontrar fallos lógicos o sintácticos en el código proporcionado. Explica dónde están los errores, por qué ocurren y proporciona la versión corregida. Sé muy metódico. Devuelve el resultado en Markdown." + get_cluster_prompt_suffix()
+    system_prompt = f"""Eres un debugger experto en {lenguaje}. Tu objetivo es encontrar fallos lógicos o sintácticos en el código proporcionado. Explica dónde están los errores, por qué ocurren y proporciona la versión corregida. Sé muy metódico.
+
+REGLA ESTRICTA DE CONFINAMIENTO DE CONOCIMIENTO:
+El alumno solo conoce estos conceptos: {vistos}.
+TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código corregido que utilice conceptos o módulos avanzados que el alumno no conozca. Corrige los bugs utilizando únicamente las herramientas de su nivel.
+
+Devuelve el resultado en Markdown.""" + get_cluster_prompt_suffix()
     
     response = llm.invoke([
         SystemMessage(content=system_prompt),
