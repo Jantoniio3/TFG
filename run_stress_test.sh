@@ -41,4 +41,5 @@ echo "============================================="
 sleep 2
 
 # Ejecuta el test pasando todos los argumentos que le des al script (.sh) hacia Python ($@)
-python src/evaluation/consistency_test.py "$@"
+# Usamos python -u (unbuffered) para que los prints salgan en tiempo real en el archivo .log
+python -u src/evaluation/consistency_test.py "$@"
