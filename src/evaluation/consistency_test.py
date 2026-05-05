@@ -49,7 +49,8 @@ async def run_stress_test(N: int = 10):
         "Modelo", 
         "Ventana_Contexto",
         "Tiempo_Total_Generacion_Seg", 
-        "Votos_Senado", 
+        "Votos_Favor", 
+        "Votos_Contra", 
         "Reintentos", 
         "Resultado_Final"
     ]
@@ -94,7 +95,17 @@ async def run_stress_test(N: int = 10):
             
             # Extracción de métricas
             reintentos = final_state.get("reintentos", 0)
-            votos = final_state.get("votos_senado", "Desconocido")
+            votos_str = final_state.get("votos_senado", "")
+            
+            # Parsear los votos a columnas numéricas (ej: "2 a favor, 1 en contra")
+            votos_favor = "0"
+            votos_contra = "0"
+            if "a favor" in votos_str and "en contra" in votos_str:
+                try:
+                    votos_favor = votos_str.split(" a favor")[0].strip()
+                    votos_contra = votos_str.split(", ")[1].split(" en contra")[0].strip()
+                except Exception:
+                    pass
             
             # Determinar si al final de todo el proceso el ejercicio se aprobó
             # (Si no hay críticas en el estado final, es que el Senado lo aprobó)
@@ -103,9 +114,9 @@ async def run_stress_test(N: int = 10):
             else:
                 resultado = "Fallido (Límite de reintentos)"
                 
-            print(f"   Tiempo: {tiempo_total}s | Votos: {votos} | Reintentos: {reintentos} | Resultado: {resultado}")
+            print(f"   Tiempo: {tiempo_total}s | Votos: {votos_favor} Favor / {votos_contra} Contra | Reintentos: {reintentos} | Resultado: {resultado}")
             
-            row = [i, modelo, num_ctx, tiempo_total, votos, reintentos, resultado]
+            row = [i, modelo, num_ctx, tiempo_total, votos_favor, votos_contra, reintentos, resultado]
             writer.writerow(row)
             f.flush() # Guardar a disco inmediatamente por si se cancela a medias
             
