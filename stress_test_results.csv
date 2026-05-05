@@ -1,11 +1,11 @@
-Iteracion,Modelo,Tiempo_Total_Generacion_Seg,Votos_Senado,Reintentos,Resultado_Final
-1,qwen2.5-coder:32b,336.68,"1 a favor, 2 en contra",3,Fallido (Límite de reintentos)
-2,qwen2.5-coder:32b,231.55,"2 a favor, 1 en contra",1,Aprobado
-3,qwen2.5-coder:32b,178.77,"3 a favor, 0 en contra",1,Aprobado
-4,qwen2.5-coder:32b,82.45,"3 a favor, 0 en contra",0,Aprobado
-5,qwen2.5-coder:32b,135.09,"2 a favor, 1 en contra",0,Aprobado
-6,qwen2.5-coder:32b,219.12,"3 a favor, 0 en contra",1,Aprobado
-7,qwen2.5-coder:32b,105.87,"2 a favor, 1 en contra",0,Aprobado
-8,qwen2.5-coder:32b,198.93,"3 a favor, 0 en contra",1,Aprobado
-9,qwen2.5-coder:32b,219.43,"2 a favor, 1 en contra",1,Aprobado
-10,qwen2.5-coder:32b,209.23,"3 a favor, 0 en contra",1,Aprobado
+Iteracion;Modelo;Ventana_Contexto;Tiempo_Total_Generacion_Seg;Votos_Senado;Reintentos;Resultado_Final
+1;llama3.1:70b;16384;1371.95;2 a favor, 1 en contra;2;Aprobado
+2;llama3.1:70b;16384;960.01;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
+3;llama3.1:70b;16384;313.06;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
+4;llama3.1:70b;16384;411.88;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
+5;llama3.1:70b;16384;326.43;1 a favor, 2 en contra;3;Fallido (Límite de reintentos)
+6;llama3.1:70b;16384;217.04;2 a favor, 1 en contra;1;Aprobado
+7;llama3.1:70b;16384;348.02;2 a favor, 1 en contra;2;Aprobado
+8;llama3.1:70b;16384;263.66;2 a favor, 1 en contra;2;Aprobado
+9;llama3.1:70b;16384;91.1;2 a favor, 1 en contra;0;Aprobado
+10;llama3.1:70b;16384;391.7;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
