@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field
 
 class SenateVote(BaseModel):
     aprueba: bool = Field(description="True si el ejercicio es adecuado, False si no cumple los requisitos.")
-    critica: str = Field(description="Breve razonamiento o crítica de tu voto.")
+    critica: str = Field(description="Breve razonamiento de tu voto. Si rechazas el ejercicio, incluye una propuesta de mejora constructiva para rehacerlo.")
 
 load_dotenv()
 
@@ -142,7 +142,7 @@ Criterios estrictos:
 Contexto de ejercicios base para guiar el estilo:
 {contexto}
 
-Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" + get_cluster_prompt_suffix()
+Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes proporcionar en tu crítica una propuesta de mejora constructiva para que el profesor sepa cómo rehacerlo.""" + get_cluster_prompt_suffix()
 
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
