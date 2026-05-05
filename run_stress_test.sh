@@ -28,7 +28,15 @@ source .venv_cluster/bin/activate
 echo "⚙️ 4. Sincronizando variables de entorno..."
 cp .env.cluster .env
 
-echo "🚀 5. Lanzando el Stress Test..."
+echo "🚀 5. Asegurando que el modelo está descargado (Ollama Pull)..."
+# $2 es el nombre del modelo que pasamos desde models.py
+if [ ! -z "$2" ]; then
+    echo "Verificando/Descargando el modelo: $2"
+    ollama pull "$2"
+fi
+
+echo "============================================="
+echo "⚙️ 6. Lanzando el Stress Test..."
 echo "============================================="
 sleep 2
 
