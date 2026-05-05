@@ -40,7 +40,11 @@ async def run_stress_test(N: int = 10):
     else:
         modelo = os.getenv("OLLAMA_MODEL", "Desconocido")
         
-    num_ctx = os.getenv("NUM_CTX", "16384")
+    if len(sys.argv) > 3:
+        num_ctx = sys.argv[3]
+        os.environ["NUM_CTX"] = num_ctx
+    else:
+        num_ctx = os.getenv("NUM_CTX", "16384")
     
     # Archivo de salida
     csv_filename = "stress_test_results.csv"
@@ -57,10 +61,16 @@ async def run_stress_test(N: int = 10):
     
     resultados = []
     
-    # Abrir el CSV en modo escritura (sobrescribe si existe)
-    with open(csv_filename, mode='w', newline='', encoding='utf-8') as f:
+    # Verificar si el archivo ya existe para no repetir las cabeceras
+    file_exists = os.path.isfile(csv_filename) and os.path.getsize(csv_filename) > 0
+    
+    # Abrir el CSV en modo append ('a') para añadir al final sin machacar
+    with open(csv_filename, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f, delimiter=';')
-        writer.writerow(headers)
+        
+        # Escribir cabeceras solo si el archivo es nuevo
+        if not file_exists:
+            writer.writerow(headers)
         
         for i in range(1, N + 1):
             print(f"[{i}/{N}] Generando ejercicio de alta dificultad (Recursividad)...")
@@ -125,7 +135,7 @@ async def run_stress_test(N: int = 10):
     print("=" * 60)
 
 if __name__ == "__main__":
-    # Uso: python consistency_test.py [N_ITERACIONES] [MODELO_OPCIONAL]
-    # Ej: python consistency_test.py 5 qwen2.5-coder:7b
+    # Uso: python consistency_test.py [N_ITERACIONES] [MODELO_OPCIONAL] [NUM_CTX_OPCIONAL]
+    # Ej: python consistency_test.py 5 qwen2.5-coder:7b 8192
     N = int(sys.argv[1]) if len(sys.argv) > 1 else 10
     asyncio.run(run_stress_test(N))
