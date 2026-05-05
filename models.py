@@ -31,4 +31,7 @@ for model, num_ctx in models:
     except subprocess.CalledProcessError as e:
         print(f"\n❌ Hubo un error al evaluar {model}. Saltando al siguiente...")
         
+    print(f"🧹 Borrando el modelo {model} para liberar espacio en disco...")
+    subprocess.run(["ollama", "rm", model])
+
 print("\n✅ ¡Toda la batería de modelos ha finalizado! Revisa tu archivo stress_test_results.csv")
