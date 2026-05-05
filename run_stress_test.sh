@@ -13,6 +13,7 @@ pkill -u $USER -f "ollama serve"
 sleep 2
 
 echo "🚀 2. Levantando Ollama limpio en segundo plano..."
+export OLLAMA_NUM_PARALLEL=1
 ollama serve > ollama_stress_log.txt 2>&1 &
 sleep 4
 
