@@ -1,10 +1,7 @@
 import subprocess
 
-# Define aquí la lista de modelos que quieres probar y su contexto asociado
-# Formato: ("nombre_del_modelo", "tamaño_contexto")
 models = [
-    ("qwen2.5:72b", "16384"),
-    ("deepseek-r1:70b", "16384"),
+    ("nemotron:70b", "16384"),
     ("llama3.3:70b", "16384"),
     ("llama3.1:70b", "16384"),
     ("qwen2.5-coder:32b", "65536"),
