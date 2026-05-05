@@ -55,7 +55,7 @@ async def run_stress_test(N: int = 10):
     
     # Abrir el CSV en modo escritura (sobrescribe si existe)
     with open(csv_filename, mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, delimiter=';')
         writer.writerow(headers)
         
         for i in range(1, N + 1):
