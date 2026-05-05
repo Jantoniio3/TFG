@@ -1,11 +1,35 @@
-Iteracion;Modelo;Ventana_Contexto;Tiempo_Total_Generacion_Seg;Votos_Senado;Reintentos;Resultado_Final
-1;llama3.1:70b;16384;1371.95;2 a favor, 1 en contra;2;Aprobado
-2;llama3.1:70b;16384;960.01;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
-3;llama3.1:70b;16384;313.06;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
-4;llama3.1:70b;16384;411.88;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
-5;llama3.1:70b;16384;326.43;1 a favor, 2 en contra;3;Fallido (Límite de reintentos)
-6;llama3.1:70b;16384;217.04;2 a favor, 1 en contra;1;Aprobado
-7;llama3.1:70b;16384;348.02;2 a favor, 1 en contra;2;Aprobado
-8;llama3.1:70b;16384;263.66;2 a favor, 1 en contra;2;Aprobado
-9;llama3.1:70b;16384;91.1;2 a favor, 1 en contra;0;Aprobado
-10;llama3.1:70b;16384;391.7;0 a favor, 3 en contra;3;Fallido (Límite de reintentos)
+Iteracion;Modelo;Ventana_Contexto;Tiempo_Total_Generacion_Seg;Votos_Favor;Votos_Contra;Reintentos;Resultado_Final
+1;llama3.1:70b;16384;379.06;0;3;3;Fallido (Límite de reintentos)
+2;llama3.1:70b;16384;143.62;2;1;1;Aprobado
+3;llama3.1:70b;16384;304.39;0;3;3;Fallido (Límite de reintentos)
+4;llama3.1:70b;16384;364.7;1;2;3;Fallido (Límite de reintentos)
+1;deepseek-r1:70b;16384;655.94;2;1;0;Aprobado
+2;deepseek-r1:70b;16384;352.57;3;0;0;Aprobado
+3;deepseek-r1:70b;16384;361.53;3;0;0;Aprobado
+1;qwen2.5:72b;16384;751.79;3;0;1;Aprobado
+2;qwen2.5:72b;16384;300.84;2;1;0;Aprobado
+3;qwen2.5:72b;16384;1204.23;2;1;2;Aprobado
+4;qwen2.5:72b;16384;2242.4;3;0;1;Aprobado
+5;qwen2.5:72b;16384;3008.28;3;0;2;Aprobado
+6;qwen2.5:72b;16384;1264.85;1;2;3;Fallido (Límite de reintentos)
+7;qwen2.5:72b;16384;778.08;3;0;1;Aprobado
+8;qwen2.5:72b;16384;1718.29;1;2;3;Fallido (Límite de reintentos)
+9;qwen2.5:72b;16384;2713.52;0;3;3;Fallido (Límite de reintentos)
+10;qwen2.5:72b;16384;1293.01;2;1;0;Aprobado
+1;deepseek-r1:70b;16384;1451.48;2;1;0;Aprobado
+2;deepseek-r1:70b;16384;1048.45;3;0;0;Aprobado
+3;deepseek-r1:70b;16384;376.94;3;0;0;Aprobado
+4;deepseek-r1:70b;16384;313.17;3;0;0;Aprobado
+5;deepseek-r1:70b;16384;401.19;2;1;0;Aprobado
+6;deepseek-r1:70b;16384;832.28;2;1;0;Aprobado
+7;deepseek-r1:70b;16384;1886.85;3;0;1;Aprobado
+8;deepseek-r1:70b;16384;943.78;3;0;0;Aprobado
+9;deepseek-r1:70b;16384;355.79;3;0;0;Aprobado
+10;deepseek-r1:70b;16384;490.06;3;0;0;Aprobado
+1;qwen2.5:72b;16384;1502.03;1;2;3;Fallido (Límite de reintentos)
+2;qwen2.5:72b;16384;328.34;2;1;0;Aprobado
+3;qwen2.5:72b;16384;585.71;3;0;1;Aprobado
+4;qwen2.5:72b;16384;851.85;3;0;1;Aprobado
+5;qwen2.5:72b;16384;701.74;2;1;1;Aprobado
+6;qwen2.5:72b;16384;741.73;2;1;1;Aprobado
+7;qwen2.5:72b;16384;1362.33;2;1;2;Aprobado
