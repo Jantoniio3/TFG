@@ -39,12 +39,15 @@ async def run_stress_test(N: int = 10):
         os.environ["OLLAMA_MODEL"] = modelo
     else:
         modelo = os.getenv("OLLAMA_MODEL", "Desconocido")
+        
+    num_ctx = os.getenv("NUM_CTX", "16384")
     
     # Archivo de salida
     csv_filename = "stress_test_results.csv"
     headers = [
         "Iteracion", 
         "Modelo", 
+        "Ventana_Contexto",
         "Tiempo_Total_Generacion_Seg", 
         "Votos_Senado", 
         "Reintentos", 
@@ -102,7 +105,7 @@ async def run_stress_test(N: int = 10):
                 
             print(f"   Tiempo: {tiempo_total}s | Votos: {votos} | Reintentos: {reintentos} | Resultado: {resultado}")
             
-            row = [i, modelo, tiempo_total, votos, reintentos, resultado]
+            row = [i, modelo, num_ctx, tiempo_total, votos, reintentos, resultado]
             writer.writerow(row)
             f.flush() # Guardar a disco inmediatamente por si se cancela a medias
             
