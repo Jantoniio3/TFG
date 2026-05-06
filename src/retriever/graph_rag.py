@@ -49,31 +49,41 @@ class GraphRAG:
             # Soportar campo nuevo 'concepts' o el antiguo 'conceptos_evaluados'
             evaluados = set(ej.get("concepts", ej.get("conceptos_evaluados", [])))
             
-            # 1. El ejercicio debe cubrir al menos uno de los conceptos buscados
+            # 1. El ejercicio debe cubrir al menos uno de los conceptos buscados (si se especifican)
             if set_buscados and not (evaluados & set_buscados):
                 continue
                 
-            # 2. TODOS los conceptos que evalúa el ejercicio deben haber sido ya vistos por el alumno
-            if not evaluados.issubset(set_vistos):
-                continue
-                
-            # 3. Filtrado por dificultad (insensible a mayúsculas)
+            # 2. Filtrado por dificultad (insensible a mayúsculas)
             if dificultad_deseada:
                 dif_ej = ej.get("difficulty", ej.get("dificultad", "")).lower()
                 if dif_ej != dificultad_deseada.lower():
                     continue
+            
+            # Calculamos si el ejercicio es "perfecto" (el alumno conoce todos los conceptos)
+            es_perfecto = evaluados.issubset(set_vistos) if set_vistos else True
                 
             valid_exercises.append({
                 "id": ej.get("id"),
                 "enunciado": ej.get("statement", ej.get("enunciado", "")),
                 "solucion": ej.get("solution", ej.get("solucion", "")),
                 "dificultad": ej.get("difficulty", ej.get("dificultad", "")),
-                "conceptos": list(evaluados)
+                "conceptos": list(evaluados),
+                "es_perfecto": es_perfecto
             })
 
+        # Si tenemos ejercicios perfectos (el alumno conoce todo), damos prioridad a esos
+        perfectos = [e for e in valid_exercises if e["es_perfecto"]]
+        
+        if perfectos:
+            seleccion = perfectos
+        else:
+            # Si no hay ejercicios perfectos, usamos los que hayamos encontrado (aunque tengan conceptos desconocidos)
+            # para que al menos el LLM tenga ejemplos del estilo y formato del tema buscado.
+            seleccion = valid_exercises
+
         # Rotar aleatoriamente y devolver top 5
-        random.shuffle(valid_exercises)
-        return valid_exercises[:5]
+        random.shuffle(seleccion)
+        return seleccion[:5]
 
     def close(self):
         """Método de limpieza por compatibilidad (vacío al operar In-Memory)."""
