@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(__file__))
 
 from src.agents.graph import build_graph
 import networkx as nx
-from src.ontology.grafo import concepto_dominio, construir_grafo
+from src.ontology.grafo import concepto_dominio, construir_grafo, CONCEPTOS
 
 def normalize_text(text: str) -> str:
     """Normaliza un texto eliminando tildes, espacios extra y pasándolo a minúsculas.
@@ -89,9 +89,13 @@ def main():
         if not historial_alumno and opcion in ["1", "2"]:
             print("\n" + "-" * 50)
             print("👤 CONFIGURACIÓN DEL PERFIL DEL ALUMNO")
-            if conceptos_db:
+            if CONCEPTOS:
                 print("📚 CONCEPTOS DISPONIBLES EN LA ONTOLOGÍA:")
-                print(', '.join(conceptos_db))
+                for dominio, lista_conceptos in CONCEPTOS.items():
+                    print(f"\n   🔹 {dominio.upper()}:")
+                    # Separar por comas y ajustar ancho
+                    conceptos_format = ', '.join(lista_conceptos)
+                    print(f"      {conceptos_format}")
             print("-" * 50)
             print("\nIndica los conceptos que YA HAS ESTUDIADO (tu perfil). Separa por comas.")
             vistos_input = input("Conceptos vistos [Dejar en blanco para usar perfil DEMO]: ")
