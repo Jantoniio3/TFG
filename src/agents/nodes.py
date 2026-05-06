@@ -112,6 +112,15 @@ Contexto de ejercicios similares para inspiración:
 
     user_prompt += "\nDevuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio."
 
+    if state.get("modo_desarrollador", False):
+        print("\n" + "═"*50)
+        print("🛠️ [MODO DEV - GENERADOR] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - GENERADOR] USER PROMPT:")
+        print(user_prompt)
+        print("═"*50)
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_prompt)
@@ -145,6 +154,15 @@ Contexto de ejercicios base para guiar el estilo:
 Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes proporcionar en tu crítica una propuesta de mejora constructiva para que el profesor sepa cómo rehacerlo.""" + get_cluster_prompt_suffix()
 
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
+
+    if state.get("modo_desarrollador", False):
+        print("\n" + "═"*50)
+        print("🛠️ [MODO DEV - SENADO] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - SENADO] USER PROMPT:")
+        print(user_prompt)
+        print("═"*50)
 
     async def get_vote():
         return await llm.ainvoke([
@@ -210,9 +228,20 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código que utili
 
 Devuelve el resultado en Markdown, de forma clara y unificada.""" + get_cluster_prompt_suffix()
     
+    user_prompt = f"Este es el enunciado del ejercicio:\n{enunciado}"
+    
+    if state.get("modo_desarrollador", False):
+        print("\n" + "═"*50)
+        print("🛠️ [MODO DEV - TUTOR SOLUCIÓN] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - TUTOR SOLUCIÓN] USER PROMPT:")
+        print(user_prompt)
+        print("═"*50)
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
-        HumanMessage(content=f"Este es el enunciado del ejercicio:\n{enunciado}")
+        HumanMessage(content=user_prompt)
     ])
     
     return {"resultado_codigo": response.content}
@@ -236,6 +265,15 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código que utili
 
 Devuelve la respuesta en Markdown.""" + get_cluster_prompt_suffix()
     
+    if state.get("modo_desarrollador", False):
+        print("\n" + "═"*50)
+        print("🛠️ [MODO DEV - TUTOR CORRECCIÓN] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - TUTOR CORRECCIÓN] USER PROMPT:")
+        print(codigo)
+        print("═"*50)
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
         HumanMessage(content=codigo)
@@ -262,6 +300,15 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código corregido
 
 Devuelve el resultado en Markdown.""" + get_cluster_prompt_suffix()
     
+    if state.get("modo_desarrollador", False):
+        print("\n" + "═"*50)
+        print("🛠️ [MODO DEV - DEBUGGER] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - DEBUGGER] USER PROMPT:")
+        print(codigo)
+        print("═"*50)
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
         HumanMessage(content=codigo)

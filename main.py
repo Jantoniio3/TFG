@@ -64,6 +64,7 @@ def main():
         
     historial_alumno = []
     lenguaje_sesion = "Python"
+    modo_desarrollador = False
     
     # Bucle infinito del Menú
     while True:
@@ -139,6 +140,12 @@ def main():
             lenguaje_sesion = req_lenguaje if req_lenguaje else "Python"
             print(f"✅ Establecido el lenguaje a {lenguaje_sesion} para esta sesión.")
             
+            # Pedir Modo Desarrollador
+            dev_mode_input = input("\n¿Activar MODO DESARROLLADOR para ver los prompts internos enviados a la IA? [s/N]: ").strip().lower()
+            modo_desarrollador = dev_mode_input == 's'
+            if modo_desarrollador:
+                print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
+            
         initial_state = {
             "alumno_historial": historial_alumno,
             "conceptos_buscados": [],
@@ -147,7 +154,8 @@ def main():
             "con_solucion": False,
             "lenguaje": lenguaje_sesion,
             "codigo_entrada": "",
-            "resultado_codigo": ""
+            "resultado_codigo": "",
+            "modo_desarrollador": modo_desarrollador
         }
             
         if opcion == "1":
