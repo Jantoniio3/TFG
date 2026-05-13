@@ -1,14 +1,8 @@
 import subprocess
 
 models = [
-    ("nemotron:70b", "16384"),
-    ("llama3.3:70b", "16384"),
-    ("llama3.1:70b", "16384"),
-    ("qwen2.5-coder:32b", "65536"),
-    ("codestral:22b", "65536"),
-    ("deepseek-coder-v2:16b", "65536"),
-    ("phi4:14b", "65536")
-]
+    ("llama3.3:70b", "4096"),
+    ("qwen2.5-coder:32b", "4096")]
 
 iteraciones = 10
 

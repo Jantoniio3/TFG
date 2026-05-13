@@ -92,13 +92,27 @@ async def run_stress_test(N: int = 10):
                 "reintentos": 0,
                 "ejercicio_generado": "",
                 "criticas_senado": "",
-                "votos_senado": ""
+                "votos_senado": "",
+                "modo_desarrollador": False,
+                "usar_senado": True
             }
             
             start_time = time.perf_counter()
             
-            # Ejecutar el grafo de LangGraph de forma asíncrona
-            final_state = await app.ainvoke(initial_state, config={"recursion_limit": 20})
+            # Ejecutar el grafo de LangGraph de forma asíncrona mostrando progreso
+            async for s in app.astream(initial_state, config={"recursion_limit": 20}):
+                for node_name, node_state in s.items():
+                    if node_name == "retriever":
+                        print("   [25%] 🔍 RAG: Recuperando contexto de la base de datos...")
+                    elif node_name == "generator":
+                        print("   [50%] ✍️ LLM: Redactando borrador base del ejercicio...")
+                    elif node_name == "senate_evaluation_node":
+                        pass # El senado ya imprime sus votaciones internamente
+                    
+                    # Acumular el estado para extraer métricas al final
+                    initial_state.update(node_state)
+            
+            final_state = initial_state
             
             end_time = time.perf_counter()
             tiempo_total = round(end_time - start_time, 2)
