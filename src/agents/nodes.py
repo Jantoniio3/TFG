@@ -214,7 +214,7 @@ def generate_solution_node(state):
     que el alumno no haya aprendido todavía.
     """
     llm = get_llm()
-    enunciado = state.get("enunciado_generado", "")
+    enunciado = state.get("enunciado_generado") or state.get("ejercicio_generado", "")
     lenguaje = state.get("lenguaje", "Python")
     vistos = ', '.join(state.get('alumno_historial', []))
     

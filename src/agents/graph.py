@@ -23,6 +23,22 @@ def route_task(state: TutorState) -> str:
     """
     return state.get("tarea", "generar")
 
+def route_post_generator(state: TutorState) -> str:
+    """Decide si enviar el ejercicio al Senado o saltarse la evaluación.
+    
+    Args:
+        state: El estado actual del tutor.
+        
+    Returns:
+        str: El siguiente nodo ("senate_evaluation_node", "generate_solution_node", "end").
+    """
+    if state.get("usar_senado", True):
+        return "senate_evaluation_node"
+    else:
+        if state.get("con_solucion", False):
+            return "generate_solution_node"
+        return "end"
+
 def route_senate(state: TutorState) -> str:
     """Decide el siguiente paso tras la votación del Senado (Tolerancia a fallos).
     
@@ -76,7 +92,11 @@ def build_graph():
     
     # Generar rama
     workflow.add_edge("retriever", "generator")
-    workflow.add_edge("generator", "senate_evaluation_node")
+    workflow.add_conditional_edges("generator", route_post_generator, {
+        "senate_evaluation_node": "senate_evaluation_node",
+        "generate_solution_node": "generate_solution_node",
+        "end": END
+    })
     workflow.add_conditional_edges("senate_evaluation_node", route_senate, {
         "generator": "generator",
         "generate_solution_node": "generate_solution_node",

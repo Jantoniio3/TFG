@@ -65,6 +65,7 @@ def main():
     historial_alumno = []
     lenguaje_sesion = "Python"
     modo_desarrollador = False
+    usar_senado = True
     
     # Bucle infinito del Menú
     while True:
@@ -145,6 +146,12 @@ def main():
             modo_desarrollador = dev_mode_input == 's'
             if modo_desarrollador:
                 print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
+                
+            # Pedir Senado
+            senado_input = input("\n¿Activar evaluación por el SENADO para asegurar calidad? (Es más lento pero más robusto) [S/n]: ").strip().lower()
+            usar_senado = senado_input != 'n'
+            if not usar_senado:
+                print("⚡ SENADO DESACTIVADO. Generación rápida (modo turbo).")
             
         initial_state = {
             "alumno_historial": historial_alumno,
@@ -155,7 +162,8 @@ def main():
             "lenguaje": lenguaje_sesion,
             "codigo_entrada": "",
             "resultado_codigo": "",
-            "modo_desarrollador": modo_desarrollador
+            "modo_desarrollador": modo_desarrollador,
+            "usar_senado": usar_senado
         }
             
         if opcion == "1":

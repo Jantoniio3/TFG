@@ -43,3 +43,4 @@ class TutorState(TypedDict):
     criticas_senado: str
     votos_senado: str
     modo_desarrollador: bool
+    usar_senado: bool
