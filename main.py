@@ -242,9 +242,20 @@ def main():
             print("*" * 50)
             
             if final_state.get("tarea") == "generar":
-                print(f"\n[ENUNCIADO]\n{final_state.get('enunciado_generado')}")
+                ejercicio_final = final_state.get('enunciado_generado') or final_state.get('ejercicio_generado', '')
+                print(f"\n[ENUNCIADO]\n{ejercicio_final}")
                 if final_state.get("con_solucion"):
                     print(f"\n[SOLUCIÓN Y EXPLICACIÓN]\n{final_state.get('resultado_codigo')}")
+                
+                # Guardar en archivo
+                try:
+                    with open("exercice.md", "w", encoding="utf-8") as f:
+                        f.write(f"# Ejercicio Generado\n\n## Enunciado\n{ejercicio_final}\n")
+                        if final_state.get("con_solucion"):
+                            f.write(f"\n## Solución y Explicación\n{final_state.get('resultado_codigo')}\n")
+                    print("\n💾 Ejercicio guardado exitosamente en 'exercice.md'.")
+                except Exception as e:
+                    print(f"\n[ERROR] No se pudo guardar el archivo: {e}")
             else:
                 print(f"\n[RESPUESTA DEL TUTOR]\n{final_state.get('resultado_codigo')}")
         except Exception as e:
