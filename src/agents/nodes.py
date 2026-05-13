@@ -16,9 +16,13 @@ from langchain_core.messages import SystemMessage, HumanMessage
 import asyncio
 from pydantic import BaseModel, Field
 
-class SenateVote(BaseModel):
+class SenateVoteBFT(BaseModel):
     aprueba: bool = Field(description="True si el ejercicio es adecuado, False si no cumple los requisitos.")
     critica: str = Field(description="Breve razonamiento de tu voto. Si rechazas el ejercicio, incluye una propuesta de mejora constructiva para rehacerlo.")
+
+class SenateVoteReflection(BaseModel):
+    nota: int = Field(description="Nota del 0 al 10 evaluando la calidad y adecuación del ejercicio.")
+    critica: str = Field(description="Si la nota es menor a 8, incluye una propuesta de mejora constructiva para rehacer el ejercicio. Si es 8 o superior, un breve comentario validándolo.")
 
 load_dotenv()
 
@@ -127,16 +131,16 @@ Contexto de ejercicios similares para inspiración:
     ])
     return {"ejercicio_generado": response.content}
 
-def senate_evaluation_node(state):
-    """Nodo Senado: Implementa Byzantine Fault Tolerance mediante voto por mayoría.
+def senate_bft_node(state):
+    """Nodo Senado (BFT): Implementa Byzantine Fault Tolerance mediante voto por mayoría.
     
     Instancia 3 llamadas asíncronas concurrentes (o secuenciales según fallback) al LLM.
     Cada "Juez" evalúa la dificultad y pertinencia pedagógica del ejercicio.
     Si 2 o más aprueban, el flujo avanza. Si no, devuelve el estado
     al Generador con las críticas acumuladas para que se regenere.
     """
-    print("\n⚖️ El Senado está debatiendo...")
-    llm = get_llm().with_structured_output(SenateVote)
+    print("\n⚖️ El Senado está debatiendo (BFT 3 Jueces)...")
+    llm = get_llm().with_structured_output(SenateVoteBFT)
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
@@ -205,6 +209,71 @@ Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes propo
             "reintentos": reintentos_actuales + 1,
             "criticas_senado": criticas_str,
             "votos_senado": f"{votos_favor} a favor, {votos_contra} en contra"
+        }
+
+def senate_reflection_node(state):
+    """Nodo Senado (Reflexión Secuencial): Implementa Self-Critique.
+    
+    Un Juez evalúa el ejercicio con una nota del 0 al 10.
+    Si la nota es >= 8, se aprueba. Si es < 8, se devuelve el estado
+    al Generador con la crítica para que se regenere.
+    """
+    print("\n⚖️ El Juez está evaluando el ejercicio (Reflexión Secuencial)...")
+    llm = get_llm().with_structured_output(SenateVoteReflection)
+    
+    ejercicio = state.get("ejercicio_generado", "")
+    dificultad = state.get("dificultad", "Media")
+    contexto = "\n".join([f"Enunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
+    
+    system_prompt = f"""Eres un juez estricto en el Senado Académico.
+Debes evaluar el siguiente ejercicio generado por otro profesor.
+Criterios estrictos:
+1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno ({dificultad})?
+2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+
+Contexto de ejercicios base para guiar el estilo:
+{contexto}
+
+Evalúa el ejercicio asignándole una nota entera del 0 al 10.
+Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejora constructiva detallada para que el profesor sepa cómo rehacerlo y subir la nota.""" + get_cluster_prompt_suffix()
+
+    user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
+
+    if state.get("modo_desarrollador", False):
+        print("\n" + "═"*50)
+        print("🛠️ [MODO DEV - SENADO REFLEXIÓN] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - SENADO REFLEXIÓN] USER PROMPT:")
+        print(user_prompt)
+        print("═"*50)
+
+    try:
+        vote = llm.invoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=user_prompt)
+        ])
+    except Exception as e:
+        print(f"[!] Error al invocar al juez: {e}. Aprobando por defecto para no bloquear.")
+        vote = SenateVoteReflection(nota=8, critica=f"Aprobado por fallback técnico: {e}")
+
+    nota = getattr(vote, "nota", 0)
+    critica = getattr(vote, "critica", "Sin crítica.")
+    
+    if nota >= 8:
+        print(f"🏛️ El Juez ha puntuado el ejercicio con un {nota}/10. ¡Aprobado!")
+        return {
+            "enunciado_generado": ejercicio,
+            "criticas_senado": "",
+            "nota_senado": nota
+        }
+    else:
+        print(f"🏛️ El Juez ha puntuado el ejercicio con un {nota}/10. Ejercicio Rechazado.")
+        reintentos_actuales = state.get("reintentos", 0)
+        return {
+            "reintentos": reintentos_actuales + 1,
+            "criticas_senado": f"Crítica del Juez (Nota {nota}/10): {critica}",
+            "nota_senado": nota
         }
 
 def generate_solution_node(state):

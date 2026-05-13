@@ -148,10 +148,23 @@ def main():
                 print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
                 
             # Pedir Senado
-            senado_input = input("\n¿Activar evaluación por el SENADO para asegurar calidad? (Es más lento pero más robusto) [S/n]: ").strip().lower()
-            usar_senado = senado_input != 'n'
-            if not usar_senado:
+            print("\n¿Qué arquitectura de validación deseas usar?")
+            print("1. Ninguna (Modo Turbo - Más rápido)")
+            print("2. Senado BFT (3 Jueces paralelos votando - Más robusto)")
+            print("3. Reflexión Iterativa (1 Juez puntuando 0-10 - Balanceado)")
+            senado_opcion = input("Elige una opción [3]: ").strip()
+            
+            usar_senado = True
+            if senado_opcion == "1":
+                tipo_senado = "ninguno"
+                usar_senado = False
                 print("⚡ SENADO DESACTIVADO. Generación rápida (modo turbo).")
+            elif senado_opcion == "2":
+                tipo_senado = "bft"
+                print("🏛️ SENADO BFT ACTIVADO.")
+            else:
+                tipo_senado = "reflexion"
+                print("🧠 SENADO REFLEXIVO ACTIVADO.")
             
         initial_state = {
             "alumno_historial": historial_alumno,
@@ -163,7 +176,8 @@ def main():
             "codigo_entrada": "",
             "resultado_codigo": "",
             "modo_desarrollador": modo_desarrollador,
-            "usar_senado": usar_senado
+            "usar_senado": usar_senado,
+            "tipo_senado": tipo_senado
         }
             
         if opcion == "1":

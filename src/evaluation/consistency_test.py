@@ -52,9 +52,9 @@ async def run_stress_test(N: int = 10):
         "Iteracion", 
         "Modelo", 
         "Ventana_Contexto",
+        "Tipo_Senado",
         "Tiempo_Total_Generacion_Seg", 
-        "Votos_Favor", 
-        "Votos_Contra", 
+        "Puntuacion_Senado", 
         "Reintentos", 
         "Resultado_Final"
     ]
@@ -93,8 +93,10 @@ async def run_stress_test(N: int = 10):
                 "ejercicio_generado": "",
                 "criticas_senado": "",
                 "votos_senado": "",
+                "nota_senado": 0,
                 "modo_desarrollador": False,
-                "usar_senado": True
+                "usar_senado": True,
+                "tipo_senado": "bft" # Por defecto BFT para stress tests
             }
             
             start_time = time.perf_counter()
@@ -106,7 +108,7 @@ async def run_stress_test(N: int = 10):
                         print("   [25%] 🔍 RAG: Recuperando contexto de la base de datos...")
                     elif node_name == "generator":
                         print("   [50%] ✍️ LLM: Redactando borrador base del ejercicio...")
-                    elif node_name == "senate_evaluation_node":
+                    elif node_name == "senate_bft_node" or node_name == "senate_reflection_node":
                         pass # El senado ya imprime sus votaciones internamente
                     
                     # Acumular el estado para extraer métricas al final
@@ -119,28 +121,23 @@ async def run_stress_test(N: int = 10):
             
             # Extracción de métricas
             reintentos = final_state.get("reintentos", 0)
-            votos_str = final_state.get("votos_senado", "")
+            tipo_evaluacion = initial_state.get("tipo_senado", "bft")
             
-            # Parsear los votos a columnas numéricas (ej: "2 a favor, 1 en contra")
-            votos_favor = "0"
-            votos_contra = "0"
-            if "a favor" in votos_str and "en contra" in votos_str:
-                try:
-                    votos_favor = votos_str.split(" a favor")[0].strip()
-                    votos_contra = votos_str.split(", ")[1].split(" en contra")[0].strip()
-                except Exception:
-                    pass
+            puntuacion = "0"
+            if tipo_evaluacion == "reflexion":
+                puntuacion = f"{final_state.get('nota_senado', 0)}/10"
+            elif tipo_evaluacion == "bft":
+                puntuacion = final_state.get("votos_senado", "0 a favor")
             
             # Determinar si al final de todo el proceso el ejercicio se aprobó
-            # (Si no hay críticas en el estado final, es que el Senado lo aprobó)
             if not final_state.get("criticas_senado"):
                 resultado = "Aprobado"
             else:
                 resultado = "Fallido (Límite de reintentos)"
                 
-            print(f"   Tiempo: {tiempo_total}s | Votos: {votos_favor} Favor / {votos_contra} Contra | Reintentos: {reintentos} | Resultado: {resultado}")
+            print(f"   Tiempo: {tiempo_total}s | Puntuación Final: {puntuacion} | Reintentos: {reintentos} | Resultado: {resultado}")
             
-            row = [i, modelo, num_ctx, tiempo_total, votos_favor, votos_contra, reintentos, resultado]
+            row = [i, modelo, num_ctx, tipo_evaluacion, tiempo_total, puntuacion, reintentos, resultado]
             writer.writerow(row)
             f.flush() # Guardar a disco inmediatamente por si se cancela a medias
             
