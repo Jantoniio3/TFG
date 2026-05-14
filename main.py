@@ -273,6 +273,16 @@ def main():
                     print(f"\n[ERROR] No se pudo guardar el archivo: {e}")
             else:
                 print(f"\n[RESPUESTA DEL TUTOR]\n{final_state.get('resultado_codigo')}")
+                # Guardar en archivo
+                try:
+                    with open("tutor_response.md", "w", encoding="utf-8") as f:
+                        tarea_nombre = "Resolución de Código" if final_state.get("tarea") == "resolver" else "Análisis de Bugs"
+                        f.write(f"# {tarea_nombre}\n\n")
+                        f.write(f"## Código Proporcionado\n```python\n{final_state.get('codigo_entrada', '')}\n```\n\n")
+                        f.write(f"## Análisis del Tutor Inteligente\n{final_state.get('resultado_codigo')}\n")
+                    print("\n💾 Respuesta del tutor guardada exitosamente en 'tutor_response.md'.")
+                except Exception as e:
+                    print(f"\n[ERROR] No se pudo guardar el archivo: {e}")
         except Exception as e:
             print(f"\n[ERROR] Ocurrió un problema ejecutando el grafo: {e}")
 
