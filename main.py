@@ -12,8 +12,20 @@ import threading
 import itertools
 import time
 
+# Colores ANSI para diferenciar texto
+USER_COLOR = "\033[96m"  # Cyan para lo que escribe el usuario
+TUTOR_COLOR = "\033[92m" # Verde para las respuestas finales del tutor
+SYS_COLOR = "\033[93m"   # Amarillo para los prompts del sistema
+RESET_COLOR = "\033[0m"  # Reset
+
 # Agregar src a los paths por si se invoca desde la raíz
 sys.path.append(os.path.dirname(__file__))
+
+def ask_user(prompt_text: str) -> str:
+    """Imprime el prompt en amarillo, lee el input en cyan y resetea el color."""
+    val = input(f"{SYS_COLOR}{prompt_text}{USER_COLOR}")
+    print(RESET_COLOR, end="")
+    return val
 
 class Spinner:
     """Muestra un reloj de arena dinámico (spinner) en la consola usando un hilo en segundo plano."""
@@ -68,11 +80,11 @@ def get_multiline_input(prompt: str) -> str:
     Returns:
         str: El bloque de código completo como un único string.
     """
-    print(prompt)
-    print("(Pega tu código. Escribe 'FIN' en una nueva línea y presiona Enter para finalizar)")
+    print(f"{SYS_COLOR}{prompt}{RESET_COLOR}")
+    print(f"{SYS_COLOR}(Pega tu código. Escribe 'FIN' en una nueva línea y presiona Enter para finalizar){RESET_COLOR}")
     lines = []
     while True:
-        line = input()
+        line = ask_user("")
         if line.strip().upper() == 'FIN':
             break
         lines.append(line)
@@ -110,7 +122,7 @@ def main():
         print("3. Buscar Bugs")
         print("4. Salir")
         
-        opcion = input("\n📝 Elige una opción: ").strip()
+        opcion = ask_user("\n📝 Elige una opción: ").strip()
         
         if opcion == "4":
             print("¡Hasta pronto!")
@@ -133,7 +145,7 @@ def main():
                     print(f"      {conceptos_format}")
             print("-" * 50)
             print("\nIndica los conceptos que YA HAS ESTUDIADO (tu perfil). Separa por comas.")
-            vistos_input = input("Conceptos vistos [Dejar en blanco para usar perfil DEMO]: ")
+            vistos_input = ask_user("Conceptos vistos [Dejar en blanco para usar perfil DEMO]: ")
             if vistos_input.strip():
                 conceptos_base_raw = [c.strip() for c in vistos_input.split(",") if c.strip()]
                 conceptos_base = []
@@ -170,12 +182,12 @@ def main():
             print(f"✅ Perfil configurado y guardado. Conoces {len(historial_alumno)} conceptos.")
             
             # Pedir lenguaje una sola vez
-            req_lenguaje = input("¿En qué lenguaje de programación quieres trabajar? [Por defecto: Python]: ").strip()
+            req_lenguaje = ask_user("¿En qué lenguaje de programación quieres trabajar? [Por defecto: Python]: ").strip()
             lenguaje_sesion = req_lenguaje if req_lenguaje else "Python"
             print(f"✅ Establecido el lenguaje a {lenguaje_sesion} para esta sesión.")
             
             # Pedir Modo Desarrollador
-            dev_mode_input = input("\n¿Activar MODO DESARROLLADOR para ver los prompts internos enviados a la IA? [s/N]: ").strip().lower()
+            dev_mode_input = ask_user("\n¿Activar MODO DESARROLLADOR para ver los prompts internos enviados a la IA? [s/N]: ").strip().lower()
             modo_desarrollador = dev_mode_input == 's'
             if modo_desarrollador:
                 print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
@@ -197,7 +209,7 @@ def main():
         if opcion == "1":
             print(f"\n📋 Tu Perfil ({len(historial_alumno)} conceptos).")
             # Dejamos la opción de presionar "Enter" si quieren repasar todo su conocimiento o usar por defecto
-            entrada = input("¿Qué conceptos te gustaría practicar? (Ej: Variable) [Rellena u oprime Enter para aleatorio]: ")
+            entrada = ask_user("¿Qué conceptos te gustaría practicar? (Ej: Variable) [Rellena u oprime Enter para aleatorio]: ")
             if entrada.strip():
                 buscados_raw = [c.strip() for c in entrada.split(",") if c.strip()]
                 buscados = []
@@ -213,17 +225,17 @@ def main():
                 buscados = random.sample(historial_alumno, min(2, len(historial_alumno)))
                 print(f"🎲 Seleccionados aleatoriamente: {', '.join(buscados)}")
             
-            dificultad = input("Dificultad (Fácil/Media/Difícil) [Por defecto: Media]: ").strip()
+            dificultad = ask_user("Dificultad (Fácil/Media/Difícil) [Por defecto: Media]: ").strip()
             dificultad = dificultad if dificultad else "Media"
             
-            con_solucion = input("¿Generar también la solución explicada? (s/n): ").strip().lower() == "s"
+            con_solucion = ask_user("¿Generar también la solución explicada? (s/n): ").strip().lower() == "s"
             
             # Pedir Senado SOLO para generar ejercicio
             print("\n¿Qué arquitectura de validación deseas usar para evaluar el borrador?")
             print("1. Ninguna (Modo Turbo - Más rápido)")
             print("2. Senado BFT (3 Jueces paralelos votando - Más robusto)")
             print("3. Reflexión Iterativa (1 Juez puntuando 0-10 - Balanceado)")
-            senado_opcion = input("Elige una opción [3]: ").strip()
+            senado_opcion = ask_user("Elige una opción [3]: ").strip()
             
             if senado_opcion == "1":
                 initial_state["tipo_senado"] = "ninguno"
@@ -301,9 +313,9 @@ def main():
             
             if final_state.get("tarea") == "generar":
                 ejercicio_final = final_state.get('enunciado_generado') or final_state.get('ejercicio_generado', '')
-                print(f"\n[ENUNCIADO]\n{ejercicio_final}")
+                print(f"\n{TUTOR_COLOR}[ENUNCIADO]\n{ejercicio_final}{RESET_COLOR}")
                 if final_state.get("con_solucion"):
-                    print(f"\n[SOLUCIÓN Y EXPLICACIÓN]\n{final_state.get('resultado_codigo')}")
+                    print(f"\n{TUTOR_COLOR}[SOLUCIÓN Y EXPLICACIÓN]\n{final_state.get('resultado_codigo')}{RESET_COLOR}")
                 
                 # Guardar en archivo
                 try:
@@ -315,7 +327,7 @@ def main():
                 except Exception as e:
                     print(f"\n[ERROR] No se pudo guardar el archivo: {e}")
             else:
-                print(f"\n[RESPUESTA DEL TUTOR]\n{final_state.get('resultado_codigo')}")
+                print(f"\n{TUTOR_COLOR}[RESPUESTA DEL TUTOR]\n{final_state.get('resultado_codigo')}{RESET_COLOR}")
                 # Guardar en archivo
                 try:
                     with open("tutor_response.md", "w", encoding="utf-8") as f:
