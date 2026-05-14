@@ -66,6 +66,7 @@ def main():
     lenguaje_sesion = "Python"
     modo_desarrollador = False
     usar_senado = True
+    tipo_senado = "bft"
     
     # Bucle infinito del Menú
     while True:
