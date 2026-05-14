@@ -16,6 +16,9 @@ from langchain_core.messages import SystemMessage, HumanMessage
 import asyncio
 from pydantic import BaseModel, Field
 
+DEV_COLOR = "\033[95m"  # Magenta para los prompts del modo desarrollador
+RESET_COLOR = "\033[0m"
+
 class SenateVoteBFT(BaseModel):
     aprueba: bool = Field(description="True si el ejercicio es adecuado, False si no cumple los requisitos.")
     critica: str = Field(description="Breve razonamiento de tu voto. Si rechazas el ejercicio, incluye una propuesta de mejora constructiva para rehacerlo.")
@@ -117,13 +120,13 @@ Contexto de ejercicios similares para inspiración:
     user_prompt += "\nDevuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio."
 
     if state.get("modo_desarrollador", False):
-        print("\n" + "═"*50)
+        print(f"\n{DEV_COLOR}" + "═"*50)
         print("🛠️ [MODO DEV - GENERADOR] SYSTEM PROMPT:")
         print(system_prompt)
         print("-" * 50)
         print("🛠️ [MODO DEV - GENERADOR] USER PROMPT:")
         print(user_prompt)
-        print("═"*50)
+        print("═"*50 + f"{RESET_COLOR}")
 
     response = llm.invoke([
         SystemMessage(content=system_prompt),
@@ -160,13 +163,13 @@ Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes propo
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
     if state.get("modo_desarrollador", False):
-        print("\n" + "═"*50)
-        print("🛠️ [MODO DEV - SENADO] SYSTEM PROMPT:")
+        print(f"\n{DEV_COLOR}" + "═"*50)
+        print("🛠️ [MODO DEV - SENADO BFT] SYSTEM PROMPT:")
         print(system_prompt)
         print("-" * 50)
-        print("🛠️ [MODO DEV - SENADO] USER PROMPT:")
+        print("🛠️ [MODO DEV - SENADO BFT] USER PROMPT:")
         print(user_prompt)
-        print("═"*50)
+        print("═"*50 + f"{RESET_COLOR}")
 
     async def get_vote():
         return await llm.ainvoke([
@@ -192,8 +195,16 @@ Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes propo
     votos_favor = sum(1 for v in votes if getattr(v, "aprueba", False))
     votos_contra = 3 - votos_favor
     
-    criticas_list = [f"Juez {i+1} ({'Aprueba' if getattr(v, 'aprueba', False) else 'Rechaza'}): {getattr(v, 'critica', '')}" for i, v in enumerate(votes)]
+    criticas_list = []
+    for i, v in enumerate(votes):
+        juez_title = f"JUEZ {i+1} ({'Aprueba' if getattr(v, 'aprueba', False) else 'Rechaza'})"
+        critica_text = getattr(v, 'critica', '')
+        criticas_list.append(f"=================\n{juez_title}\n=================\n{critica_text}\n")
+        
     criticas_str = "\n".join(criticas_list)
+    
+    # Imprimir por consola para que el usuario pueda leer las críticas en vivo
+    print(f"\n\033[93m{criticas_str}\033[0m")
     
     if votos_favor >= 2:
         print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. ¡Ejercicio Aprobado!")
@@ -240,13 +251,13 @@ Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejo
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
     if state.get("modo_desarrollador", False):
-        print("\n" + "═"*50)
+        print(f"\n{DEV_COLOR}" + "═"*50)
         print("🛠️ [MODO DEV - SENADO REFLEXIÓN] SYSTEM PROMPT:")
         print(system_prompt)
         print("-" * 50)
         print("🛠️ [MODO DEV - SENADO REFLEXIÓN] USER PROMPT:")
         print(user_prompt)
-        print("═"*50)
+        print("═"*50 + f"{RESET_COLOR}")
 
     async def get_vote():
         return await llm.ainvoke([
@@ -273,8 +284,16 @@ Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejo
     notas = [getattr(v, "nota", 0) for v in votes]
     media_nota = round(sum(notas) / 3)
     
-    criticas_list = [f"Juez {i+1} (Nota {n}/10): {getattr(v, 'critica', 'Sin crítica.')}" for i, (n, v) in enumerate(zip(notas, votes))]
+    criticas_list = []
+    for i, (n, v) in enumerate(zip(notas, votes)):
+        juez_title = f"JUEZ {i+1} (Nota: {n}/10)"
+        critica_text = getattr(v, 'critica', 'Sin crítica.')
+        criticas_list.append(f"=================\n{juez_title}\n=================\n{critica_text}\n")
+        
     criticas_str = "\n".join(criticas_list)
+    
+    # Imprimir por consola para que el usuario pueda leer las críticas en vivo
+    print(f"\n\033[93m{criticas_str}\033[0m")
     
     if media_nota >= 8:
         print(f"🏛️ Votación del Senado: Nota media de {media_nota}/10. ¡Ejercicio Aprobado!")
@@ -316,13 +335,13 @@ Devuelve el resultado en Markdown, de forma clara y unificada.""" + get_cluster_
     user_prompt = f"Este es el enunciado del ejercicio:\n{enunciado}"
     
     if state.get("modo_desarrollador", False):
-        print("\n" + "═"*50)
+        print(f"\n{DEV_COLOR}" + "═"*50)
         print("🛠️ [MODO DEV - TUTOR SOLUCIÓN] SYSTEM PROMPT:")
         print(system_prompt)
         print("-" * 50)
         print("🛠️ [MODO DEV - TUTOR SOLUCIÓN] USER PROMPT:")
         print(user_prompt)
-        print("═"*50)
+        print("═"*50 + f"{RESET_COLOR}")
 
     response = llm.invoke([
         SystemMessage(content=system_prompt),
@@ -351,13 +370,13 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código que utili
 Devuelve la respuesta en Markdown.""" + get_cluster_prompt_suffix()
     
     if state.get("modo_desarrollador", False):
-        print("\n" + "═"*50)
+        print(f"\n{DEV_COLOR}" + "═"*50)
         print("🛠️ [MODO DEV - TUTOR CORRECCIÓN] SYSTEM PROMPT:")
         print(system_prompt)
         print("-" * 50)
         print("🛠️ [MODO DEV - TUTOR CORRECCIÓN] USER PROMPT:")
         print(codigo)
-        print("═"*50)
+        print("═"*50 + f"{RESET_COLOR}")
 
     response = llm.invoke([
         SystemMessage(content=system_prompt),
@@ -386,13 +405,13 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código corregido
 Devuelve el resultado en Markdown.""" + get_cluster_prompt_suffix()
     
     if state.get("modo_desarrollador", False):
-        print("\n" + "═"*50)
+        print(f"\n{DEV_COLOR}" + "═"*50)
         print("🛠️ [MODO DEV - DEBUGGER] SYSTEM PROMPT:")
         print(system_prompt)
         print("-" * 50)
         print("🛠️ [MODO DEV - DEBUGGER] USER PROMPT:")
         print(codigo)
-        print("═"*50)
+        print("═"*50 + f"{RESET_COLOR}")
 
     response = llm.invoke([
         SystemMessage(content=system_prompt),
