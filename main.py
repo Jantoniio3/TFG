@@ -107,6 +107,7 @@ def main():
     conceptos_normalizados = {normalize_text(c): c for c in conceptos_db}
         
     historial_alumno = []
+    conceptos_maximos = []
     lenguaje_sesion = "Python"
     modo_desarrollador = False
     usar_senado = True
@@ -156,6 +157,8 @@ def main():
                     else:
                         print(f"⚠️ El concepto '{c}' no existe en la ontología y será ignorado.")
                         
+                conceptos_maximos = conceptos_base.copy()
+                        
                 print("🧠 Infiriendo dependencias previas desde el Grafo de Conocimiento In-Memory...")
                 G_req = construir_grafo(["REQUIERE_PREVIO"])
                 prerequisitos = set()
@@ -178,6 +181,7 @@ def main():
                 print("Usando perfil demo predefinido...")
                 mock = ["Algoritmo", "Programa", "Variable", "Función", "Operador"]
                 historial_alumno = [c for c in mock if c in conceptos_db] if conceptos_db else mock
+                conceptos_maximos = ["Función", "Operador"]
             
             print(f"✅ Perfil configurado y guardado. Conoces {len(historial_alumno)} conceptos.")
             
@@ -220,10 +224,9 @@ def main():
                     else:
                         print(f"⚠️ El concepto '{c}' no existe en la ontología y será ignorado.")
             else:
-                # Si no pone nada, agarramos 1 o 2 conceptos de su historial
-                import random
-                buscados = random.sample(historial_alumno, min(2, len(historial_alumno)))
-                print(f"🎲 Seleccionados aleatoriamente: {', '.join(buscados)}")
+                # Si no pone nada, agarramos los conceptos máximos que introdujo en su perfil
+                buscados = conceptos_maximos if conceptos_maximos else historial_alumno[:2]
+                print(f"🎯 Seleccionados automáticamente (tu nivel máximo): {', '.join(buscados)}")
             
             dificultad = ask_user("Dificultad (Fácil/Media/Difícil) [Por defecto: Media]: ").strip()
             dificultad = dificultad if dificultad else "Media"
