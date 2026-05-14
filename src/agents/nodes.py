@@ -248,32 +248,48 @@ Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejo
         print(user_prompt)
         print("═"*50)
 
-    try:
-        vote = llm.invoke([
+    async def get_vote():
+        return await llm.ainvoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
         ])
-    except Exception as e:
-        print(f"[!] Error al invocar al juez: {e}. Aprobando por defecto para no bloquear.")
-        vote = SenateVoteReflection(nota=8, critica=f"Aprobado por fallback técnico: {e}")
 
-    nota = getattr(vote, "nota", 0)
-    critica = getattr(vote, "critica", "Sin crítica.")
+    async def run_senate():
+        # Ejecución en PARALELO para máxima velocidad con 3 jueces
+        return await asyncio.gather(*(get_vote() for _ in range(3)))
+
+    try:
+        try:
+            loop = asyncio.get_running_loop()
+            # Si hay loop, creamos tarea para evitar RuntimeError
+            votes = asyncio.run_coroutine_threadsafe(run_senate(), loop).result()
+        except RuntimeError:
+            votes = asyncio.run(run_senate())
+    except Exception as e:
+        print(f"[!] Aviso: fallback a votación síncrona por error asíncrono ({e})")
+        votes = [llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]) for _ in range(3)]
+
+    # Calcular media y combinar críticas
+    notas = [getattr(v, "nota", 0) for v in votes]
+    media_nota = round(sum(notas) / 3)
     
-    if nota >= 8:
-        print(f"🏛️ El Juez ha puntuado el ejercicio con un {nota}/10. ¡Aprobado!")
+    criticas_list = [f"Juez {i+1} (Nota {n}/10): {getattr(v, 'critica', 'Sin crítica.')}" for i, (n, v) in enumerate(zip(notas, votes))]
+    criticas_str = "\n".join(criticas_list)
+    
+    if media_nota >= 8:
+        print(f"🏛️ Votación del Senado: Nota media de {media_nota}/10. ¡Ejercicio Aprobado!")
         return {
             "enunciado_generado": ejercicio,
             "criticas_senado": "",
-            "nota_senado": nota
+            "nota_senado": media_nota
         }
     else:
-        print(f"🏛️ El Juez ha puntuado el ejercicio con un {nota}/10. Ejercicio Rechazado.")
+        print(f"🏛️ Votación del Senado: Nota media de {media_nota}/10. Ejercicio Rechazado.")
         reintentos_actuales = state.get("reintentos", 0)
         return {
             "reintentos": reintentos_actuales + 1,
-            "criticas_senado": f"Crítica del Juez (Nota {nota}/10): {critica}",
-            "nota_senado": nota
+            "criticas_senado": criticas_str,
+            "nota_senado": media_nota
         }
 
 def generate_solution_node(state):
