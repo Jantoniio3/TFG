@@ -8,9 +8,41 @@ y lanza la ejecución en modo streaming del DAG de LangGraph.
 import os
 import sys
 import unicodedata
+import threading
+import itertools
+import time
 
 # Agregar src a los paths por si se invoca desde la raíz
 sys.path.append(os.path.dirname(__file__))
+
+class Spinner:
+    """Muestra un reloj de arena dinámico (spinner) en la consola usando un hilo en segundo plano."""
+    def __init__(self, message="La IA está pensando..."):
+        self.spinner = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'])
+        self.message = message
+        self.busy = False
+        self.thread = None
+
+    def spinner_task(self):
+        while self.busy:
+            sys.stdout.write(f"\r{next(self.spinner)} {self.message}")
+            sys.stdout.flush()
+            time.sleep(0.1)
+            
+    def start(self):
+        self.busy = True
+        self.thread = threading.Thread(target=self.spinner_task)
+        self.thread.daemon = True
+        self.thread.start()
+
+    def stop(self):
+        if not self.busy:
+            return
+        self.busy = False
+        if self.thread:
+            self.thread.join()
+        sys.stdout.write('\r\033[K') # Limpiar la línea
+        sys.stdout.flush()
 
 from src.agents.graph import build_graph
 import networkx as nx
@@ -232,8 +264,14 @@ def main():
             print("\n⚙️ Lanzando grafo: Buscando Bugs con LLM Determinista...")
             
         try:
+            spinner = Spinner("La IA está analizando los nodos...")
+            spinner.start()
+            
             # Usamos stream en vez de invoke para poder mostrar el progreso paso a paso
             for s in app.stream(initial_state, config={"recursion_limit": 20}):
+                # Detener el spinner un momento para que los prints de los nodos no se solapen
+                spinner.stop()
+                
                 for node_name, node_state in s.items():
                     if node_name == "retriever":
                         print("   [25%] 🔍 RAG: Evaluando tu nivel y recuperando temario...")
@@ -250,7 +288,11 @@ def main():
                     
                     # Guardamos el estado acumulativo
                     initial_state.update(node_state)
+                
+                # Reanudar el spinner hasta que se emita el siguiente estado
+                spinner.start()
             
+            spinner.stop()
             final_state = initial_state
             
             print("\n" + "*" * 50)
