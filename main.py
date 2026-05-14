@@ -147,25 +147,6 @@ def main():
             modo_desarrollador = dev_mode_input == 's'
             if modo_desarrollador:
                 print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
-                
-            # Pedir Senado
-            print("\n¿Qué arquitectura de validación deseas usar?")
-            print("1. Ninguna (Modo Turbo - Más rápido)")
-            print("2. Senado BFT (3 Jueces paralelos votando - Más robusto)")
-            print("3. Reflexión Iterativa (1 Juez puntuando 0-10 - Balanceado)")
-            senado_opcion = input("Elige una opción [3]: ").strip()
-            
-            usar_senado = True
-            if senado_opcion == "1":
-                tipo_senado = "ninguno"
-                usar_senado = False
-                print("⚡ SENADO DESACTIVADO. Generación rápida (modo turbo).")
-            elif senado_opcion == "2":
-                tipo_senado = "bft"
-                print("🏛️ SENADO BFT ACTIVADO.")
-            else:
-                tipo_senado = "reflexion"
-                print("🧠 SENADO REFLEXIVO ACTIVADO.")
             
         initial_state = {
             "alumno_historial": historial_alumno,
@@ -204,6 +185,26 @@ def main():
             dificultad = dificultad if dificultad else "Media"
             
             con_solucion = input("¿Generar también la solución explicada? (s/n): ").strip().lower() == "s"
+            
+            # Pedir Senado SOLO para generar ejercicio
+            print("\n¿Qué arquitectura de validación deseas usar para evaluar el borrador?")
+            print("1. Ninguna (Modo Turbo - Más rápido)")
+            print("2. Senado BFT (3 Jueces paralelos votando - Más robusto)")
+            print("3. Reflexión Iterativa (1 Juez puntuando 0-10 - Balanceado)")
+            senado_opcion = input("Elige una opción [3]: ").strip()
+            
+            if senado_opcion == "1":
+                initial_state["tipo_senado"] = "ninguno"
+                initial_state["usar_senado"] = False
+                print("⚡ SENADO DESACTIVADO. Generación rápida (modo turbo).")
+            elif senado_opcion == "2":
+                initial_state["tipo_senado"] = "bft"
+                initial_state["usar_senado"] = True
+                print("🏛️ SENADO BFT ACTIVADO.")
+            else:
+                initial_state["tipo_senado"] = "reflexion"
+                initial_state["usar_senado"] = True
+                print("🧠 SENADO REFLEXIVO ACTIVADO.")
             
             initial_state["tarea"] = "generar"
             initial_state["conceptos_buscados"] = buscados
