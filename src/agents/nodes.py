@@ -26,6 +26,7 @@ class SenateVoteBFT(BaseModel):
 class SenateVoteReflection(BaseModel):
     nota: int = Field(description="Nota del 0 al 10 evaluando la calidad y adecuación del ejercicio.")
     critica: str = Field(description="Si la nota es menor a 8, incluye una propuesta de mejora constructiva para rehacer el ejercicio. Si es 8 o superior, un breve comentario validándolo.")
+    ejercicio_mejorado: str = Field(description="El enunciado del ejercicio reescrito y mejorado a la perfección basándote en tu propia crítica, listo para ser entregado al alumno.")
 
 load_dotenv()
 
@@ -246,7 +247,8 @@ Contexto de ejercicios base para guiar el estilo:
 {contexto}
 
 Evalúa el ejercicio asignándole una nota entera del 0 al 10.
-Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejora constructiva detallada para que el profesor sepa cómo rehacerlo y subir la nota.""" + get_cluster_prompt_suffix()
+Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejora constructiva detallada.
+IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debes devolver siempre en 'ejercicio_mejorado' tu propia versión reescrita y perfeccionada del ejercicio.""" + get_cluster_prompt_suffix()
 
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
@@ -296,9 +298,16 @@ Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejo
     print(f"\n\033[93m{criticas_str}\033[0m")
     
     if media_nota >= 8:
+        # Encontrar el juez que dio la nota más alta para quedarnos con su versión mejorada
+        mejor_juez = max(votes, key=lambda v: getattr(v, "nota", 0))
+        ejercicio_final = getattr(mejor_juez, "ejercicio_mejorado", ejercicio)
+        # Fallback por si el LLM dejó el campo vacío
+        if not ejercicio_final.strip():
+            ejercicio_final = ejercicio
+            
         print(f"🏛️ Votación del Senado: Nota media de {media_nota}/10. ¡Ejercicio Aprobado!")
         return {
-            "enunciado_generado": ejercicio,
+            "enunciado_generado": ejercicio_final,
             "criticas_senado": "",
             "nota_senado": media_nota
         }
