@@ -213,7 +213,7 @@ def main():
         if opcion == "1":
             print(f"\n📋 Tu Perfil ({len(historial_alumno)} conceptos).")
             # Dejamos la opción de presionar "Enter" si quieren repasar todo su conocimiento o usar por defecto
-            entrada = ask_user("¿Qué conceptos te gustaría practicar? (Ej: Variable) [Rellena u oprime Enter para aleatorio]: ")
+            entrada = ask_user("¿Qué conceptos te gustaría practicar? (Ej: Variable) [Rellena u oprime Enter para usar tu nivel máximo]: ")
             if entrada.strip():
                 buscados_raw = [c.strip() for c in entrada.split(",") if c.strip()]
                 buscados = []
@@ -237,7 +237,7 @@ def main():
             print("\n¿Qué arquitectura de validación deseas usar para evaluar el borrador?")
             print("1. Ninguna (Modo Turbo - Más rápido)")
             print("2. Senado BFT (3 Jueces paralelos votando - Más robusto)")
-            print("3. Reflexión Iterativa (1 Juez puntuando 0-10 - Balanceado)")
+            print("3. Senado Reflexivo (3 Jueces puntuando 0-10 y reescribiendo el ejercicio - Calidad Máxima)")
             senado_opcion = ask_user("Elige una opción [3]: ").strip()
             
             if senado_opcion == "1":
@@ -279,7 +279,7 @@ def main():
             print("\n⚙️ Lanzando grafo: Buscando Bugs con LLM Determinista...")
             
         try:
-            spinner = Spinner("La IA está analizando los nodos...")
+            spinner = Spinner("⏳ La IA está razonando...")
             spinner.start()
             
             # Usamos stream en vez de invoke para poder mostrar el progreso paso a paso

@@ -163,16 +163,16 @@ Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes propo
 
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
-    if state.get("modo_desarrollador", False):
-        print(f"\n{DEV_COLOR}" + "═"*50)
-        print("🛠️ [MODO DEV - SENADO BFT] SYSTEM PROMPT:")
-        print(system_prompt)
-        print("-" * 50)
-        print("🛠️ [MODO DEV - SENADO BFT] USER PROMPT:")
-        print(user_prompt)
-        print("═"*50 + f"{RESET_COLOR}")
-
-    async def get_vote():
+    async def get_vote(juez_id):
+        if state.get("modo_desarrollador", False):
+            print(f"\n{DEV_COLOR}" + "═"*50)
+            print(f"🛠️ [MODO DEV - SENADO BFT - JUEZ {juez_id}] SYSTEM PROMPT:")
+            print(system_prompt)
+            print("-" * 50)
+            print(f"🛠️ [MODO DEV - SENADO BFT - JUEZ {juez_id}] USER PROMPT:")
+            print(user_prompt)
+            print("═"*50 + f"{RESET_COLOR}")
+            
         return await llm.ainvoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
@@ -180,7 +180,7 @@ Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes propo
 
     async def run_senate():
         # Ejecución en PARALELO para máxima velocidad (Seguro con modelo 32B en A40)
-        return await asyncio.gather(*(get_vote() for _ in range(3)))
+        return await asyncio.gather(*(get_vote(i+1) for i in range(3)))
 
     try:
         try:
@@ -252,16 +252,16 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
 
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
-    if state.get("modo_desarrollador", False):
-        print(f"\n{DEV_COLOR}" + "═"*50)
-        print("🛠️ [MODO DEV - SENADO REFLEXIÓN] SYSTEM PROMPT:")
-        print(system_prompt)
-        print("-" * 50)
-        print("🛠️ [MODO DEV - SENADO REFLEXIÓN] USER PROMPT:")
-        print(user_prompt)
-        print("═"*50 + f"{RESET_COLOR}")
+    async def get_vote(juez_id):
+        if state.get("modo_desarrollador", False):
+            print(f"\n{DEV_COLOR}" + "═"*50)
+            print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] SYSTEM PROMPT:")
+            print(system_prompt)
+            print("-" * 50)
+            print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] USER PROMPT:")
+            print(user_prompt)
+            print("═"*50 + f"{RESET_COLOR}")
 
-    async def get_vote():
         return await llm.ainvoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
@@ -269,7 +269,7 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
 
     async def run_senate():
         # Ejecución en PARALELO para máxima velocidad con 3 jueces
-        return await asyncio.gather(*(get_vote() for _ in range(3)))
+        return await asyncio.gather(*(get_vote(i+1) for i in range(3)))
 
     try:
         try:
