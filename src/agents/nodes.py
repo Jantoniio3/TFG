@@ -17,6 +17,9 @@ import asyncio
 from pydantic import BaseModel, Field
 
 DEV_COLOR = "\033[95m"  # Magenta para los prompts del modo desarrollador
+DEV_SYS_COLOR = "\033[94m"  # Azul para System Prompts
+DEV_USER_COLOR = "\033[96m" # Cyan para User Prompts
+DEV_RES_COLOR = "\033[92m"  # Verde para la Respuesta cruda
 RESET_COLOR = "\033[0m"
 
 class SenateVoteBFT(BaseModel):
@@ -167,18 +170,23 @@ Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes propo
 
     async def get_vote(juez_id):
         if state.get("modo_desarrollador", False):
-            print(f"\n{DEV_COLOR}" + "═"*50)
+            print(f"\n{DEV_SYS_COLOR}" + "═"*50)
             print(f"🛠️ [MODO DEV - SENADO BFT - JUEZ {juez_id}] SYSTEM PROMPT:")
             print(system_prompt)
-            print("-" * 50)
+            print(f"{DEV_USER_COLOR}" + "-" * 50)
             print(f"🛠️ [MODO DEV - SENADO BFT - JUEZ {juez_id}] USER PROMPT:")
             print(user_prompt)
             print("═"*50 + f"{RESET_COLOR}")
             
-        return await llm.ainvoke([
+        vote = await llm.ainvoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
         ])
+        
+        if state.get("modo_desarrollador", False):
+            print(f"\n{DEV_RES_COLOR}🤖 [MODO DEV - SENADO BFT - JUEZ {juez_id}] RESPUESTA:\n{vote.model_dump_json(indent=2)}\n" + "═"*50 + f"{RESET_COLOR}")
+            
+        return vote
 
     async def run_senate():
         # Ejecución en PARALELO para máxima velocidad (Seguro con modelo 32B en A40)
@@ -261,10 +269,10 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
         user_prompt = f"Ejercicio a evaluar:\n{ejercicio_actual}"
         
         if state.get("modo_desarrollador", False):
-            print(f"\n{DEV_COLOR}" + "═"*50)
+            print(f"\n{DEV_SYS_COLOR}" + "═"*50)
             print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] SYSTEM PROMPT:")
             print(system_prompt)
-            print("-" * 50)
+            print(f"{DEV_USER_COLOR}" + "-" * 50)
             print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] USER PROMPT:")
             print(user_prompt)
             print("═"*50 + f"{RESET_COLOR}")
@@ -274,6 +282,10 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
                 SystemMessage(content=system_prompt),
                 HumanMessage(content=user_prompt)
             ])
+            
+            if state.get("modo_desarrollador", False):
+                print(f"\n{DEV_RES_COLOR}🤖 [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] RESPUESTA:\n{vote.model_dump_json(indent=2)}\n" + "═"*50 + f"{RESET_COLOR}")
+                
             votes.append(vote)
             
             # Actualizar el ejercicio actual con el mejorado por este juez (si no está vacío)
