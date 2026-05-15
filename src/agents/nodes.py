@@ -228,7 +228,10 @@ def senate_reflection_node(state):
     Si la nota es >= 8, se aprueba. Si es < 8, se devuelve el estado
     al Generador con la crítica para que se regenere.
     """
-    print("\n⚖️ El Senado Reflexivo ha iniciado la cadena de mejora (3 Jueces Secuenciales)...")
+    con_solucion = state.get("con_solucion", False)
+    num_jueces = 1 if con_solucion else 3
+    msg_jueces = "(1 Juez Rápido)" if con_solucion else "(3 Jueces Secuenciales)"
+    print(f"\n⚖️ El Senado Reflexivo ha iniciado la cadena de mejora {msg_jueces}...")
     llm = get_llm().with_structured_output(SenateVoteReflection)
     
     ejercicio = state.get("ejercicio_generado", "")
@@ -253,8 +256,8 @@ REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría 
     votes = []
     ejercicio_actual = ejercicio
     
-    for i in range(3):
-        juez_id = i + 1
+    for i in range(num_jueces):
+        juez_id = 3 if num_jueces == 1 else i + 1
         user_prompt = f"Ejercicio a evaluar:\n{ejercicio_actual}"
         
         if state.get("modo_desarrollador", False):
