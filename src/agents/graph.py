@@ -46,16 +46,14 @@ def route_post_generator(state: TutorState) -> str:
 def route_senate(state: TutorState) -> str:
     """Decide el siguiente paso tras la votación del Senado.
     
-    El Senado ya evalúa y mejora el ejercicio internamente de forma iterativa.
-    Por lo tanto, una vez que el Senado finaliza, el ejercicio siempre se 
-    considera apto para entregarlo al estudiante, evitando bucles infinitos.
-    
-    Args:
-        state: El estado actual del tutor.
-        
-    Returns:
-        str: El siguiente nodo en el flujo ("generate_solution_node", "end").
+    El Senado Reflexivo ya genera la solución internamente si se le pide, 
+    por lo que puede ir directamente al final. El BFT o 'ninguno' pueden necesitar la solución separada.
     """
+    tipo_senado = state.get("tipo_senado", "reflexion")
+    
+    if tipo_senado == "reflexion":
+        return "end"
+        
     if state.get("con_solucion", False):
         return "generate_solution_node"
     return "end"

@@ -30,6 +30,7 @@ class SenateVoteReflection(BaseModel):
     nota: int = Field(description="Nota del 0 al 10 evaluando la calidad y adecuación del ejercicio.")
     critica: str = Field(description="Breve justificación de tu nota. PROHIBIDO dar consejos de mejora aquí. Si algo se puede mejorar, hazlo directamente en 'ejercicio_mejorado'.")
     ejercicio_mejorado: str = Field(description="OBLIGATORIO: El enunciado del ejercicio completamente reescrito y perfeccionado, aplicando todas tus mejoras directamente. Listo para ser entregado al alumno sin más modificaciones.")
+    solucion_explicada: str = Field(default="", description="[SOLO SI SE TE PIDE] La solución detallada en código y explicada paso a paso del ejercicio final.")
 
 load_dotenv()
 
@@ -260,6 +261,11 @@ REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría 
         juez_id = 3 if num_jueces == 1 else i + 1
         user_prompt = f"Ejercicio a evaluar:\n{ejercicio_actual}"
         
+        is_last_judge = (i == num_jueces - 1)
+        if is_last_judge and con_solucion:
+            vistos = ', '.join(state.get('alumno_historial', []))
+            user_prompt += f"\n\nADEMÁS: El usuario ha solicitado la SOLUCIÓN EXPLICADA. Utiliza el campo 'solucion_explicada' para escribir el código resuelto en Python y la explicación paso a paso de este ejercicio final.\nREGLA ESTRICTA DE CONFINAMIENTO: El alumno SOLO conoce estos conceptos: {vistos}. Tienes prohibido usar conceptos ajenos a esa lista."
+        
         if state.get("modo_desarrollador", False):
             print(f"\n{DEV_SYS_COLOR}=================\nJUEZ {juez_id}\n=================")
             print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] SYSTEM PROMPT:")
@@ -307,10 +313,12 @@ REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría 
     criticas_str = "\n".join(criticas_list)
     
     print(f"🏛️ Votación del Senado: El Juez 3 certifica la versión final con un {nota_final}/10. Proceso de mejora iterativa completado.")
+    solucion = getattr(votes[-1], "solucion_explicada", "") if votes else ""
     return {
         "enunciado_generado": ejercicio_actual,
         "criticas_senado": "",
-        "nota_senado": nota_final
+        "nota_senado": nota_final,
+        "resultado_codigo": solucion if con_solucion else ""
     }
 
 def generate_solution_node(state):
