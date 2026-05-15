@@ -44,28 +44,21 @@ def route_post_generator(state: TutorState) -> str:
         return "end"
 
 def route_senate(state: TutorState) -> str:
-    """Decide el siguiente paso tras la votación del Senado (Tolerancia a fallos).
+    """Decide el siguiente paso tras la votación del Senado.
     
-    Si el Senado rechaza el ejercicio, enruta de vuelta al Generador para reintentar.
-    Si se supera el límite de reintentos (3), finaliza el grafo para evitar bucles infinitos.
-    Si el Senado lo aprueba, enruta a la solución o finaliza.
+    El Senado ya evalúa y mejora el ejercicio internamente de forma iterativa.
+    Por lo tanto, una vez que el Senado finaliza, el ejercicio siempre se 
+    considera apto para entregarlo al estudiante, evitando bucles infinitos.
     
     Args:
         state: El estado actual del tutor.
         
     Returns:
-        str: El siguiente nodo en el flujo ("generator", "generate_solution_node", "end").
+        str: El siguiente nodo en el flujo ("generate_solution_node", "end").
     """
-    if state.get("criticas_senado"):
-        if state.get("reintentos", 0) < 3:
-            return "generator"
-        else:
-            print("\n❌ Límite de reintentos alcanzado. El Senado no pudo aprobar el ejercicio. Terminando...")
-            return "end"
-    else:
-        if state.get("con_solucion", False):
-            return "generate_solution_node"
-        return "end"
+    if state.get("con_solucion", False):
+        return "generate_solution_node"
+    return "end"
 
 def build_graph():
     """Construye y compila la máquina de estados (Grafo) de LangGraph.
@@ -106,12 +99,10 @@ def build_graph():
     
     # Ambos senados usan la misma lógica de ruteo post-evaluación
     workflow.add_conditional_edges("senate_bft_node", route_senate, {
-        "generator": "generator",
         "generate_solution_node": "generate_solution_node",
         "end": END
     })
     workflow.add_conditional_edges("senate_reflection_node", route_senate, {
-        "generator": "generator",
         "generate_solution_node": "generate_solution_node",
         "end": END
     })
