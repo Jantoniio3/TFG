@@ -291,7 +291,7 @@ def main():
                     if node_name == "retriever":
                         print("   [25%] 🔍 RAG: Evaluando tu nivel y recuperando temario...")
                     elif node_name == "generator":
-                        print("   [50%] ✍️ LLM: Redactando borrador base del ejercicio...")
+                        pass
                     elif node_name == "senate_evaluation_node":
                         pass # El senado ya imprime sus votaciones internamente en nodes.py
                     elif node_name == "generate_solution_node":

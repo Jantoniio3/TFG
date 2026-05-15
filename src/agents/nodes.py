@@ -28,8 +28,8 @@ class SenateVoteBFT(BaseModel):
 
 class SenateVoteReflection(BaseModel):
     nota: int = Field(description="Nota del 0 al 10 evaluando la calidad y adecuación del ejercicio.")
-    critica: str = Field(description="Si la nota es menor a 8, incluye una propuesta de mejora constructiva para rehacer el ejercicio. Si es 8 o superior, un breve comentario validándolo.")
-    ejercicio_mejorado: str = Field(description="El enunciado del ejercicio reescrito y mejorado a la perfección basándote en tu propia crítica, listo para ser entregado al alumno.")
+    critica: str = Field(description="Breve justificación de tu nota. PROHIBIDO dar consejos de mejora aquí. Si algo se puede mejorar, hazlo directamente en 'ejercicio_mejorado'.")
+    ejercicio_mejorado: str = Field(description="OBLIGATORIO: El enunciado del ejercicio completamente reescrito y perfeccionado, aplicando todas tus mejoras directamente. Listo para ser entregado al alumno sin más modificaciones.")
 
 load_dotenv()
 
@@ -170,7 +170,7 @@ Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes propo
 
     async def get_vote(juez_id):
         if state.get("modo_desarrollador", False):
-            print(f"\n{DEV_SYS_COLOR}" + "═"*50)
+            print(f"\n{DEV_SYS_COLOR}=================\nJUEZ {juez_id}\n=================")
             print(f"🛠️ [MODO DEV - SENADO BFT - JUEZ {juez_id}] SYSTEM PROMPT:")
             print(system_prompt)
             print(f"{DEV_USER_COLOR}" + "-" * 50)
@@ -240,7 +240,7 @@ def senate_reflection_node(state):
     Si la nota es >= 8, se aprueba. Si es < 8, se devuelve el estado
     al Generador con la crítica para que se regenere.
     """
-    print("\n⚖️ El Juez está evaluando el ejercicio (Reflexión Secuencial)...")
+    print("\n⚖️ El Senado Reflexivo ha iniciado la cadena de mejora (3 Jueces Secuenciales)...")
     llm = get_llm().with_structured_output(SenateVoteReflection)
     
     ejercicio = state.get("ejercicio_generado", "")
@@ -258,8 +258,8 @@ Contexto de ejercicios base para guiar el estilo:
 {contexto}
 
 Evalúa el ejercicio asignándole una nota entera del 0 al 10.
-Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejora constructiva detallada.
-IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debes devolver siempre en 'ejercicio_mejorado' tu propia versión reescrita y perfeccionada del ejercicio.""" + get_cluster_prompt_suffix()
+En tu crítica, razona tu nota de forma MUY BREVE.
+REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.""" + get_cluster_prompt_suffix()
 
     votes = []
     ejercicio_actual = ejercicio
@@ -269,7 +269,7 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
         user_prompt = f"Ejercicio a evaluar:\n{ejercicio_actual}"
         
         if state.get("modo_desarrollador", False):
-            print(f"\n{DEV_SYS_COLOR}" + "═"*50)
+            print(f"\n{DEV_SYS_COLOR}=================\nJUEZ {juez_id}\n=================")
             print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] SYSTEM PROMPT:")
             print(system_prompt)
             print(f"{DEV_USER_COLOR}" + "-" * 50)
@@ -306,6 +306,10 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
     for i, v in enumerate(votes):
         juez_title = f"JUEZ {i+1} (Nota: {getattr(v, 'nota', 0)}/10)"
         critica_text = getattr(v, 'critica', 'Sin crítica.')
+        ejercicio_mejorado = getattr(v, 'ejercicio_mejorado', '').strip()
+        if ejercicio_mejorado:
+            critica_text += f"\n\n[EJERCICIO MEJORADO PROPUESTO]:\n{ejercicio_mejorado}"
+            
         criticas_list.append(f"=================\n{juez_title}\n=================\n{critica_text}\n")
         
     criticas_str = "\n".join(criticas_list)
