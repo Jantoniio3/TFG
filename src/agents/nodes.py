@@ -152,7 +152,7 @@ def senate_bft_node(state):
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
-    contexto = "\n".join([f"Enunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
+    contexto = "\n".join([f"Dificultad: {e['dificultad']}\nEnunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
     
     system_prompt = f"""Eres un juez estricto en el Senado Académico.
 Debes evaluar el siguiente ejercicio generado por otro profesor.
@@ -233,7 +233,7 @@ def senate_reflection_node(state):
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
-    contexto = "\n".join([f"Enunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
+    contexto = "\n".join([f"Dificultad: {e['dificultad']}\nEnunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
     
     system_prompt = f"""Eres un juez estricto en el Senado Académico.
 Debes evaluar el siguiente ejercicio generado por otro profesor.
