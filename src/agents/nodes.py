@@ -247,7 +247,8 @@ Contexto de ejercicios base para guiar el estilo:
 
 Evalúa el ejercicio asignándole una nota entera del 0 al 10.
 En tu crítica, razona tu nota de forma MUY BREVE.
-REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.""" + get_cluster_prompt_suffix()
+REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.
+¡ATENCIÓN CRÍTICA!: EL CAMPO 'ejercicio_mejorado' NUNCA PUEDE ESTAR VACÍO (""). TIENES QUE ESCRIBIR EL ENUNCIADO COMPLETO REESCRITO SIEMPRE, INCLUSO SI LE DAS UN 10. SI DEJAS EL CAMPO VACÍO, EL SISTEMA CRASHEARÁ.""" + get_cluster_prompt_suffix()
 
     votes = []
     ejercicio_actual = ejercicio
