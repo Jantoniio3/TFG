@@ -111,6 +111,7 @@ def generate_exercise(state):
 1. El alumno solo conoce estos conceptos: {vistos}. NO incluyas ni uses conceptos que no estén en esta lista.
 2. El ejercicio debe enfocarse en poner en práctica principalmente estos conceptos: {buscados}.
 3. Dificultad deseada: {state.get('dificultad', 'Media')}.
+4. ORIGINALIDAD: El ejercicio debe ser completamente nuevo. NO debes copiar la temática ni la narrativa de los ejercicios de ejemplo.
 
 Contexto de ejercicios similares para inspiración:
 {contexto}
@@ -155,6 +156,7 @@ Debes evaluar el siguiente ejercicio generado por otro profesor.
 Criterios estrictos:
 1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno ({dificultad})?
 2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+3. ORIGINALIDAD: ¿Es el ejercicio original? NO debe ser una copia idéntica o tener la misma narrativa que los ejemplos del contexto.
 
 Contexto de ejercicios base para guiar el estilo:
 {contexto}
@@ -242,6 +244,7 @@ Debes evaluar el siguiente ejercicio generado por otro profesor.
 Criterios estrictos:
 1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno ({dificultad})?
 2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+3. ORIGINALIDAD: ¿Es el ejercicio original? NO debe ser una copia idéntica o tener la misma narrativa que los ejemplos del contexto.
 
 Contexto de ejercicios base para guiar el estilo:
 {contexto}
@@ -250,9 +253,13 @@ Evalúa el ejercicio asignándole una nota entera del 0 al 10.
 Si la nota es menor a 8, debes proporcionar en tu crítica una propuesta de mejora constructiva detallada.
 IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debes devolver siempre en 'ejercicio_mejorado' tu propia versión reescrita y perfeccionada del ejercicio.""" + get_cluster_prompt_suffix()
 
-    user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
-
-    async def get_vote(juez_id):
+    votes = []
+    ejercicio_actual = ejercicio
+    
+    for i in range(3):
+        juez_id = i + 1
+        user_prompt = f"Ejercicio a evaluar:\n{ejercicio_actual}"
+        
         if state.get("modo_desarrollador", False):
             print(f"\n{DEV_COLOR}" + "═"*50)
             print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] SYSTEM PROMPT:")
@@ -262,33 +269,30 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
             print(user_prompt)
             print("═"*50 + f"{RESET_COLOR}")
 
-        return await llm.ainvoke([
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=user_prompt)
-        ])
-
-    async def run_senate():
-        # Ejecución en PARALELO para máxima velocidad con 3 jueces
-        return await asyncio.gather(*(get_vote(i+1) for i in range(3)))
-
-    try:
         try:
-            loop = asyncio.get_running_loop()
-            # Si hay loop, creamos tarea para evitar RuntimeError
-            votes = asyncio.run_coroutine_threadsafe(run_senate(), loop).result()
-        except RuntimeError:
-            votes = asyncio.run(run_senate())
-    except Exception as e:
-        print(f"[!] Aviso: fallback a votación síncrona por error asíncrono ({e})")
-        votes = [llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]) for _ in range(3)]
+            vote = llm.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ])
+            votes.append(vote)
+            
+            # Actualizar el ejercicio actual con el mejorado por este juez (si no está vacío)
+            mejorado = getattr(vote, "ejercicio_mejorado", "").strip()
+            if mejorado:
+                ejercicio_actual = mejorado
+                
+        except Exception as e:
+            print(f"[!] Aviso: Error al invocar al juez {juez_id} ({e})")
+            # En caso de error, emulamos un voto genérico para no romper la cadena
+            vote_error = SenateVoteReflection(nota=8, critica=f"Error técnico: {e}", ejercicio_mejorado=ejercicio_actual)
+            votes.append(vote_error)
 
-    # Calcular media y combinar críticas
-    notas = [getattr(v, "nota", 0) for v in votes]
-    media_nota = round(sum(notas) / 3)
+    # La nota final será la que ponga el último juez (Juez 3)
+    nota_final = getattr(votes[-1], "nota", 0)
     
     criticas_list = []
-    for i, (n, v) in enumerate(zip(notas, votes)):
-        juez_title = f"JUEZ {i+1} (Nota: {n}/10)"
+    for i, v in enumerate(votes):
+        juez_title = f"JUEZ {i+1} (Nota: {getattr(v, 'nota', 0)}/10)"
         critica_text = getattr(v, 'critica', 'Sin crítica.')
         criticas_list.append(f"=================\n{juez_title}\n=================\n{critica_text}\n")
         
@@ -297,27 +301,20 @@ IMPORTANTE: Independientemente de la nota que le des (incluso si es un 10), debe
     # Imprimir por consola para que el usuario pueda leer las críticas en vivo
     print(f"\n\033[93m{criticas_str}\033[0m")
     
-    if media_nota >= 8:
-        # Encontrar el juez que dio la nota más alta para quedarnos con su versión mejorada
-        mejor_juez = max(votes, key=lambda v: getattr(v, "nota", 0))
-        ejercicio_final = getattr(mejor_juez, "ejercicio_mejorado", ejercicio)
-        # Fallback por si el LLM dejó el campo vacío
-        if not ejercicio_final.strip():
-            ejercicio_final = ejercicio
-            
-        print(f"🏛️ Votación del Senado: Nota media de {media_nota}/10. ¡Ejercicio Aprobado!")
+    if nota_final >= 8:
+        print(f"🏛️ Votación del Senado: El Juez 3 certifica la versión final con un {nota_final}/10. ¡Ejercicio Aprobado!")
         return {
-            "enunciado_generado": ejercicio_final,
+            "enunciado_generado": ejercicio_actual,
             "criticas_senado": "",
-            "nota_senado": media_nota
+            "nota_senado": nota_final
         }
     else:
-        print(f"🏛️ Votación del Senado: Nota media de {media_nota}/10. Ejercicio Rechazado.")
+        print(f"🏛️ Votación del Senado: El Juez 3 suspende la versión final con un {nota_final}/10. Ejercicio Rechazado.")
         reintentos_actuales = state.get("reintentos", 0)
         return {
             "reintentos": reintentos_actuales + 1,
             "criticas_senado": criticas_str,
-            "nota_senado": media_nota
+            "nota_senado": nota_final
         }
 
 def generate_solution_node(state):
