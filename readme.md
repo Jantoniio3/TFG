@@ -72,7 +72,7 @@ python src/evaluation/model_evaluator.py
 
 ## Configuración de VRAM (A40 GPU)
 En el archivo `.env.cluster` se configura la gestión agresiva de VRAM:
-- **`OLLAMA_MODEL`**: `qwen2.5-coder:32b` (Modelo experto en código que pesa ~19GB).
-- **`NUM_CTX`**: `65536`. Dado que la A40 cuenta con 48GB, se amplía el contexto de ejecución a 64K tokens para permitir la votación asíncrona concurrente de 3 jueces en el Senado sin incurrir en VRAM Thrashing.
+- **`OLLAMA_MODEL`**: `llama3.1:70b` (Modelo de 70 billones de parámetros).
+- **`NUM_CTX`**: `16384`. Dado que la A40 cuenta con 48GB y el modelo de 70B en 4-bits consume ~39GB, reducimos el contexto a 16K tokens para asegurar que la votación asíncrona concurrente de 3 jueces en el Senado quepa en la memoria restante sin causar VRAM Thrashing o errores OOM (Out Of Memory).
 
 > **Nota:** Todos los módulos internos aplican una "Regla Estricta de Confinamiento de Conocimiento" que prohíbe pedagógicamente sugerir bibliotecas (`math`, `collections`, etc.) a alumnos que no han alcanzado dicho nodo en el grafo.

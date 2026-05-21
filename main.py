@@ -8,13 +8,57 @@ y lanza la ejecución en modo streaming del DAG de LangGraph.
 import os
 import sys
 import unicodedata
+import threading
+import itertools
+import time
+
+# Colores ANSI para diferenciar texto
+USER_COLOR = "\033[96m"  # Cyan para lo que escribe el usuario
+TUTOR_COLOR = "\033[92m" # Verde para las respuestas finales del tutor
+SYS_COLOR = "\033[93m"   # Amarillo para los prompts del sistema
+RESET_COLOR = "\033[0m"  # Reset
 
 # Agregar src a los paths por si se invoca desde la raíz
 sys.path.append(os.path.dirname(__file__))
 
+def ask_user(prompt_text: str) -> str:
+    """Imprime el prompt en amarillo, lee el input en cyan y resetea el color."""
+    val = input(f"{SYS_COLOR}{prompt_text}{USER_COLOR}")
+    print(RESET_COLOR, end="")
+    return val
+
+class Spinner:
+    """Muestra un reloj de arena dinámico (spinner) en la consola usando un hilo en segundo plano."""
+    def __init__(self, message="La IA está pensando..."):
+        self.spinner = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'])
+        self.message = message
+        self.busy = False
+        self.thread = None
+
+    def spinner_task(self):
+        while self.busy:
+            sys.stdout.write(f"\r{next(self.spinner)} {self.message}")
+            sys.stdout.flush()
+            time.sleep(0.1)
+            
+    def start(self):
+        self.busy = True
+        self.thread = threading.Thread(target=self.spinner_task)
+        self.thread.daemon = True
+        self.thread.start()
+
+    def stop(self):
+        if not self.busy:
+            return
+        self.busy = False
+        if self.thread:
+            self.thread.join()
+        sys.stdout.write('\r\033[K') # Limpiar la línea
+        sys.stdout.flush()
+
 from src.agents.graph import build_graph
 import networkx as nx
-from src.ontology.grafo import concepto_dominio, construir_grafo
+from src.ontology.grafo import concepto_dominio, construir_grafo, CONCEPTOS
 
 def normalize_text(text: str) -> str:
     """Normaliza un texto eliminando tildes, espacios extra y pasándolo a minúsculas.
@@ -36,11 +80,11 @@ def get_multiline_input(prompt: str) -> str:
     Returns:
         str: El bloque de código completo como un único string.
     """
-    print(prompt)
-    print("(Pega tu código. Escribe 'FIN' en una nueva línea y presiona Enter para finalizar)")
+    print(f"{SYS_COLOR}{prompt}{RESET_COLOR}")
+    print(f"{SYS_COLOR}(Pega tu código. Escribe 'FIN' en una nueva línea y presiona Enter para finalizar){RESET_COLOR}")
     lines = []
     while True:
-        line = input()
+        line = ask_user("")
         if line.strip().upper() == 'FIN':
             break
         lines.append(line)
@@ -63,7 +107,11 @@ def main():
     conceptos_normalizados = {normalize_text(c): c for c in conceptos_db}
         
     historial_alumno = []
+    conceptos_maximos = []
     lenguaje_sesion = "Python"
+    modo_desarrollador = False
+    usar_senado = True
+    tipo_senado = "bft"
     
     # Bucle infinito del Menú
     while True:
@@ -75,7 +123,7 @@ def main():
         print("3. Buscar Bugs")
         print("4. Salir")
         
-        opcion = input("\n📝 Elige una opción: ").strip()
+        opcion = ask_user("\n📝 Elige una opción: ").strip()
         
         if opcion == "4":
             print("¡Hasta pronto!")
@@ -89,12 +137,16 @@ def main():
         if not historial_alumno and opcion in ["1", "2"]:
             print("\n" + "-" * 50)
             print("👤 CONFIGURACIÓN DEL PERFIL DEL ALUMNO")
-            if conceptos_db:
+            if CONCEPTOS:
                 print("📚 CONCEPTOS DISPONIBLES EN LA ONTOLOGÍA:")
-                print(', '.join(conceptos_db))
+                for dominio, lista_conceptos in CONCEPTOS.items():
+                    print(f"\n   🔹 {dominio.upper()}:")
+                    # Separar por comas y ajustar ancho
+                    conceptos_format = ', '.join(lista_conceptos)
+                    print(f"      {conceptos_format}")
             print("-" * 50)
             print("\nIndica los conceptos que YA HAS ESTUDIADO (tu perfil). Separa por comas.")
-            vistos_input = input("Conceptos vistos [Dejar en blanco para usar perfil DEMO]: ")
+            vistos_input = ask_user("Conceptos vistos [Dejar en blanco para usar perfil DEMO]: ")
             if vistos_input.strip():
                 conceptos_base_raw = [c.strip() for c in vistos_input.split(",") if c.strip()]
                 conceptos_base = []
@@ -104,6 +156,8 @@ def main():
                         conceptos_base.append(conceptos_normalizados[norm_c])
                     else:
                         print(f"⚠️ El concepto '{c}' no existe en la ontología y será ignorado.")
+                        
+                conceptos_maximos = conceptos_base.copy()
                         
                 print("🧠 Infiriendo dependencias previas desde el Grafo de Conocimiento In-Memory...")
                 G_req = construir_grafo(["REQUIERE_PREVIO"])
@@ -127,13 +181,20 @@ def main():
                 print("Usando perfil demo predefinido...")
                 mock = ["Algoritmo", "Programa", "Variable", "Función", "Operador"]
                 historial_alumno = [c for c in mock if c in conceptos_db] if conceptos_db else mock
+                conceptos_maximos = ["Función", "Operador"]
             
             print(f"✅ Perfil configurado y guardado. Conoces {len(historial_alumno)} conceptos.")
             
             # Pedir lenguaje una sola vez
-            req_lenguaje = input("¿En qué lenguaje de programación quieres trabajar? [Por defecto: Python]: ").strip()
+            req_lenguaje = ask_user("¿En qué lenguaje de programación quieres trabajar? [Por defecto: Python]: ").strip()
             lenguaje_sesion = req_lenguaje if req_lenguaje else "Python"
             print(f"✅ Establecido el lenguaje a {lenguaje_sesion} para esta sesión.")
+            
+            # Pedir Modo Desarrollador
+            dev_mode_input = ask_user("\n¿Activar MODO DESARROLLADOR para ver los prompts internos enviados a la IA? [s/N]: ").strip().lower()
+            modo_desarrollador = dev_mode_input == 's'
+            if modo_desarrollador:
+                print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
             
         initial_state = {
             "alumno_historial": historial_alumno,
@@ -143,13 +204,16 @@ def main():
             "con_solucion": False,
             "lenguaje": lenguaje_sesion,
             "codigo_entrada": "",
-            "resultado_codigo": ""
+            "resultado_codigo": "",
+            "modo_desarrollador": modo_desarrollador,
+            "usar_senado": usar_senado,
+            "tipo_senado": tipo_senado
         }
             
         if opcion == "1":
             print(f"\n📋 Tu Perfil ({len(historial_alumno)} conceptos).")
             # Dejamos la opción de presionar "Enter" si quieren repasar todo su conocimiento o usar por defecto
-            entrada = input("¿Qué conceptos te gustaría practicar? (Ej: Variable) [Rellena u oprime Enter para aleatorio]: ")
+            entrada = ask_user("¿Qué conceptos te gustaría practicar? (Ej: Variable) [Rellena u oprime Enter para usar tu nivel máximo]: ")
             if entrada.strip():
                 buscados_raw = [c.strip() for c in entrada.split(",") if c.strip()]
                 buscados = []
@@ -160,15 +224,34 @@ def main():
                     else:
                         print(f"⚠️ El concepto '{c}' no existe en la ontología y será ignorado.")
             else:
-                # Si no pone nada, agarramos 1 o 2 conceptos de su historial
-                import random
-                buscados = random.sample(historial_alumno, min(2, len(historial_alumno)))
-                print(f"🎲 Seleccionados aleatoriamente: {', '.join(buscados)}")
+                # Si no pone nada, agarramos los conceptos máximos que introdujo en su perfil
+                buscados = conceptos_maximos if conceptos_maximos else historial_alumno[:2]
+                print(f"🎯 Seleccionados automáticamente (tu nivel máximo): {', '.join(buscados)}")
             
-            dificultad = input("Dificultad (Fácil/Media/Difícil) [Por defecto: Media]: ").strip()
+            dificultad = ask_user("Dificultad (Fácil/Media/Difícil) [Por defecto: Media]: ").strip()
             dificultad = dificultad if dificultad else "Media"
             
-            con_solucion = input("¿Generar también la solución explicada? (s/n): ").strip().lower() == "s"
+            con_solucion = ask_user("¿Generar también la solución explicada? (s/n): ").strip().lower() == "s"
+            
+            # Pedir Senado SOLO para generar ejercicio
+            print("\n¿Qué arquitectura de validación deseas usar para evaluar el borrador?")
+            print("1. Ninguna (Modo Turbo - Más rápido)")
+            print("2. Senado BFT (3 Jueces paralelos votando - Más robusto)")
+            print("3. Senado Reflexivo (3 Jueces puntuando 0-10 y reescribiendo el ejercicio - Calidad Máxima)")
+            senado_opcion = ask_user("Elige una opción [3]: ").strip()
+            
+            if senado_opcion == "1":
+                initial_state["tipo_senado"] = "ninguno"
+                initial_state["usar_senado"] = False
+                print("⚡ SENADO DESACTIVADO. Generación rápida (modo turbo).")
+            elif senado_opcion == "2":
+                initial_state["tipo_senado"] = "bft"
+                initial_state["usar_senado"] = True
+                print("🏛️ SENADO BFT ACTIVADO.")
+            else:
+                initial_state["tipo_senado"] = "reflexion"
+                initial_state["usar_senado"] = True
+                print("🧠 SENADO REFLEXIVO ACTIVADO.")
             
             initial_state["tarea"] = "generar"
             initial_state["conceptos_buscados"] = buscados
@@ -196,13 +279,19 @@ def main():
             print("\n⚙️ Lanzando grafo: Buscando Bugs con LLM Determinista...")
             
         try:
+            spinner = Spinner("⏳ La IA está razonando...")
+            spinner.start()
+            
             # Usamos stream en vez de invoke para poder mostrar el progreso paso a paso
             for s in app.stream(initial_state, config={"recursion_limit": 20}):
+                # Detener el spinner un momento para que los prints de los nodos no se solapen
+                spinner.stop()
+                
                 for node_name, node_state in s.items():
-                    if node_name == "retrieve_exercises":
+                    if node_name == "retriever":
                         print("   [25%] 🔍 RAG: Evaluando tu nivel y recuperando temario...")
-                    elif node_name == "generate_exercise":
-                        print("   [50%] ✍️ LLM: Redactando borrador base del ejercicio...")
+                    elif node_name == "generator":
+                        pass
                     elif node_name == "senate_evaluation_node":
                         pass # El senado ya imprime sus votaciones internamente en nodes.py
                     elif node_name == "generate_solution_node":
@@ -214,7 +303,11 @@ def main():
                     
                     # Guardamos el estado acumulativo
                     initial_state.update(node_state)
+                
+                # Reanudar el spinner hasta que se emita el siguiente estado
+                spinner.start()
             
+            spinner.stop()
             final_state = initial_state
             
             print("\n" + "*" * 50)
@@ -222,11 +315,32 @@ def main():
             print("*" * 50)
             
             if final_state.get("tarea") == "generar":
-                print(f"\n[ENUNCIADO]\n{final_state.get('enunciado_generado')}")
+                ejercicio_final = final_state.get('enunciado_generado') or final_state.get('ejercicio_generado', '')
+                print(f"\n{TUTOR_COLOR}[ENUNCIADO]\n{ejercicio_final}{RESET_COLOR}")
                 if final_state.get("con_solucion"):
-                    print(f"\n[SOLUCIÓN Y EXPLICACIÓN]\n{final_state.get('resultado_codigo')}")
+                    print(f"\n{TUTOR_COLOR}[SOLUCIÓN Y EXPLICACIÓN]\n{final_state.get('resultado_codigo')}{RESET_COLOR}")
+                
+                # Guardar en archivo
+                try:
+                    with open("exercice.md", "w", encoding="utf-8") as f:
+                        f.write(f"# Ejercicio Generado\n\n## Enunciado\n{ejercicio_final}\n")
+                        if final_state.get("con_solucion"):
+                            f.write(f"\n## Solución y Explicación\n{final_state.get('resultado_codigo')}\n")
+                    print("\n💾 Ejercicio guardado exitosamente en 'exercice.md'.")
+                except Exception as e:
+                    print(f"\n[ERROR] No se pudo guardar el archivo: {e}")
             else:
-                print(f"\n[RESPUESTA DEL TUTOR]\n{final_state.get('resultado_codigo')}")
+                print(f"\n{TUTOR_COLOR}[RESPUESTA DEL TUTOR]\n{final_state.get('resultado_codigo')}{RESET_COLOR}")
+                # Guardar en archivo
+                try:
+                    with open("tutor_response.md", "w", encoding="utf-8") as f:
+                        tarea_nombre = "Resolución de Código" if final_state.get("tarea") == "resolver" else "Análisis de Bugs"
+                        f.write(f"# {tarea_nombre}\n\n")
+                        f.write(f"## Código Proporcionado\n```python\n{final_state.get('codigo_entrada', '')}\n```\n\n")
+                        f.write(f"## Análisis del Tutor Inteligente\n{final_state.get('resultado_codigo')}\n")
+                    print("\n💾 Respuesta del tutor guardada exitosamente en 'tutor_response.md'.")
+                except Exception as e:
+                    print(f"\n[ERROR] No se pudo guardar el archivo: {e}")
         except Exception as e:
             print(f"\n[ERROR] Ocurrió un problema ejecutando el grafo: {e}")
 

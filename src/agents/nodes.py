@@ -16,9 +16,21 @@ from langchain_core.messages import SystemMessage, HumanMessage
 import asyncio
 from pydantic import BaseModel, Field
 
-class SenateVote(BaseModel):
+DEV_COLOR = "\033[95m"  # Magenta para los prompts del modo desarrollador
+DEV_SYS_COLOR = "\033[94m"  # Azul para System Prompts
+DEV_USER_COLOR = "\033[96m" # Cyan para User Prompts
+DEV_RES_COLOR = "\033[92m"  # Verde para la Respuesta cruda
+RESET_COLOR = "\033[0m"
+
+class SenateVoteBFT(BaseModel):
     aprueba: bool = Field(description="True si el ejercicio es adecuado, False si no cumple los requisitos.")
-    critica: str = Field(description="Breve razonamiento o crítica de tu voto.")
+    critica: str = Field(description="Breve razonamiento de tu voto. Si rechazas el ejercicio, incluye una propuesta de mejora constructiva para rehacerlo.")
+
+class SenateVoteReflection(BaseModel):
+    nota: int = Field(description="Nota del 0 al 10 evaluando la calidad y adecuación del ejercicio.")
+    critica: str = Field(description="Breve justificación de tu nota. PROHIBIDO dar consejos de mejora aquí. Si algo se puede mejorar, hazlo directamente en 'ejercicio_mejorado'.")
+    ejercicio_mejorado: str = Field(description="OBLIGATORIO: El enunciado del ejercicio completamente reescrito y perfeccionado, aplicando todas tus mejoras directamente. Listo para ser entregado al alumno sin más modificaciones.")
+    solucion_explicada: str = Field(default="", description="[SOLO SI SE TE PIDE] La solución detallada en código y explicada paso a paso del ejercicio final.")
 
 load_dotenv()
 
@@ -103,6 +115,7 @@ def generate_exercise(state):
 1. El alumno solo conoce estos conceptos: {vistos}. NO incluyas ni uses conceptos que no estén en esta lista.
 2. El ejercicio debe enfocarse en poner en práctica principalmente estos conceptos: {buscados}.
 3. Dificultad deseada: {state.get('dificultad', 'Media')}.
+4. ORIGINALIDAD: El ejercicio debe ser completamente nuevo. NO debes copiar la temática ni la narrativa de los ejercicios de ejemplo.
 
 Contexto de ejercicios similares para inspiración:
 {contexto}
@@ -112,49 +125,73 @@ Contexto de ejercicios similares para inspiración:
 
     user_prompt += "\nDevuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio."
 
+    if state.get("modo_desarrollador", False):
+        print(f"\n{DEV_COLOR}" + "═"*50)
+        print("🛠️ [MODO DEV - GENERADOR] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - GENERADOR] USER PROMPT:")
+        print(user_prompt)
+        print("═"*50 + f"{RESET_COLOR}")
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_prompt)
     ])
     return {"ejercicio_generado": response.content}
 
-def senate_evaluation_node(state):
-    """Nodo Senado: Implementa Byzantine Fault Tolerance mediante voto por mayoría.
+def senate_bft_node(state):
+    """Nodo Senado (BFT): Implementa Byzantine Fault Tolerance mediante voto por mayoría.
     
     Instancia 3 llamadas asíncronas concurrentes (o secuenciales según fallback) al LLM.
     Cada "Juez" evalúa la dificultad y pertinencia pedagógica del ejercicio.
     Si 2 o más aprueban, el flujo avanza. Si no, devuelve el estado
     al Generador con las críticas acumuladas para que se regenere.
     """
-    print("\n⚖️ El Senado está debatiendo...")
-    llm = get_llm().with_structured_output(SenateVote)
+    print("\n⚖️ El Senado está debatiendo (BFT 3 Jueces)...")
+    llm = get_llm().with_structured_output(SenateVoteBFT)
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
-    contexto = "\n".join([f"Enunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
+    contexto = "\n".join([f"Dificultad: {e['dificultad']}\nEnunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
     
     system_prompt = f"""Eres un juez estricto en el Senado Académico.
 Debes evaluar el siguiente ejercicio generado por otro profesor.
 Criterios estrictos:
 1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno ({dificultad})?
 2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+3. ORIGINALIDAD: ¿Es el ejercicio original? NO debe ser una copia idéntica o tener la misma narrativa que los ejemplos del contexto.
 
 Contexto de ejercicios base para guiar el estilo:
 {contexto}
 
-Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" + get_cluster_prompt_suffix()
+Evalúa estrictamente si apruebas o no el ejercicio. Si lo rechazas, debes proporcionar en tu crítica una propuesta de mejora constructiva para que el profesor sepa cómo rehacerlo.""" + get_cluster_prompt_suffix()
 
     user_prompt = f"Ejercicio a evaluar:\n{ejercicio}"
 
-    async def get_vote():
-        return await llm.ainvoke([
+    async def get_vote(juez_id):
+        if state.get("modo_desarrollador", False):
+            print(f"\n{DEV_SYS_COLOR}=================\nJUEZ {juez_id}\n=================")
+            print(f"🛠️ [MODO DEV - SENADO BFT - JUEZ {juez_id}] SYSTEM PROMPT:")
+            print(system_prompt)
+            print(f"{DEV_USER_COLOR}" + "-" * 50)
+            print(f"🛠️ [MODO DEV - SENADO BFT - JUEZ {juez_id}] USER PROMPT:")
+            print(user_prompt)
+            print("═"*50 + f"{RESET_COLOR}")
+            
+        vote = await llm.ainvoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
         ])
+        
+        if state.get("modo_desarrollador", False):
+            print(f"\n{DEV_RES_COLOR}🤖 [MODO DEV - SENADO BFT - JUEZ {juez_id}] RESPUESTA:\n{vote.model_dump_json(indent=2)}\n" + "═"*50 + f"{RESET_COLOR}")
+            
+        return vote
 
     async def run_senate():
         # Ejecución en PARALELO para máxima velocidad (Seguro con modelo 32B en A40)
-        return await asyncio.gather(*(get_vote() for _ in range(3)))
+        return await asyncio.gather(*(get_vote(i+1) for i in range(3)))
 
     try:
         try:
@@ -170,22 +207,119 @@ Evalúa estrictamente si apruebas o no el ejercicio y da una breve crítica.""" 
     votos_favor = sum(1 for v in votes if getattr(v, "aprueba", False))
     votos_contra = 3 - votos_favor
     
-    criticas_list = [f"Juez {i+1} ({'Aprueba' if getattr(v, 'aprueba', False) else 'Rechaza'}): {getattr(v, 'critica', '')}" for i, v in enumerate(votes)]
+    criticas_list = []
+    for i, v in enumerate(votes):
+        juez_title = f"JUEZ {i+1} ({'Aprueba' if getattr(v, 'aprueba', False) else 'Rechaza'})"
+        critica_text = getattr(v, 'critica', '')
+        criticas_list.append(f"=================\n{juez_title}\n=================\n{critica_text}\n")
+        
     criticas_str = "\n".join(criticas_list)
     
-    if votos_favor >= 2:
-        print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. ¡Ejercicio Aprobado!")
-        return {
-            "enunciado_generado": ejercicio,
-            "criticas_senado": "" 
-        }
-    else:
-        print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. Ejercicio Rechazado.")
-        reintentos_actuales = state.get("reintentos", 0)
-        return {
-            "reintentos": reintentos_actuales + 1,
-            "criticas_senado": criticas_str
-        }
+    print(f"🏛️ Votación del Senado: {votos_favor} a favor, {votos_contra} en contra. Proceso de validación finalizado.")
+    return {
+        "enunciado_generado": ejercicio,
+        "criticas_senado": "",
+        "votos_senado": f"{votos_favor} a favor, {votos_contra} en contra"
+    }
+
+def senate_reflection_node(state):
+    """Nodo Senado (Reflexión Secuencial): Implementa Self-Critique.
+    
+    Un Juez evalúa el ejercicio con una nota del 0 al 10.
+    Si la nota es >= 8, se aprueba. Si es < 8, se devuelve el estado
+    al Generador con la crítica para que se regenere.
+    """
+    con_solucion = state.get("con_solucion", False)
+    num_jueces = 1 if con_solucion else 3
+    msg_jueces = "(1 Juez Rápido)" if con_solucion else "(3 Jueces Secuenciales)"
+    print(f"\n⚖️ El Senado Reflexivo ha iniciado la cadena de mejora {msg_jueces}...")
+    llm = get_llm().with_structured_output(SenateVoteReflection)
+    
+    ejercicio = state.get("ejercicio_generado", "")
+    dificultad = state.get("dificultad", "Media")
+    contexto = "\n".join([f"Dificultad: {e['dificultad']}\nEnunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
+    
+    system_prompt = f"""Eres un juez estricto en el Senado Académico.
+Debes evaluar el siguiente ejercicio generado por otro profesor.
+Criterios estrictos:
+1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno ({dificultad})?
+2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+3. ORIGINALIDAD: ¿Es el ejercicio original? NO debe ser una copia idéntica o tener la misma narrativa que los ejemplos del contexto.
+
+Contexto de ejercicios base para guiar el estilo:
+{contexto}
+
+Evalúa el ejercicio asignándole una nota entera del 0 al 10.
+En tu crítica, razona tu nota de forma MUY BREVE.
+REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.
+¡ATENCIÓN CRÍTICA!: EL CAMPO 'ejercicio_mejorado' NUNCA PUEDE ESTAR VACÍO (""). TIENES QUE ESCRIBIR EL ENUNCIADO COMPLETO REESCRITO SIEMPRE, INCLUSO SI LE DAS UN 10. SI DEJAS EL CAMPO VACÍO, EL SISTEMA CRASHEARÁ.""" + get_cluster_prompt_suffix()
+
+    votes = []
+    ejercicio_actual = ejercicio
+    
+    for i in range(num_jueces):
+        juez_id = 3 if num_jueces == 1 else i + 1
+        user_prompt = f"Ejercicio a evaluar:\n{ejercicio_actual}"
+        
+        is_last_judge = (i == num_jueces - 1)
+        if is_last_judge and con_solucion:
+            vistos = ', '.join(state.get('alumno_historial', []))
+            user_prompt += f"\n\nADEMÁS: El usuario ha solicitado la SOLUCIÓN EXPLICADA. Utiliza el campo 'solucion_explicada' para escribir el código resuelto en Python y la explicación paso a paso de este ejercicio final.\nREGLA ESTRICTA DE CONFINAMIENTO: El alumno SOLO conoce estos conceptos: {vistos}. Tienes prohibido usar conceptos ajenos a esa lista."
+        
+        if state.get("modo_desarrollador", False):
+            print(f"\n{DEV_SYS_COLOR}=================\nJUEZ {juez_id}\n=================")
+            print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] SYSTEM PROMPT:")
+            print(system_prompt)
+            print(f"{DEV_USER_COLOR}" + "-" * 50)
+            print(f"🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] USER PROMPT:")
+            print(user_prompt)
+            print("═"*50 + f"{RESET_COLOR}")
+
+        try:
+            vote = llm.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ])
+            
+            if state.get("modo_desarrollador", False):
+                print(f"\n{DEV_RES_COLOR}🤖 [MODO DEV - SENADO REFLEXIÓN - JUEZ {juez_id}] RESPUESTA:\n{vote.model_dump_json(indent=2)}\n" + "═"*50 + f"{RESET_COLOR}")
+                
+            votes.append(vote)
+            
+            # Actualizar el ejercicio actual con el mejorado por este juez (si no está vacío)
+            mejorado = getattr(vote, "ejercicio_mejorado", "").strip()
+            if mejorado:
+                ejercicio_actual = mejorado
+                
+        except Exception as e:
+            print(f"[!] Aviso: Error al invocar al juez {juez_id} ({e})")
+            # En caso de error, emulamos un voto genérico para no romper la cadena
+            vote_error = SenateVoteReflection(nota=8, critica=f"Error técnico: {e}", ejercicio_mejorado=ejercicio_actual)
+            votes.append(vote_error)
+
+    # La nota final será la que ponga el último juez (Juez 3)
+    nota_final = getattr(votes[-1], "nota", 0)
+    
+    criticas_list = []
+    for i, v in enumerate(votes):
+        juez_title = f"JUEZ {i+1} (Nota: {getattr(v, 'nota', 0)}/10)"
+        critica_text = getattr(v, 'critica', 'Sin crítica.')
+        ejercicio_mejorado = getattr(v, 'ejercicio_mejorado', '').strip()
+        if ejercicio_mejorado:
+            critica_text += f"\n\n[EJERCICIO MEJORADO PROPUESTO]:\n{ejercicio_mejorado}"
+            
+        criticas_list.append(f"=================\n{juez_title}\n=================\n{critica_text}\n")
+        
+    criticas_str = "\n".join(criticas_list)
+    
+    print(f"🏛️ Votación del Senado: El Juez 3 certifica la versión final con un {nota_final}/10. Proceso de mejora iterativa completado.")
+    solucion = getattr(votes[-1], "solucion_explicada", "") if votes else ""
+    return {
+        "enunciado_generado": ejercicio_actual,
+        "criticas_senado": "",
+        "nota_senado": nota_final,
+        "resultado_codigo": solucion if con_solucion else ""
+    }
 
 def generate_solution_node(state):
     """Nodo Tutor (Solución): Explica y resuelve el ejercicio generado.
@@ -194,7 +328,7 @@ def generate_solution_node(state):
     que el alumno no haya aprendido todavía.
     """
     llm = get_llm()
-    enunciado = state.get("enunciado_generado", "")
+    enunciado = state.get("enunciado_generado") or state.get("ejercicio_generado", "")
     lenguaje = state.get("lenguaje", "Python")
     vistos = ', '.join(state.get('alumno_historial', []))
     
@@ -208,9 +342,20 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código que utili
 
 Devuelve el resultado en Markdown, de forma clara y unificada.""" + get_cluster_prompt_suffix()
     
+    user_prompt = f"Este es el enunciado del ejercicio:\n{enunciado}"
+    
+    if state.get("modo_desarrollador", False):
+        print(f"\n{DEV_COLOR}" + "═"*50)
+        print("🛠️ [MODO DEV - TUTOR SOLUCIÓN] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - TUTOR SOLUCIÓN] USER PROMPT:")
+        print(user_prompt)
+        print("═"*50 + f"{RESET_COLOR}")
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
-        HumanMessage(content=f"Este es el enunciado del ejercicio:\n{enunciado}")
+        HumanMessage(content=user_prompt)
     ])
     
     return {"resultado_codigo": response.content}
@@ -234,6 +379,15 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código que utili
 
 Devuelve la respuesta en Markdown.""" + get_cluster_prompt_suffix()
     
+    if state.get("modo_desarrollador", False):
+        print(f"\n{DEV_COLOR}" + "═"*50)
+        print("🛠️ [MODO DEV - TUTOR CORRECCIÓN] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - TUTOR CORRECCIÓN] USER PROMPT:")
+        print(codigo)
+        print("═"*50 + f"{RESET_COLOR}")
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
         HumanMessage(content=codigo)
@@ -260,6 +414,15 @@ TIENES TOTALMENTE PROHIBIDO usar, sugerir, mencionar o mostrar código corregido
 
 Devuelve el resultado en Markdown.""" + get_cluster_prompt_suffix()
     
+    if state.get("modo_desarrollador", False):
+        print(f"\n{DEV_COLOR}" + "═"*50)
+        print("🛠️ [MODO DEV - DEBUGGER] SYSTEM PROMPT:")
+        print(system_prompt)
+        print("-" * 50)
+        print("🛠️ [MODO DEV - DEBUGGER] USER PROMPT:")
+        print(codigo)
+        print("═"*50 + f"{RESET_COLOR}")
+
     response = llm.invoke([
         SystemMessage(content=system_prompt),
         HumanMessage(content=codigo)
