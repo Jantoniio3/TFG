@@ -1,0 +1,332 @@
+⚙️ Lanzando grafo: Graph RAG + Generando Ejercicio...
+   [25%] 🔍 RAG: Evaluando tu nivel y recuperando temario...
+⠹ ⏳ La IA está razonando...
+══════════════════════════════════════════════════
+🛠️ [MODO DEV - GENERADOR] SYSTEM PROMPT:
+Eres un profesor experto de programación. Tu objetivo es generar un ejercicio de código en python.
+
+[INSTRUCCIÓN AVANZADA CLÚSTER A40]: Dado que cuentas con alta capacidad computacional y de contexto, por favor utiliza 'Chain of Thought' (piensa paso a paso). Argumenta exhaustivamente tus decisiones, provee consideraciones pedagógicas o de rendimiento sumamente profundas, y genera respuestas del más alto nivel técnico y descriptivo disponible.
+--------------------------------------------------
+🛠️ [MODO DEV - GENERADOR] USER PROMPT:
+Restricciones Críticas:
+1. El alumno solo conoce estos conceptos: Expresión booleana, Expresión de comparación, Tipo de dato, Algoritmo, Identificador, Flujo de ejecución, Expresión, Variable, Operador, Indentación, Tipo de dato básico, Literal, Programa, Bucle while. NO incluyas ni uses conceptos que no estén en esta lista.
+2. El ejercicio debe enfocarse en poner en práctica principalmente estos conceptos: Bucle while.
+3. Dificultad deseada: dificil.
+4. ORIGINALIDAD: El ejercicio debe ser completamente nuevo. NO debes copiar la temática ni la narrativa de los ejercicios de ejemplo.
+
+Contexto de ejercicios similares para inspiración:
+Id: E062 - Dificultad: media
+Enunciado: Un monomio está caracterizado por un coeficiente (real) y una x elevada a un exponente (entero y positivo), si bien puede no llevar x. Como es sabido, un polinomio es una suma de monomios (Ejemplo: +2.0x**3 + x + 4.0)
+
+Para escribir en pantalla un monomio, hay que tener en cuenta que:
+
+   1. Si el coeficiente es 0 no deberá imprimirse el monomio.
+   2. Si el coeficiente es 1 no imprimiremos el coeficiente.
+   3. Si el exponente es 1 no escribiremos el exponente
+   4. Si el exponente es 0 no escribiremos ni el polinomio ni la x.
+
+   Haz un subprograma que imprima un monomio. Advierte que Python no escribe el "+" en los números positivos y ahora hará falta hacerlo expresamente.
+Id: E069 - Dificultad: muy difícil
+Enunciado: Escribe un subprograma que invierta los valores de las filas de orden k en una matriz (representada mediante una lista de listas). Por ejemplo `[[6,3,2], [8,6,3], [4,15,2], [3,6], [3,7,0], [2,9]]`, K = 2 invierte la 2ª, 4ª y 6ª filas, produciendo la matriz: `[[6,3,2], [3,6,8], [4,15,2], [6,3], [3,7,0], [9,2]]`
+Id: E087 - Dificultad: media
+Enunciado: Mejorar el *Ejercicio Resuelto 3*, modularizándolo y poniendo un límite al número de veces que el usuario puede intentar acertar el símbolo oculto.
+Id: E088 - Dificultad: media
+Enunciado: Estudia la convergencia de la siguiente serie introduciendo un número creciente de términos y observando su tendencia. Implementa una función para la serie y un código que vaya analizando su convergencia. Comenta tus resultados.
+
+    (imagen de fórmula eliminada)
+Id: E056 - Dificultad: media
+Enunciado: Obtén las raíces de una ecuación de segundo grado a partir de sus coeficientes a, b y c. Recuerda que si el discriminante es cero la raíz es única (-b/2xa) y que si el discriminante es negativo las raíces son imaginarias, en cuyo caso deberá indicarse con un mensaje "raíces imaginarias". Modulariza tu solución.
+
+Devuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio.
+══════════════════════════════════════════════════
+⠧ ⏳ La IA está razonando...
+⚖️ El Senado Reflexivo ha iniciado la cadena de mejora (3 Jueces Secuenciales)...
+
+=================
+JUEZ 1
+=================
+🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ 1] SYSTEM PROMPT:
+Eres un juez estricto en el Senado Académico.
+Debes evaluar el siguiente ejercicio generado por otro profesor.
+Criterios estrictos:
+1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno (dificil)?
+2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+3. ORIGINALIDAD: ¿Es el ejercicio original? NO debe ser una copia idéntica o tener la misma narrativa que los ejemplos del contexto.
+
+Contexto de ejercicios base para guiar el estilo:
+Enunciado: Un monomio está caracterizado por un coeficiente (real) y una x elevada a un exponente (entero y positivo), si bien puede no llevar x. Como es sabido, un polinomio es una suma de monomios (Ejemplo: +2.0x**3 + x + 4.0)
+
+Para escribir en pantalla un monomio, hay que tener en cuenta que:
+
+   1. Si el coeficiente es 0 no deberá imprimirse el monomio.
+   2. Si el coeficiente es 1 no imprimiremos el coeficiente.
+   3. Si el exponente es 1 no escribiremos el exponente
+   4. Si el exponente es 0 no escribiremos ni el polinomio ni la x.
+
+   Haz un subprograma que imprima un monomio. Advierte que Python no escribe el "+" en los números positivos y ahora hará falta hacerlo expresamente.
+Enunciado: Escribe un subprograma que invierta los valores de las filas de orden k en una matriz (representada mediante una lista de listas). Por ejemplo `[[6,3,2], [8,6,3], [4,15,2], [3,6], [3,7,0], [2,9]]`, K = 2 invierte la 2ª, 4ª y 6ª filas, produciendo la matriz: `[[6,3,2], [3,6,8], [4,15,2], [6,3], [3,7,0], [9,2]]`
+Enunciado: Mejorar el *Ejercicio Resuelto 3*, modularizándolo y poniendo un límite al número de veces que el usuario puede intentar acertar el símbolo oculto.
+Enunciado: Estudia la convergencia de la siguiente serie introduciendo un número creciente de términos y observando su tendencia. Implementa una función para la serie y un código que vaya analizando su convergencia. Comenta tus resultados.
+
+    (imagen de fórmula eliminada)
+Enunciado: Obtén las raíces de una ecuación de segundo grado a partir de sus coeficientes a, b y c. Recuerda que si el discriminante es cero la raíz es única (-b/2xa) y que si el discriminante es negativo las raíces son imaginarias, en cuyo caso deberá indicarse con un mensaje "raíces imaginarias". Modulariza tu solución.
+
+Evalúa el ejercicio asignándole una nota entera del 0 al 10.
+En tu crítica, razona tu nota de forma MUY BREVE.
+REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.
+¡ATENCIÓN CRÍTICA!: EL CAMPO 'ejercicio_mejorado' NUNCA PUEDE ESTAR VACÍO (""). TIENES QUE ESCRIBIR EL ENUNCIADO COMPLETO REESCRITO SIEMPRE, INCLUSO SI LE DAS UN 10. SI DEJAS EL CAMPO VACÍO, EL SISTEMA CRASHEARÁ.
+
+[INSTRUCCIÓN AVANZADA CLÚSTER A40]: Dado que cuentas con alta capacidad computacional y de contexto, por favor utiliza 'Chain of Thought' (piensa paso a paso). Argumenta exhaustivamente tus decisiones, provee consideraciones pedagógicas o de rendimiento sumamente profundas, y genera respuestas del más alto nivel técnico y descriptivo disponible.
+--------------------------------------------------
+🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ 1] USER PROMPT:
+Ejercicio a evaluar:
+```markdown
+## Ejercicio Avanzado: Generador de Sucesos Aleatorios con Restricciones
+
+**Contexto:**
+Imagina que estás desarrollando un pequeño juego de simulación donde los jugadores deben adivinar números generados aleatoriamente según ciertas reglas. Cada número generado debe cumplir con restricciones específicas y el proceso de generación debe ser repetido hasta que se cumplan todas las condiciones.
+
+**Enunciado:**
+Escribe un programa en Python que genere un número entero entre 1 y 100 (inclusive) utilizando un bucle `while`. El número generado debe cumplir con las siguientes restricciones:
+
+1. **Suma de los dígitos**: La suma de los dígitos del número debe ser mayor a 5.
+2. **Paridad alternada**: Los dígitos del número deben seguir un patrón de paridad alternada, es decir, si el primer dígito es impar, el segundo debe ser par y viceversa.
+
+El programa debe repetir el proceso de generación hasta que se encuentre un número que cumpla ambas restricciones. Luego, debe imprimir el número encontrado y la cantidad de intentos realizados para generar ese número.
+
+**Consideraciones:**
+- Utiliza únicamente los conceptos proporcionados: expresión booleana, expresión de comparación, tipo de dato, algoritmo, identificador, flujo de ejecución, expresión, variable, operador, indentación, tipo de dato básico, literal, programa y bucle `while`.
+- No utilices funciones adicionales ni módulos externos como `random` o `math`. Para generar un número aleatorio entre 1 y 100, puedes utilizar el siguiente fragmento de código:
+
+```python
+import time
+
+def generar_numero_aleatorio():
+    seed = int(time.time() * 1000) % 100 + 1
+    return seed
+```
+
+Este código genera un número pseudoaleatorio entre 1 y 100 basado en el tiempo actual.
+
+**Ejemplo de Salida:**
+```
+Número generado: 43
+Cantidad de intentos: 5
+```
+
+**Nota:**
+Asegúrate de que tu programa funciona correctamente para cualquier secuencia de números generados por la función `generar_numero_aleatorio`. El número de intentos puede variar dependiendo de la secuencia aleatoria obtenida.
+```
+══════════════════════════════════════════════════
+⠴ ⏳ La IA está razonando...
+🤖 [MODO DEV - SENADO REFLEXIÓN - JUEZ 1] RESPUESTA:
+{
+  "nota": 7,
+  "critica": "El ejercicio es adecuado en términos de dificultad, ya que requiere lógica y comprensión de bucles y condiciones. Sin embargo, no se parece mucho a los ejercicios base proporcionados, que son más centrados en manipulación de estructuras de datos específicas o cálculos matemáticos. Además, el ejercicio es original.",
+  "ejercicio_mejorado": "## Ejercicio Avanzado: Generador de Sucesos Aleatorios con Restricciones\n\n**Contexto:** \nImagina que estás desarrollando un pequeño juego de simulación donde los jugadores deben adivinar números generados aleatoriamente según ciertas reglas. Cada número generado debe cumplir con restricciones específicas y el proceso de generación debe ser repetido hasta que se cumplan todas las condiciones.\n\n**Enunciado:**\nEscribe un programa en Python que genere un número entero entre 1 y 100 (inclusive) utilizando un bucle `while`. El número generado debe cumplir con las siguientes restricciones:\n\n1. **Suma de los dígitos**: La suma de los dígitos del número debe ser mayor a 5.\n2. **Paridad alternada**: Los dígitos del número deben seguir un patrón de paridad alternada, es decir, si el primer dígito es impar, el segundo debe ser par y viceversa.\n\nEl programa debe repetir el proceso de generación hasta que se encuentre un número que cumpla ambas restricciones. Luego, debe imprimir el número encontrado y la cantidad de intentos realizados para generar ese número.\n\n**Consideraciones:**\n- Utiliza únicamente los conceptos proporcionados: expresión booleana, expresión de comparación, tipo de dato, algoritmo, identificador, flujo de ejecución, expresión, variable, operador, indentación, tipo de dato básico, literal, programa y bucle `while`.\n- No utilices funciones adicionales ni módulos externos como `random` o `math`. Para generar un número aleatorio entre 1 y 100, puedes utilizar el siguiente fragmento de código:\n\n```python\nimport time\ndef generar_numero_aleatorio():\n    seed = int(time.time() * 1000) % 100 + 1\n    return seed\n```\nEste código genera un número pseudoaleatorio entre 1 y 100 basado en el tiempo actual.\n\n**Ejemplo de Salida:**\n```\nNúmero generado: 43\nCantidad de intentos: 5\n```\n\n**Nota:** \nAsegúrate de que tu programa funciona correctamente para cualquier secuencia de números generados por la función `generar_numero_aleatorio`. El número de intentos puede variar dependiendo de la secuencia aleatoria obtenida."
+}
+══════════════════════════════════════════════════
+
+=================
+JUEZ 2
+=================
+🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ 2] SYSTEM PROMPT:
+Eres un juez estricto en el Senado Académico.
+Debes evaluar el siguiente ejercicio generado por otro profesor.
+Criterios estrictos:
+1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno (dificil)?
+2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+3. ORIGINALIDAD: ¿Es el ejercicio original? NO debe ser una copia idéntica o tener la misma narrativa que los ejemplos del contexto.
+
+Contexto de ejercicios base para guiar el estilo:
+Enunciado: Un monomio está caracterizado por un coeficiente (real) y una x elevada a un exponente (entero y positivo), si bien puede no llevar x. Como es sabido, un polinomio es una suma de monomios (Ejemplo: +2.0x**3 + x + 4.0)
+
+Para escribir en pantalla un monomio, hay que tener en cuenta que:
+
+   1. Si el coeficiente es 0 no deberá imprimirse el monomio.
+   2. Si el coeficiente es 1 no imprimiremos el coeficiente.
+   3. Si el exponente es 1 no escribiremos el exponente
+   4. Si el exponente es 0 no escribiremos ni el polinomio ni la x.
+
+   Haz un subprograma que imprima un monomio. Advierte que Python no escribe el "+" en los números positivos y ahora hará falta hacerlo expresamente.
+Enunciado: Escribe un subprograma que invierta los valores de las filas de orden k en una matriz (representada mediante una lista de listas). Por ejemplo `[[6,3,2], [8,6,3], [4,15,2], [3,6], [3,7,0], [2,9]]`, K = 2 invierte la 2ª, 4ª y 6ª filas, produciendo la matriz: `[[6,3,2], [3,6,8], [4,15,2], [6,3], [3,7,0], [9,2]]`
+Enunciado: Mejorar el *Ejercicio Resuelto 3*, modularizándolo y poniendo un límite al número de veces que el usuario puede intentar acertar el símbolo oculto.
+Enunciado: Estudia la convergencia de la siguiente serie introduciendo un número creciente de términos y observando su tendencia. Implementa una función para la serie y un código que vaya analizando su convergencia. Comenta tus resultados.
+
+    (imagen de fórmula eliminada)
+Enunciado: Obtén las raíces de una ecuación de segundo grado a partir de sus coeficientes a, b y c. Recuerda que si el discriminante es cero la raíz es única (-b/2xa) y que si el discriminante es negativo las raíces son imaginarias, en cuyo caso deberá indicarse con un mensaje "raíces imaginarias". Modulariza tu solución.
+
+Evalúa el ejercicio asignándole una nota entera del 0 al 10.
+En tu crítica, razona tu nota de forma MUY BREVE.
+REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.
+¡ATENCIÓN CRÍTICA!: EL CAMPO 'ejercicio_mejorado' NUNCA PUEDE ESTAR VACÍO (""). TIENES QUE ESCRIBIR EL ENUNCIADO COMPLETO REESCRITO SIEMPRE, INCLUSO SI LE DAS UN 10. SI DEJAS EL CAMPO VACÍO, EL SISTEMA CRASHEARÁ.
+
+[INSTRUCCIÓN AVANZADA CLÚSTER A40]: Dado que cuentas con alta capacidad computacional y de contexto, por favor utiliza 'Chain of Thought' (piensa paso a paso). Argumenta exhaustivamente tus decisiones, provee consideraciones pedagógicas o de rendimiento sumamente profundas, y genera respuestas del más alto nivel técnico y descriptivo disponible.
+--------------------------------------------------
+🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ 2] USER PROMPT:
+Ejercicio a evaluar:
+## Ejercicio Avanzado: Generador de Sucesos Aleatorios con Restricciones
+
+**Contexto:**
+Imagina que estás desarrollando un pequeño juego de simulación donde los jugadores deben adivinar números generados aleatoriamente según ciertas reglas. Cada número generado debe cumplir con restricciones específicas y el proceso de generación debe ser repetido hasta que se cumplan todas las condiciones.
+
+**Enunciado:**
+Escribe un programa en Python que genere un número entero entre 1 y 100 (inclusive) utilizando un bucle `while`. El número generado debe cumplir con las siguientes restricciones:
+
+1. **Suma de los dígitos**: La suma de los dígitos del número debe ser mayor a 5.
+2. **Paridad alternada**: Los dígitos del número deben seguir un patrón de paridad alternada, es decir, si el primer dígito es impar, el segundo debe ser par y viceversa.
+
+El programa debe repetir el proceso de generación hasta que se encuentre un número que cumpla ambas restricciones. Luego, debe imprimir el número encontrado y la cantidad de intentos realizados para generar ese número.
+
+**Consideraciones:**
+- Utiliza únicamente los conceptos proporcionados: expresión booleana, expresión de comparación, tipo de dato, algoritmo, identificador, flujo de ejecución, expresión, variable, operador, indentación, tipo de dato básico, literal, programa y bucle `while`.
+- No utilices funciones adicionales ni módulos externos como `random` o `math`. Para generar un número aleatorio entre 1 y 100, puedes utilizar el siguiente fragmento de código:
+
+```python
+import time
+def generar_numero_aleatorio():
+    seed = int(time.time() * 1000) % 100 + 1
+    return seed
+```
+Este código genera un número pseudoaleatorio entre 1 y 100 basado en el tiempo actual.
+
+**Ejemplo de Salida:**
+```
+Número generado: 43
+Cantidad de intentos: 5
+```
+
+**Nota:**
+Asegúrate de que tu programa funciona correctamente para cualquier secuencia de números generados por la función `generar_numero_aleatorio`. El número de intentos puede variar dependiendo de la secuencia aleatoria obtenida.
+══════════════════════════════════════════════════
+⠋ ⏳ La IA está razonando...
+🤖 [MODO DEV - SENADO REFLEXIÓN - JUEZ 2] RESPUESTA:
+{
+  "nota": 8,
+  "critica": "El ejercicio es adecuadamente desafiante para un nivel avanzado, cumpliendo con los criterios de dificultad y utilizando conceptos específicos sin recurrir a módulos externos innecesarios. Sin embargo, se podría mejorar en originalidad al cambiar la lógica del generador aleatorio interno o ajustar las restricciones para evitar un posible sesgo hacia ciertos números.",
+  "ejercicio_mejorado": "## Ejercicio Avanzado: Generador de Sucesos Aleatorios con Restricciones\n\n**Contexto:** \nImagina que estás desarrollando un pequeño juego de simulación donde los jugadores deben adivinar números generados aleatoriamente según ciertas reglas. Cada número generado debe cumplir con restricciones específicas y el proceso de generación debe ser repetido hasta que se cumplan todas las condiciones.\n\n**Enunciado:**\nEscribe un programa en Python que genere un número entero entre 1 y 100 (inclusive) utilizando un bucle `while`. El número generado debe cumplir con las siguientes restricciones:\n\n1. **Suma de los dígitos**: La suma de los dígitos del número debe ser mayor a 8.\n2. **Multiplicidad relativa**: Los dígitos del número no deben compartir factores primos entre sí, excepto el 1 (es decir, deben ser coprimos).\n\nEl programa debe repetir el proceso de generación hasta que se encuentre un número que cumpla ambas restricciones. Luego, debe imprimir el número encontrado y la cantidad de intentos realizados para generar ese número.\n\n**Consideraciones:**\n- Utiliza únicamente los conceptos proporcionados: expresión booleana, expresión de comparación, tipo de dato, algoritmo, identificador, flujo de ejecución, expresión, variable, operador, indentación, tipo de dato básico, literal, programa y bucle `while`.\n- No utilices funciones adicionales ni módulos externos como `random` o `math`. Para generar un número aleatorio entre 1 y 100, puedes utilizar el siguiente fragmento de código:\n\n```python\ndef generar_numero_aleatorio(seed):\n    seed = (seed * 9301 + 49297) % 233280\n    return seed % 100 + 1\n```\nEste código genera un número pseudoaleatorio entre 1 y 100 basado en una semilla proporcionada.\n\n**Ejemplo de Salida:**\n```\nNúmero generado: 74\nCantidad de intentos: 12\n```\n\n**Nota:** \nAsegúrate de que tu programa funciona correctamente para cualquier secuencia de números generados por la función `generar_numero_aleatorio`. El número de intentos puede variar dependiendo de la secuencia aleatoria obtenida."
+}
+══════════════════════════════════════════════════
+
+=================
+JUEZ 3
+=================
+🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ 3] SYSTEM PROMPT:
+Eres un juez estricto en el Senado Académico.
+Debes evaluar el siguiente ejercicio generado por otro profesor.
+Criterios estrictos:
+1. ¿La dificultad del ejercicio coincide razonablemente con la pedida por el alumno (dificil)?
+2. ¿El formato y estilo del ejercicio se parece a los ejercicios base extraídos del contexto?
+3. ORIGINALIDAD: ¿Es el ejercicio original? NO debe ser una copia idéntica o tener la misma narrativa que los ejemplos del contexto.
+
+Contexto de ejercicios base para guiar el estilo:
+Enunciado: Un monomio está caracterizado por un coeficiente (real) y una x elevada a un exponente (entero y positivo), si bien puede no llevar x. Como es sabido, un polinomio es una suma de monomios (Ejemplo: +2.0x**3 + x + 4.0)
+
+Para escribir en pantalla un monomio, hay que tener en cuenta que:
+
+   1. Si el coeficiente es 0 no deberá imprimirse el monomio.
+   2. Si el coeficiente es 1 no imprimiremos el coeficiente.
+   3. Si el exponente es 1 no escribiremos el exponente
+   4. Si el exponente es 0 no escribiremos ni el polinomio ni la x.
+
+   Haz un subprograma que imprima un monomio. Advierte que Python no escribe el "+" en los números positivos y ahora hará falta hacerlo expresamente.
+Enunciado: Escribe un subprograma que invierta los valores de las filas de orden k en una matriz (representada mediante una lista de listas). Por ejemplo `[[6,3,2], [8,6,3], [4,15,2], [3,6], [3,7,0], [2,9]]`, K = 2 invierte la 2ª, 4ª y 6ª filas, produciendo la matriz: `[[6,3,2], [3,6,8], [4,15,2], [6,3], [3,7,0], [9,2]]`
+Enunciado: Mejorar el *Ejercicio Resuelto 3*, modularizándolo y poniendo un límite al número de veces que el usuario puede intentar acertar el símbolo oculto.
+Enunciado: Estudia la convergencia de la siguiente serie introduciendo un número creciente de términos y observando su tendencia. Implementa una función para la serie y un código que vaya analizando su convergencia. Comenta tus resultados.
+
+    (imagen de fórmula eliminada)
+Enunciado: Obtén las raíces de una ecuación de segundo grado a partir de sus coeficientes a, b y c. Recuerda que si el discriminante es cero la raíz es única (-b/2xa) y que si el discriminante es negativo las raíces son imaginarias, en cuyo caso deberá indicarse con un mensaje "raíces imaginarias". Modulariza tu solución.
+
+Evalúa el ejercicio asignándole una nota entera del 0 al 10.
+En tu crítica, razona tu nota de forma MUY BREVE.
+REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.
+¡ATENCIÓN CRÍTICA!: EL CAMPO 'ejercicio_mejorado' NUNCA PUEDE ESTAR VACÍO (""). TIENES QUE ESCRIBIR EL ENUNCIADO COMPLETO REESCRITO SIEMPRE, INCLUSO SI LE DAS UN 10. SI DEJAS EL CAMPO VACÍO, EL SISTEMA CRASHEARÁ.
+
+[INSTRUCCIÓN AVANZADA CLÚSTER A40]: Dado que cuentas con alta capacidad computacional y de contexto, por favor utiliza 'Chain of Thought' (piensa paso a paso). Argumenta exhaustivamente tus decisiones, provee consideraciones pedagógicas o de rendimiento sumamente profundas, y genera respuestas del más alto nivel técnico y descriptivo disponible.
+--------------------------------------------------
+🛠️ [MODO DEV - SENADO REFLEXIÓN - JUEZ 3] USER PROMPT:
+Ejercicio a evaluar:
+## Ejercicio Avanzado: Generador de Sucesos Aleatorios con Restricciones
+
+**Contexto:**
+Imagina que estás desarrollando un pequeño juego de simulación donde los jugadores deben adivinar números generados aleatoriamente según ciertas reglas. Cada número generado debe cumplir con restricciones específicas y el proceso de generación debe ser repetido hasta que se cumplan todas las condiciones.
+
+**Enunciado:**
+Escribe un programa en Python que genere un número entero entre 1 y 100 (inclusive) utilizando un bucle `while`. El número generado debe cumplir con las siguientes restricciones:
+
+1. **Suma de los dígitos**: La suma de los dígitos del número debe ser mayor a 8.
+2. **Multiplicidad relativa**: Los dígitos del número no deben compartir factores primos entre sí, excepto el 1 (es decir, deben ser coprimos).
+
+El programa debe repetir el proceso de generación hasta que se encuentre un número que cumpla ambas restricciones. Luego, debe imprimir el número encontrado y la cantidad de intentos realizados para generar ese número.
+
+**Consideraciones:**
+- Utiliza únicamente los conceptos proporcionados: expresión booleana, expresión de comparación, tipo de dato, algoritmo, identificador, flujo de ejecución, expresión, variable, operador, indentación, tipo de dato básico, literal, programa y bucle `while`.
+- No utilices funciones adicionales ni módulos externos como `random` o `math`. Para generar un número aleatorio entre 1 y 100, puedes utilizar el siguiente fragmento de código:
+
+```python
+def generar_numero_aleatorio(seed):
+    seed = (seed * 9301 + 49297) % 233280
+    return seed % 100 + 1
+```
+Este código genera un número pseudoaleatorio entre 1 y 100 basado en una semilla proporcionada.
+
+**Ejemplo de Salida:**
+```
+Número generado: 74
+Cantidad de intentos: 12
+```
+
+**Nota:**
+Asegúrate de que tu programa funciona correctamente para cualquier secuencia de números generados por la función `generar_numero_aleatorio`. El número de intentos puede variar dependiendo de la secuencia aleatoria obtenida.
+══════════════════════════════════════════════════
+⠇ ⏳ La IA está razonando...
+🤖 [MODO DEV - SENADO REFLEXIÓN - JUEZ 3] RESPUESTA:
+{
+  "nota": 8,
+  "critica": "El ejercicio es adecuadamente complejo y original, utilizando únicamente los conceptos proporcionados. Sin embargo, podría ser más desafiante si se agregara una tercera restricción o un mayor nivel de modularización.",
+  "ejercicio_mejorado": "## Ejercicio Avanzado: Generador de Sucesos Aleatorios con Restricciones\n\n**Contexto:** \nImagina que estás desarrollando un pequeño juego de simulación donde los jugadores deben adivinar números generados aleatoriamente según ciertas reglas. Cada número generado debe cumplir con restricciones específicas y el proceso de generación debe ser repetido hasta que se cumplan todas las condiciones.\n\n**Enunciado:**\nEscribe un programa en Python que genere un número entero entre 1 y 100 (inclusive) utilizando un bucle `while`. El número generado debe cumplir con las siguientes restricciones:\n\n1. **Suma de los dígitos**: La suma de los dígitos del número debe ser mayor a 8.\n2. **Multiplicidad relativa**: Los dígitos del número no deben compartir factores primos entre sí, excepto el 1 (es decir, deben ser coprimos).\n3. **Diferencia entre dígitos**: La diferencia entre los dos dígitos debe ser mayor a 2.\n\nEl programa debe repetir el proceso de generación hasta que se encuentre un número que cumpla ambas restricciones. Luego, debe imprimir el número encontrado y la cantidad de intentos realizados para generar ese número.\n\n**Consideraciones:**\n- Utiliza únicamente los conceptos proporcionados: expresión booleana, expresión de comparación, tipo de dato, algoritmo, identificador, flujo de ejecución, expresión, variable, operador, indentación, tipo de dato básico, literal, programa y bucle `while`.\n- No utilices funciones adicionales ni módulos externos como `random` o `math`. Para generar un número aleatorio entre 1 y 100, puedes utilizar el siguiente fragmento de código:\n\n```python\ndef generar_numero_aleatorio(seed):\n    seed = (seed * 9301 + 49297) % 233280\n    return seed % 100 + 1\n```\nEste código genera un número pseudoaleatorio entre 1 y 100 basado en una semilla proporcionada.\n\n**Ejemplo de Salida:**\n```\nNúmero generado: 74\nCantidad de intentos: 12\n```\n\n**Nota:** \nAsegúrate de que tu programa funciona correctamente para cualquier secuencia de números generados por la función `generar_numero_aleatorio`. El número de intentos puede variar dependiendo de la secuencia aleatoria obtenida."
+}
+══════════════════════════════════════════════════
+🏛️ Votación del Senado: El Juez 3 certifica la versión final con un 8/10. Proceso de mejora iterativa completado.
+
+**************************************************
+🎯 RESULTADO 🎯
+**************************************************
+
+[ENUNCIADO]
+## Ejercicio Avanzado: Generador de Sucesos Aleatorios con Restricciones
+
+**Contexto:**
+Imagina que estás desarrollando un pequeño juego de simulación donde los jugadores deben adivinar números generados aleatoriamente según ciertas reglas. Cada número generado debe cumplir con restricciones específicas y el proceso de generación debe ser repetido hasta que se cumplan todas las condiciones.
+
+**Enunciado:**
+Escribe un programa en Python que genere un número entero entre 1 y 100 (inclusive) utilizando un bucle `while`. El número generado debe cumplir con las siguientes restricciones:
+
+1. **Suma de los dígitos**: La suma de los dígitos del número debe ser mayor a 8.
+2. **Multiplicidad relativa**: Los dígitos del número no deben compartir factores primos entre sí, excepto el 1 (es decir, deben ser coprimos).
+3. **Diferencia entre dígitos**: La diferencia entre los dos dígitos debe ser mayor a 2.
+
+El programa debe repetir el proceso de generación hasta que se encuentre un número que cumpla ambas restricciones. Luego, debe imprimir el número encontrado y la cantidad de intentos realizados para generar ese número.
+
+**Consideraciones:**
+- Utiliza únicamente los conceptos proporcionados: expresión booleana, expresión de comparación, tipo de dato, algoritmo, identificador, flujo de ejecución, expresión, variable, operador, indentación, tipo de dato básico, literal, programa y bucle `while`.
+- No utilices funciones adicionales ni módulos externos como `random` o `math`. Para generar un número aleatorio entre 1 y 100, puedes utilizar el siguiente fragmento de código:
+
+```python
+def generar_numero_aleatorio(seed):
+    seed = (seed * 9301 + 49297) % 233280
+    return seed % 100 + 1
+```
+Este código genera un número pseudoaleatorio entre 1 y 100 basado en una semilla proporcionada.
+
+**Ejemplo de Salida:**
+```
+Número generado: 74
+Cantidad de intentos: 12
+```
+
+**Nota:**
+Asegúrate de que tu programa funciona correctamente para cualquier secuencia de números generados por la función `generar_numero_aleatorio`. El número de intentos puede variar dependiendo de la secuencia aleatoria obtenida.
+
+💾 Ejercicio guardado exitosamente en 'exercice.md'.
+

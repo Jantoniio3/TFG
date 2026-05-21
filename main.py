@@ -280,12 +280,14 @@ def main():
             
         try:
             spinner = Spinner("⏳ La IA está razonando...")
-            spinner.start()
+            if not modo_desarrollador:
+                spinner.start()
             
             # Usamos stream en vez de invoke para poder mostrar el progreso paso a paso
             for s in app.stream(initial_state, config={"recursion_limit": 20}):
                 # Detener el spinner un momento para que los prints de los nodos no se solapen
-                spinner.stop()
+                if not modo_desarrollador:
+                    spinner.stop()
                 
                 for node_name, node_state in s.items():
                     if node_name == "retriever":
@@ -305,9 +307,11 @@ def main():
                     initial_state.update(node_state)
                 
                 # Reanudar el spinner hasta que se emita el siguiente estado
-                spinner.start()
+                if not modo_desarrollador:
+                    spinner.start()
             
-            spinner.stop()
+            if not modo_desarrollador:
+                spinner.stop()
             final_state = initial_state
             
             print("\n" + "*" * 50)
