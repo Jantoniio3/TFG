@@ -11,6 +11,7 @@ import unicodedata
 import threading
 import itertools
 import time
+from dotenv import load_dotenv
 
 # Colores ANSI para diferenciar texto
 USER_COLOR = "\033[96m"  # Cyan para lo que escribe el usuario
@@ -109,7 +110,13 @@ def main():
     historial_alumno = []
     conceptos_maximos = []
     lenguaje_sesion = "Python"
-    modo_desarrollador = False
+    
+    load_dotenv()
+    dev_mode_env = os.getenv("DEVELOPER_MODE", "False").strip().lower()
+    modo_desarrollador = dev_mode_env in ("true", "1", "yes", "s")
+    if modo_desarrollador:
+        print("🛠️ MODO DESARROLLADOR ACTIVADO (desde .env). Prepárate para ver mucho texto en consola.")
+        
     usar_senado = True
     tipo_senado = "bft"
     
@@ -189,12 +196,6 @@ def main():
             req_lenguaje = ask_user("¿En qué lenguaje de programación quieres trabajar? [Por defecto: Python]: ").strip()
             lenguaje_sesion = req_lenguaje if req_lenguaje else "Python"
             print(f"✅ Establecido el lenguaje a {lenguaje_sesion} para esta sesión.")
-            
-            # Pedir Modo Desarrollador
-            dev_mode_input = ask_user("\n¿Activar MODO DESARROLLADOR para ver los prompts internos enviados a la IA? [s/N]: ").strip().lower()
-            modo_desarrollador = dev_mode_input == 's'
-            if modo_desarrollador:
-                print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
             
         initial_state = {
             "alumno_historial": historial_alumno,
