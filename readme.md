@@ -70,9 +70,12 @@ python src/evaluation/model_evaluator.py
 
 ---
 
-## Configuración de VRAM (A40 GPU)
-En el archivo `.env.cluster` se configura la gestión agresiva de VRAM:
-- **`OLLAMA_MODEL`**: `llama3.1:70b` (Modelo de 70 billones de parámetros).
-- **`NUM_CTX`**: `16384`. Dado que la A40 cuenta con 48GB y el modelo de 70B en 4-bits consume ~39GB, reducimos el contexto a 16K tokens para asegurar que la votación asíncrona concurrente de 3 jueces en el Senado quepa en la memoria restante sin causar VRAM Thrashing o errores OOM (Out Of Memory).
+## Variables de Entorno y Configuración
+En los archivos `.env` y `.env.cluster` se configuran las propiedades del sistema:
+- **`OLLAMA_BASE_URL`**: URL base de la API de Ollama.
+- **`ENVIRONMENT`**: Entorno de ejecución (`local` o `cluster`).
+- **`OLLAMA_MODEL`**: Modelo LLM a utilizar.
+- **`NUM_CTX`**: Ventana de contexto para el LLM.
+- **`DEVELOPER_MODE`**: Habilita/Deshabilita el modo desarrollador (`True`/`False`) para ver los prompts internos enviados a la IA en la consola, eliminando la necesidad de seleccionarlo interactivamente.
 
 > **Nota:** Todos los módulos internos aplican una "Regla Estricta de Confinamiento de Conocimiento" que prohíbe pedagógicamente sugerir bibliotecas (`math`, `collections`, etc.) a alumnos que no han alcanzado dicho nodo en el grafo.

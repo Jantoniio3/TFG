@@ -12,6 +12,7 @@ from src.retriever.graph_rag import GraphRAG
 
 from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.callbacks import StreamingStdOutCallbackHandler
 
 import asyncio
 from pydantic import BaseModel, Field
@@ -34,12 +35,15 @@ class SenateVoteReflection(BaseModel):
 
 load_dotenv()
 
-def get_llm():
+def get_llm(stream: bool = False):
     """Instancia el modelo LLM con temperatura estándar para tareas creativas.
     
     Lee la configuración del entorno para determinar si está en el clúster
     o en local, ajustando el modelo y la memoria contextual.
     
+    Args:
+        stream (bool): Si es True, activa el streaming de tokens a la consola.
+        
     Returns:
         ChatOllama: Instancia del modelo LLM configurado (temperatura 0.7).
     """
@@ -51,14 +55,18 @@ def get_llm():
         # Mensaje opcional para que se vea en los logs de Streamlit/Consola que se activa la A40
         pass
         
-    return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.7)
+    callbacks = [StreamingStdOutCallbackHandler()] if stream else []
+    return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.7, callbacks=callbacks)
 
-def get_llm_deterministic():
+def get_llm_deterministic(stream: bool = False):
     """Instancia el modelo LLM sin temperatura para tareas de precisión.
     
     Ideal para depuración de código (find_bugs_node) donde no se busca
     creatividad sino exactitud lógica.
     
+    Args:
+        stream (bool): Si es True, activa el streaming de tokens a la consola.
+        
     Returns:
         ChatOllama: Instancia del modelo LLM configurado (temperatura 0.0).
     """
@@ -67,7 +75,8 @@ def get_llm_deterministic():
     env = os.getenv("ENVIRONMENT", "local")
     if env == "cluster":
         print(f"[⚡ CLUSTER MODE] Usando GPU A40 / {model_name} determinista para mayor exactitud.")
-    return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.0)
+    callbacks = [StreamingStdOutCallbackHandler()] if stream else []
+    return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.0, callbacks=callbacks)
 
 def get_cluster_prompt_suffix():
     env = os.getenv("ENVIRONMENT", "local")
@@ -101,7 +110,7 @@ def generate_exercise(state):
     del Senado, lee las críticas previas para inyectarlas en el prompt
     y forzar la corrección del ejercicio en este nuevo intento.
     """
-    llm = get_llm()
+    llm = get_llm(stream=state.get("modo_desarrollador", False))
     buscados = ', '.join(state.get('conceptos_buscados', []))
     vistos = ', '.join(state.get('alumno_historial', []))
     contexto = "\n".join([f"Id: {e['id']} - Dificultad: {e['dificultad']}\nEnunciado: {e['enunciado']}" for e in state.get("ejercicios_contexto", [])])
@@ -149,7 +158,7 @@ def senate_bft_node(state):
     al Generador con las críticas acumuladas para que se regenere.
     """
     print("\n⚖️ El Senado está debatiendo (BFT 3 Jueces)...")
-    llm = get_llm().with_structured_output(SenateVoteBFT)
+    llm = get_llm(stream=state.get("modo_desarrollador", False)).with_structured_output(SenateVoteBFT)
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
@@ -233,7 +242,7 @@ def senate_reflection_node(state):
     num_jueces = 1 if con_solucion else 3
     msg_jueces = "(1 Juez Rápido)" if con_solucion else "(3 Jueces Secuenciales)"
     print(f"\n⚖️ El Senado Reflexivo ha iniciado la cadena de mejora {msg_jueces}...")
-    llm = get_llm().with_structured_output(SenateVoteReflection)
+    llm = get_llm(stream=state.get("modo_desarrollador", False)).with_structured_output(SenateVoteReflection)
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
@@ -327,7 +336,7 @@ def generate_solution_node(state):
     Incluye la directriz estricta de confinamiento para no usar herramientas
     que el alumno no haya aprendido todavía.
     """
-    llm = get_llm()
+    llm = get_llm(stream=state.get("modo_desarrollador", False))
     enunciado = state.get("enunciado_generado") or state.get("ejercicio_generado", "")
     lenguaje = state.get("lenguaje", "Python")
     vistos = ', '.join(state.get('alumno_historial', []))
@@ -366,7 +375,7 @@ def solve_node(state):
     Explica de forma socrática el código y propone mejoras respetando
     estrictamente el historial de aprendizaje del estudiante.
     """
-    llm = get_llm()
+    llm = get_llm(stream=state.get("modo_desarrollador", False))
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")
     vistos = ', '.join(state.get('alumno_historial', []))
@@ -401,7 +410,7 @@ def find_bugs_node(state):
     Utiliza el modelo determinista (temperatura 0.0) para máxima
     exactitud al cazar bugs lógicos y de sintaxis.
     """
-    llm = get_llm_deterministic()
+    llm = get_llm_deterministic(stream=state.get("modo_desarrollador", False))
     codigo = state.get("codigo_entrada", "")
     lenguaje = state.get("lenguaje", "Python")
     vistos = ', '.join(state.get('alumno_historial', []))

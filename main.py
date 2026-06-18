@@ -11,6 +11,7 @@ import unicodedata
 import threading
 import itertools
 import time
+from dotenv import load_dotenv
 
 # Colores ANSI para diferenciar texto
 USER_COLOR = "\033[96m"  # Cyan para lo que escribe el usuario
@@ -109,7 +110,13 @@ def main():
     historial_alumno = []
     conceptos_maximos = []
     lenguaje_sesion = "Python"
-    modo_desarrollador = False
+    
+    load_dotenv()
+    dev_mode_env = os.getenv("DEVELOPER_MODE", "False").strip().lower()
+    modo_desarrollador = dev_mode_env in ("true", "1", "yes", "s")
+    if modo_desarrollador:
+        print("🛠️ MODO DESARROLLADOR ACTIVADO (desde .env). Prepárate para ver mucho texto en consola.")
+        
     usar_senado = True
     tipo_senado = "bft"
     
@@ -189,12 +196,6 @@ def main():
             req_lenguaje = ask_user("¿En qué lenguaje de programación quieres trabajar? [Por defecto: Python]: ").strip()
             lenguaje_sesion = req_lenguaje if req_lenguaje else "Python"
             print(f"✅ Establecido el lenguaje a {lenguaje_sesion} para esta sesión.")
-            
-            # Pedir Modo Desarrollador
-            dev_mode_input = ask_user("\n¿Activar MODO DESARROLLADOR para ver los prompts internos enviados a la IA? [s/N]: ").strip().lower()
-            modo_desarrollador = dev_mode_input == 's'
-            if modo_desarrollador:
-                print("🛠️ MODO DESARROLLADOR ACTIVADO. Prepárate para ver mucho texto en consola.")
             
         initial_state = {
             "alumno_historial": historial_alumno,
@@ -280,12 +281,14 @@ def main():
             
         try:
             spinner = Spinner("⏳ La IA está razonando...")
-            spinner.start()
+            if not modo_desarrollador:
+                spinner.start()
             
             # Usamos stream en vez de invoke para poder mostrar el progreso paso a paso
             for s in app.stream(initial_state, config={"recursion_limit": 20}):
                 # Detener el spinner un momento para que los prints de los nodos no se solapen
-                spinner.stop()
+                if not modo_desarrollador:
+                    spinner.stop()
                 
                 for node_name, node_state in s.items():
                     if node_name == "retriever":
@@ -305,9 +308,11 @@ def main():
                     initial_state.update(node_state)
                 
                 # Reanudar el spinner hasta que se emita el siguiente estado
-                spinner.start()
+                if not modo_desarrollador:
+                    spinner.start()
             
-            spinner.stop()
+            if not modo_desarrollador:
+                spinner.stop()
             final_state = initial_state
             
             print("\n" + "*" * 50)
