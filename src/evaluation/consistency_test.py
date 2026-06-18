@@ -53,7 +53,7 @@ async def run_stress_test(N: int = 10):
         "Modelo", 
         "Ventana_Contexto",
         "Tipo_Senado",
-        "Tiempo_Total_Generacion_Seg", 
+        "Tiempo_Total_Generacion_Min", 
         "Puntuacion_Senado", 
         "Reintentos", 
         "Resultado_Final"
@@ -94,9 +94,8 @@ async def run_stress_test(N: int = 10):
                 "criticas_senado": "",
                 "votos_senado": "",
                 "nota_senado": 0,
-                "modo_desarrollador": False,
                 "usar_senado": True,
-                "tipo_senado": "bft" # Por defecto BFT para stress tests
+                "tipo_senado": "reflexion" # Usamos el senado en línea (reflexión)
             }
             
             start_time = time.perf_counter()
@@ -117,7 +116,7 @@ async def run_stress_test(N: int = 10):
             final_state = initial_state
             
             end_time = time.perf_counter()
-            tiempo_total = round(end_time - start_time, 2)
+            tiempo_total_min = round((end_time - start_time) / 60.0, 2)
             
             # Extracción de métricas
             reintentos = final_state.get("reintentos", 0)
@@ -135,9 +134,9 @@ async def run_stress_test(N: int = 10):
             else:
                 resultado = "Fallido (Límite de reintentos)"
                 
-            print(f"   Tiempo: {tiempo_total}s | Puntuación Final: {puntuacion} | Reintentos: {reintentos} | Resultado: {resultado}")
+            print(f"   Tiempo: {tiempo_total_min}min | Puntuación Final: {puntuacion} | Reintentos: {reintentos} | Resultado: {resultado}")
             
-            row = [i, modelo, num_ctx, tipo_evaluacion, tiempo_total, puntuacion, reintentos, resultado]
+            row = [i, modelo, num_ctx, tipo_evaluacion, tiempo_total_min, puntuacion, reintentos, resultado]
             writer.writerow(row)
             f.flush() # Guardar a disco inmediatamente por si se cancela a medias
             

@@ -1,10 +1,20 @@
 import subprocess
 
 models = [
-    ("llama3.3:70b", "4096"),
-    ("qwen2.5-coder:32b", "4096")]
+    # --- Familia Meta (LLaMA) ---
+    ("llama3.3:70b", "4096"),          # El estado del arte actual de Meta. Razonamiento lógico insuperable.
+    ("llama3.1:70b", "4096"),          # Versión anterior de Meta. Perfecto para medir si la v3.3 realmente mejora a la v3.1.
+    
+    # --- Familia Alibaba (Qwen) ---
+    ("qwen2.5-coder:32b", "4096"),     # El mejor modelo open-source específico de código en su rango de peso.
+    ("qwen2.5:72b", "4096"),           # El hermano mayor genérico. Útil para ver si un modelo genérico de 72B supera a uno de código de 32B.
+    
+    # --- Modelos especializados en RAG y Código ---
+    ("command-r:35b", "4096"),         # Creado por Cohere, está entrenado específicamente para sistemas RAG y uso de herramientas.
+    ("deepseek-coder:33b", "4096")     # Un clásico altamente eficiente en la corrección de errores de programación (debug).
+]
 
-iteraciones = 10
+iteraciones = 5
 
 print("=" * 60)
 print("🚀 INICIANDO BATERÍA DE TESTS MULTI-MODELO")

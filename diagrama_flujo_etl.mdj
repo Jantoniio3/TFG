@@ -1,0 +1,265 @@
+{
+  "_type": "Project",
+  "_id": "AAAA31a888234b5c",
+  "name": "TFG_ETL",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "_id": "AAAAc6bdc2ca633f",
+      "_parent": {
+        "$ref": "AAAA31a888234b5c"
+      },
+      "name": "Model",
+      "ownedElements": [
+        {
+          "_type": "UMLActivity",
+          "_id": "AAAAb455350f21df",
+          "_parent": {
+            "$ref": "AAAAc6bdc2ca633f"
+          },
+          "name": "ETL_Flow",
+          "nodes": [
+            {
+              "_type": "UMLObjectNode",
+              "_id": "AAAA4437ed233886",
+              "name": "Documento PDF Original"
+            },
+            {
+              "_type": "UMLObjectNode",
+              "_id": "AAAA1b1228001e15",
+              "name": "exercises_dataset.json"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA5a2ff190c34c",
+              "name": "Lectura binaria"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA98d814ff1db4",
+              "name": "Conversion MarkItDown"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA71b0922dd721",
+              "name": "Generar Markdown"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAAa92835d435a6",
+              "name": "Analisis Regex"
+            },
+            {
+              "_type": "UMLDecisionNode",
+              "_id": "AAAAaab551dc100c",
+              "name": "Identificar Cabecera"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA8ad4134ced7f",
+              "name": "Aislar Enunciado + Codigo"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA3188e9fc293f",
+              "name": "Aislar solo Enunciado"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAAbf1c3c3d295f",
+              "name": "JSON preliminar"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA1cfc7968679f",
+              "name": "Iterar fragmentos"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA94d6992382e9",
+              "name": "Inferencia LLM"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAA01d41c814cb9",
+              "name": "Extraer Metadatos"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "AAAAa927bedd5dba",
+              "name": "Mapeo Grafo NetworkX"
+            }
+          ],
+          "edges": [
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAA27469e15c727",
+              "name": "",
+              "source": {
+                "$ref": "AAAA4437ed233886"
+              },
+              "target": {
+                "$ref": "AAAA5a2ff190c34c"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAA48caf1101c71",
+              "name": "",
+              "source": {
+                "$ref": "AAAA5a2ff190c34c"
+              },
+              "target": {
+                "$ref": "AAAA98d814ff1db4"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAAcec619eb1a09",
+              "name": "",
+              "source": {
+                "$ref": "AAAA98d814ff1db4"
+              },
+              "target": {
+                "$ref": "AAAA71b0922dd721"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAAc4d45c6b4d04",
+              "name": "",
+              "source": {
+                "$ref": "AAAA71b0922dd721"
+              },
+              "target": {
+                "$ref": "AAAAa92835d435a6"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAAcaa685ba40a8",
+              "name": "",
+              "source": {
+                "$ref": "AAAAa92835d435a6"
+              },
+              "target": {
+                "$ref": "AAAAaab551dc100c"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAA2bccc9a2d720",
+              "name": "Resuelto",
+              "source": {
+                "$ref": "AAAAaab551dc100c"
+              },
+              "target": {
+                "$ref": "AAAA8ad4134ced7f"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAA395d3a7187b3",
+              "name": "Propuesto",
+              "source": {
+                "$ref": "AAAAaab551dc100c"
+              },
+              "target": {
+                "$ref": "AAAA3188e9fc293f"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAA396192408038",
+              "name": "",
+              "source": {
+                "$ref": "AAAA8ad4134ced7f"
+              },
+              "target": {
+                "$ref": "AAAAbf1c3c3d295f"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAAb1d53d6aa0c3",
+              "name": "",
+              "source": {
+                "$ref": "AAAA3188e9fc293f"
+              },
+              "target": {
+                "$ref": "AAAAbf1c3c3d295f"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAAdc02dbdbdfc1",
+              "name": "",
+              "source": {
+                "$ref": "AAAAbf1c3c3d295f"
+              },
+              "target": {
+                "$ref": "AAAA1cfc7968679f"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAA08613a6ef9c0",
+              "name": "",
+              "source": {
+                "$ref": "AAAA1cfc7968679f"
+              },
+              "target": {
+                "$ref": "AAAA94d6992382e9"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAA803409b074ca",
+              "name": "",
+              "source": {
+                "$ref": "AAAA94d6992382e9"
+              },
+              "target": {
+                "$ref": "AAAA01d41c814cb9"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAAb274b5a04ea3",
+              "name": "",
+              "source": {
+                "$ref": "AAAA01d41c814cb9"
+              },
+              "target": {
+                "$ref": "AAAAa927bedd5dba"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "AAAAfc32460444ba",
+              "name": "",
+              "source": {
+                "$ref": "AAAAa927bedd5dba"
+              },
+              "target": {
+                "$ref": "AAAA1b1228001e15"
+              }
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLActivityDiagram",
+              "_id": "AAAAf1e3ea31029f",
+              "_parent": {
+                "$ref": "AAAAb455350f21df"
+              },
+              "name": "Diagrama de Flujo ETL",
+              "defaultDiagram": true,
+              "ownedViews": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

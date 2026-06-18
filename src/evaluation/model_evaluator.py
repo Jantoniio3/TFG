@@ -7,6 +7,7 @@ ambas capacidades vitales para funcionar como Juez en el Senado de LangGraph.
 
 import os
 import sys
+import time
 from dotenv import load_dotenv
 import ollama
 
@@ -31,11 +32,30 @@ def evaluar_modelos():
     print("=" * 60)
     print(f"📡 Conectando al servidor de Ollama en: {ollama_url}")
     
+    # === CONFIGURACIÓN DE LA EVALUACIÓN ===
+    # Si dejas esta lista vacía [], se evaluarán TODOS los modelos instalados.
+    # Si quieres evaluar modelos concretos, escribe sus nombres. Ejemplo: ["llama3.1:8b", "mistral:latest"]
+    modelos_a_evaluar = [] 
+    
+    # Cantidad máxima de tokens que el modelo puede generar en su respuesta
+    max_tokens_respuesta = 500
+    
+    # Cantidad máxima de tokens de contexto (tamaño de lectura de la memoria)
+    tokens_contexto = 2048
+    # ======================================
+
     try:
         modelos_instalados = client.list()
-        lista_modelos = [m.model for m in modelos_instalados.models]
+        lista_completa = [m.model for m in modelos_instalados.models]
+        
+        # Filtramos si el usuario ha especificado modelos concretos
+        if modelos_a_evaluar:
+            lista_modelos = [m for m in lista_completa if m in modelos_a_evaluar]
+        else:
+            lista_modelos = lista_completa
+            
         if not lista_modelos:
-            print("❌ No se ha encontrado ningún modelo instalado. Usa 'ollama pull <modelo>'.")
+            print("❌ No se ha encontrado ningún modelo a evaluar. Revisa la configuración o usa 'ollama pull <modelo>'.")
             return
             
         print(f"📦 Modelos detectados instalados en tu máquina: {len(lista_modelos)}")
@@ -64,6 +84,7 @@ Debes devolver obligatoriamente un objeto JSON válido con dos claves exactas:
     for modelo in lista_modelos:
         print(f"\n[{modelo}] 🚀 Evaluando aptitud...")
         try:
+            start_time = time.time()
             # Usamos la librería nativa para generar la respuesta forzando 'json'
             response = client.generate(
                 model=modelo,
@@ -71,9 +92,12 @@ Debes devolver obligatoriamente un objeto JSON válido con dos claves exactas:
                 format='json',
                 options={
                     "temperature": 0.0, # Determinista para evitar florituras
-                    "num_ctx": 2048 # Contexto minúsculo para que la evaluación sea ultra rápida
+                    "num_ctx": tokens_contexto, # Contexto configurado
+                    "num_predict": max_tokens_respuesta # Límite de tokens de respuesta
                 }
             )
+            end_time = time.time()
+            elapsed_minutes = (end_time - start_time) / 60.0
             
             output = response.get('response', '')
             
@@ -97,18 +121,19 @@ Debes devolver obligatoriamente un objeto JSON válido con dos claves exactas:
         except Exception as e:
             estado = "🔴 NO APTO"
             motivo = f"Excepción durante la prueba: {str(e)}"
+            elapsed_minutes = 0.0
             print(f"  -> Veredicto: {estado} (Error: {str(e)})")
             
-        resultados.append({"modelo": modelo, "estado": estado, "motivo": motivo})
+        resultados.append({"modelo": modelo, "estado": estado, "motivo": motivo, "tiempo_min": elapsed_minutes})
         
     # Tabla final
     print("\n" + "=" * 80)
     print("📊 RESUMEN FINAL DE APTITUD PARA EL SISTEMA MULTI-AGENTE")
     print("=" * 80)
-    print(f"{'MODELO':<25} | {'VEREDICTO':<12} | {'MOTIVO'}")
-    print("-" * 80)
+    print(f"{'MODELO':<25} | {'VEREDICTO':<12} | {'TIEMPO (min)':<12} | {'MOTIVO'}")
+    print("-" * 95)
     for res in resultados:
-        print(f"{res['modelo']:<25} | {res['estado']:<12} | {res['motivo']}")
+        print(f"{res['modelo']:<25} | {res['estado']:<12} | {res['tiempo_min']:<12.2f} | {res['motivo']}")
 
 if __name__ == "__main__":
     evaluar_modelos()

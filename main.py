@@ -234,25 +234,10 @@ def main():
             
             con_solucion = ask_user("¿Generar también la solución explicada? (s/n): ").strip().lower() == "s"
             
-            # Pedir Senado SOLO para generar ejercicio
-            print("\n¿Qué arquitectura de validación deseas usar para evaluar el borrador?")
-            print("1. Ninguna (Modo Turbo - Más rápido)")
-            print("2. Senado BFT (3 Jueces paralelos votando - Más robusto)")
-            print("3. Senado Reflexivo (3 Jueces puntuando 0-10 y reescribiendo el ejercicio - Calidad Máxima)")
-            senado_opcion = ask_user("Elige una opción [3]: ").strip()
-            
-            if senado_opcion == "1":
-                initial_state["tipo_senado"] = "ninguno"
-                initial_state["usar_senado"] = False
-                print("⚡ SENADO DESACTIVADO. Generación rápida (modo turbo).")
-            elif senado_opcion == "2":
-                initial_state["tipo_senado"] = "bft"
-                initial_state["usar_senado"] = True
-                print("🏛️ SENADO BFT ACTIVADO.")
-            else:
-                initial_state["tipo_senado"] = "reflexion"
-                initial_state["usar_senado"] = True
-                print("🧠 SENADO REFLEXIVO ACTIVADO.")
+            # Forzamos el uso del senado reflexivo en línea
+            initial_state["tipo_senado"] = "reflexion"
+            initial_state["usar_senado"] = True
+            print("🧠 SENADO REFLEXIVO (EN LÍNEA) ACTIVADO.")
             
             initial_state["tarea"] = "generar"
             initial_state["conceptos_buscados"] = buscados
