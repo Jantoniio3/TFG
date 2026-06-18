@@ -2,8 +2,7 @@ import subprocess
 
 models = [
     # --- Familia Meta (LLaMA) ---
-    ("llama3.3:70b", "4096"),          # El estado del arte actual de Meta. Razonamiento lógico insuperable.
-    ("llama3.1:70b", "4096"),          # Versión anterior de Meta. Perfecto para medir si la v3.3 realmente mejora a la v3.1.
+    ("llama3.3:70b", "4096"),          # Versión anterior de Meta. Perfecto para medir si la v3.3 realmente mejora a la v3.1.
     
     # --- Familia Alibaba (Qwen) ---
     ("qwen2.5-coder:32b", "4096"),     # El mejor modelo open-source específico de código en su rango de peso.
