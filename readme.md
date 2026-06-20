@@ -58,17 +58,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
----
 
-## Laboratorio de Benchmarking
-
-El sistema incluye un evaluador dinámico para validar la capacidad matemática y de salida estructurada (JSON estricto) de los modelos descargados en el clúster, justificando así la elección tecnológica del Senado:
-
-```bash
-python src/evaluation/model_evaluator.py
-```
-
----
 
 ## Variables de Entorno y Configuración
 En los archivos `.env` y `.env.cluster` se configuran las propiedades del sistema:
