@@ -1,0 +1,2 @@
+Iteracion;Modelo;Conceptos;Juez_1_Nota;Juez_2_Nota;Juez_3_Nota;Nota_Media;Reintentos;Resultado_Final
+1;qwen2.5-coder:32b;Recursividad, Bucle for, Funciones;9;8;8;8.33;0;Aprobado
