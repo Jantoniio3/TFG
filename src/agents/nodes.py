@@ -132,7 +132,7 @@ Contexto de ejercicios similares para inspiración:
     if reintentos > 0 and criticas:
         user_prompt += f"\nATENCIÓN: Este es el intento número {reintentos + 1}. El Senado rechazó tu ejercicio anterior con las siguientes críticas:\n{criticas}\nPOR FAVOR, CORRIGE EL EJERCICIO TENIENDO EN CUENTA ESTE FEEDBACK.\n"
 
-    user_prompt += "\nDevuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio."
+    user_prompt += "\nDevuelve ÚNICAMENTE el texto en formato Markdown con el enunciado completo del nuevo ejercicio. PROHIBIDO incluir títulos genéricos iniciales como '# Ejercicio Generado' o '## Enunciado'."
 
     if state.get("modo_desarrollador", False):
         print(f"\n{DEV_COLOR}" + "═"*50)
@@ -261,7 +261,10 @@ Contexto de ejercicios base para guiar el estilo:
 Evalúa el ejercicio asignándole una nota entera del 0 al 10.
 En tu crítica, razona tu nota de forma MUY BREVE.
 REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría mejorar o añadir (ej. "se podría añadir..."). Si el ejercicio necesita mejoras, NO des el consejo: aplícalo directamente tú reescribiendo el ejercicio completo en el campo obligatorio 'ejercicio_mejorado'.
-¡ATENCIÓN CRÍTICA!: EL CAMPO 'ejercicio_mejorado' NUNCA PUEDE ESTAR VACÍO (""). TIENES QUE ESCRIBIR EL ENUNCIADO COMPLETO REESCRITO SIEMPRE, INCLUSO SI LE DAS UN 10. SI DEJAS EL CAMPO VACÍO, EL SISTEMA CRASHEARÁ.""" + get_cluster_prompt_suffix()
+¡ATENCIÓN CRÍTICA!: EL CAMPO 'ejercicio_mejorado' NUNCA PUEDE ESTAR VACÍO (""). TIENES QUE ESCRIBIR EL ENUNCIADO COMPLETO REESCRITO SIEMPRE, INCLUSO SI LE DAS UN 10.
+REGLAS DE FORMATO Y CONTENIDO PARA 'ejercicio_mejorado':
+- PROHIBIDO ATAJOS: Está terminantemente prohibido escribir "Mismo ejercicio", "Sin cambios", o referencias vagas. Debes reescribir el ejercicio palabra por palabra, con todo el código y la narrativa completa.
+- PROHIBIDO TÍTULOS INÚTILES: No incluyas cabeceras genéricas como "# Ejercicio Generado" o "## Enunciado". Arranca directamente con el título real del ejercicio o su narrativa.""" + get_cluster_prompt_suffix()
 
     votes = []
     ejercicio_actual = ejercicio
