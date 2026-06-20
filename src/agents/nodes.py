@@ -306,8 +306,11 @@ REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría 
             vote_error = SenateVoteReflection(nota=8, critica=f"Error técnico: {e}", ejercicio_mejorado=ejercicio_actual)
             votes.append(vote_error)
 
-    # La nota final será la que ponga el último juez (Juez 3)
-    nota_final = getattr(votes[-1], "nota", 0)
+    # Extraer las notas individuales de cada juez
+    notas = [getattr(v, "nota", 0) for v in votes]
+    
+    # Calcular la nota media
+    nota_media = round(sum(notas) / len(notas), 2) if notas else 0
     
     criticas_list = []
     for i, v in enumerate(votes):
@@ -321,12 +324,13 @@ REGLA DE ORO: Tienes absolutamente PROHIBIDO dar consejos sobre qué se podría 
         
     criticas_str = "\n".join(criticas_list)
     
-    print(f"🏛️ Votación del Senado: El Juez 3 certifica la versión final con un {nota_final}/10. Proceso de mejora iterativa completado.")
+    print(f"🏛️ Votación del Senado: El Senado Reflexivo certifica la versión final con una nota media de {nota_media}/10. Notas individuales: {notas}")
     solucion = getattr(votes[-1], "solucion_explicada", "") if votes else ""
     return {
         "enunciado_generado": ejercicio_actual,
         "criticas_senado": "",
-        "nota_senado": nota_final,
+        "nota_senado": nota_media,
+        "notas_individuales": notas,
         "resultado_codigo": solucion if con_solucion else ""
     }
 

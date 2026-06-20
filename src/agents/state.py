@@ -42,7 +42,8 @@ class TutorState(TypedDict):
     ejercicio_generado: str
     criticas_senado: str
     votos_senado: str
-    nota_senado: int
+    nota_senado: float
+    notas_individuales: List[float]
     modo_desarrollador: bool
     usar_senado: bool
     tipo_senado: str
