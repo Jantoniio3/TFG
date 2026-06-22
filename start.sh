@@ -29,7 +29,7 @@ echo "Verificando/Descargando el modelo $MODELO..."
 ollama pull $MODELO
 
 echo "3. Verificando entorno de Python..."
-if [ ! -d ".venv_cluster" ]; then
+if [ ! -f ".venv_cluster/bin/activate" ]; then
     echo "Entorno virtual no encontrado. Creándolo desde cero e instalando dependencias..."
     python3 -m venv .venv_cluster
     source .venv_cluster/bin/activate
