@@ -24,9 +24,16 @@ sleep 1
 echo "2. Arrancando el motor de IA limpio en segundo plano..."
 ollama serve > ollama_logs.txt 2>&1 &
 sleep 3
-MODELO=$(grep OLLAMA_MODEL .env.cluster | cut -d '=' -f2)
-echo "Verificando/Descargando el modelo $MODELO..."
+MODELO=$(grep OLLAMA_MODEL .env.cluster | grep -v OLLAMA_SENATE_MODEL | cut -d '=' -f2)
+MODELO_SENADO=$(grep OLLAMA_SENATE_MODEL .env.cluster | cut -d '=' -f2)
+
+echo "Verificando/Descargando el modelo principal $MODELO..."
 ollama pull $MODELO
+
+if [ -n "$MODELO_SENADO" ]; then
+    echo "Verificando/Descargando el modelo del Senado $MODELO_SENADO..."
+    ollama pull "$MODELO_SENADO"
+fi
 
 echo "3. Verificando entorno de Python..."
 if [ ! -f ".venv_cluster/bin/activate" ]; then

@@ -58,6 +58,24 @@ def get_llm(stream: bool = False):
     callbacks = [StreamingStdOutCallbackHandler()] if stream else []
     return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.7, callbacks=callbacks)
 
+def get_senate_llm(stream: bool = False):
+    """Instancia el modelo LLM específico para el Senado.
+    
+    Permite utilizar un modelo distinto (como qwen2.5-coder:32b) para la
+    evaluación y mejora, independiente del modelo usado en el generador.
+    
+    Args:
+        stream (bool): Si es True, activa el streaming de tokens a la consola.
+        
+    Returns:
+        ChatOllama: Instancia del modelo LLM configurado.
+    """
+    model_name = os.getenv("OLLAMA_SENATE_MODEL", os.getenv("OLLAMA_MODEL", "llama3.1:8b"))
+    num_ctx = int(os.getenv("NUM_CTX", "16384"))
+    
+    callbacks = [StreamingStdOutCallbackHandler()] if stream else []
+    return ChatOllama(model=model_name, num_ctx=num_ctx, temperature=0.7, callbacks=callbacks)
+
 def get_llm_deterministic(stream: bool = False):
     """Instancia el modelo LLM sin temperatura para tareas de precisión.
     
@@ -158,7 +176,7 @@ def senate_bft_node(state):
     al Generador con las críticas acumuladas para que se regenere.
     """
     print("\n⚖️ El Senado está debatiendo (BFT 3 Jueces)...")
-    llm = get_llm(stream=state.get("modo_desarrollador", False)).with_structured_output(SenateVoteBFT)
+    llm = get_senate_llm(stream=state.get("modo_desarrollador", False)).with_structured_output(SenateVoteBFT)
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
@@ -242,7 +260,7 @@ def senate_reflection_node(state):
     num_jueces = 1 if con_solucion else 3
     msg_jueces = "(1 Juez Rápido)" if con_solucion else "(3 Jueces Secuenciales)"
     print(f"\n⚖️ El Senado Reflexivo ha iniciado la cadena de mejora {msg_jueces}...")
-    llm = get_llm(stream=state.get("modo_desarrollador", False)).with_structured_output(SenateVoteReflection)
+    llm = get_senate_llm(stream=state.get("modo_desarrollador", False)).with_structured_output(SenateVoteReflection)
     
     ejercicio = state.get("ejercicio_generado", "")
     dificultad = state.get("dificultad", "Media")
